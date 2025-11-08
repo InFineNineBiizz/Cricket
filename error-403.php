@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Error 403</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+
+    <?php 
+        include "links.php";
+    ?>
+    
+</head>
+
+<body class="h-100">
+
+    <div class="auth-bg d-flex min-vh-100">
+        <div class="row g-0 justify-content-center w-100 m-xxl-5 px-xxl-4 m-3">
+            <div class="col-xxl-3 col-lg-5 col-md-6">
+                <a href="index.php" class="auth-brand d-flex justify-content-center mb-2">
+                    <img src="assets/images/logo-dark.png" alt="dark logo" height="26" class="logo-dark">
+                    <img src="assets/images/logo.png" alt="logo light" height="26" class="logo-light">
+                </a>
+
+                <br>
+
+                <div class="card overflow-hidden text-center p-xxl-4 p-3 mb-0">
+
+                    <div class="text-center">
+                        <h1 class="text-error">403</h1>
+                        <h3 class="mt-3 mb-2">Access Denied !</h3>
+                        <p class="text-muted mb-3">You are not authorized to view this page. If you think this is a mistake, please contact support for assistance.</p>
+
+                        <a href="index.php" class="btn btn-danger">
+                            <i class="ti ti-home fs-16 me-1"></i> Back to Home
+                        </a>
+                    </div>
+
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor js -->
+    <script src="assets/js/vendor.min.js"></script>
+
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+
+</body>
+</html>
