@@ -30,6 +30,7 @@
 <!-- Datatable Demo js -->
 <script src="assets/js/components/table-datatable.js"></script>
 
+<!-- DropDown Validation -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('.needs-validation');
@@ -70,5 +71,46 @@ document.addEventListener('DOMContentLoaded', function () {
       sel.addEventListener(evt, () => syncChoicesValidity(sel));
     });
   });
+});
+</script>
+
+<!-- Date Validation -->
+<script>
+$("#myForm").on("submit", function(e){
+
+    let dateValue = $("#sdate").val();
+    let dateVal = $("#edate").val();
+
+    if(dateValue === ""){
+        e.preventDefault(); // stop form submit
+        $("#sdate").addClass("is-invalid");
+        $("#season_start_error").removeClass("d-none");
+    } else {
+        $("#sdate").removeClass("is-invalid").addClass("is-valid");
+        $("#season_start_error").addClass("d-none");
+    }
+
+    if(dateVal === ""){
+        e.preventDefault(); // stop form submit
+        $("#edate").addClass("is-invalid");
+        $("#season_end_error").removeClass("d-none");
+    } else {
+        $("#edate").removeClass("is-invalid").addClass("is-valid");
+        $("#season_end_error").addClass("d-none");
+    }
+
+    $("#sdate").on("change", function(){
+    if($(this).val() !== ""){
+        $(this).removeClass("is-invalid").addClass("is-valid");
+        $("#season_start_error").addClass("d-none");
+    }
+    });
+
+    $("#edate").on("change", function(){
+    if($(this).val() !== ""){
+        $(this).removeClass("is-invalid").addClass("is-valid");
+        $("#season_end_error").addClass("d-none");
+    }
+    });
 });
 </script>

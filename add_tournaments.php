@@ -1,19 +1,44 @@
 <?php 
     include "connection.php";
+    $name=$cat=$logo=$img="";
+
+    if(isset($_GET['tid']))
+    {
+        $id=$_GET['tid'];
+        $str="select * from tournaments where tid=".$id."";
+        $res=mysqli_query($conn,$str);
+        $row=mysqli_fetch_array($res);
+        $name=$row['name'];
+        $cat=$row['category'];
+        $logo=$row['logo'];
+    }
 
     if(isset($_POST['btn']))
     {
-        move_uploaded_file($_FILES['tlogo']['tmp_name'],"images/".$_FILES['tlogo']['name']);
-        $img=$_FILES['tlogo']['name'];                
-        
-        $str="insert into tournaments(name,category,logo) values('".$_POST['tname']."','".$_POST['tcategory']."','".$img."')";
-        $res=mysqli_query($conn,$str);
-        if ($res) {
-            // Success!
-            $valid = "<div class='alert alert-success text-center'><strong>Tournament Added!</strong></div>";
-        } else {
-            // Failed! Show the error message
-            $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+        if(empty($_GET['tid']))
+        {        
+            move_uploaded_file($_FILES['tlogo']['tmp_name'],"images/".$_FILES['tlogo']['name']);
+            $img=$_FILES['tlogo']['name'];                
+            
+            $str="insert into tournaments(name,category,logo) values('".$_POST['tname']."','".$_POST['tcategory']."','".$img."')";
+            $res=mysqli_query($conn,$str);
+            if ($res) 
+            { 
+                $valid = "<div class='alert alert-success text-center'><strong>Tournament Added!</strong></div>";
+            } 
+            else 
+            {
+                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+            }
+        }
+        else
+        {
+            move_uploaded_file($_FILES['tlogo']['tmp_name'],"images/".$_FILES['tlogo']['name']);
+            $img=$_FILES['tlogo']['name'];
+
+            $str="update tournaments set name='".$_POST['tname']."',category='".$_POST['tcategory']."',logo='".$img."' where tid=".$id."";
+            $res=mysqli_query($conn,$str);
+            header("location:manage_tournaments.php");
         }
     }
 ?>
@@ -46,7 +71,18 @@
         <!-- Sidenav Menu End -->
         
         <!-- Topbar Start -->
-        
+        <header class="app-topbar" id="header">
+        <div class="page-container topbar-menu">
+            <div class="d-flex align-items-center gap-2">    
+                <!-- Topbar Page Title -->
+                <div class="topbar-item d-none d-md-flex px-2">                 
+                    <div>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Add Tournaments</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </header>
         <?php 
             include "topbar.php";
         ?>
@@ -61,48 +97,45 @@
             <div class="page-container">
                     <div class="row">
                         <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-bottom border-dashed">
-                                    <h2 class="header-title mb-2">Add Tounaments</h2>                            
-                                </div>
+                            <div class="card">                                                                
                                 <br>
                                 <?php 
                                     if(isset($valid))
                                     {
                                         echo $valid;
                                     }
-                                ?>                        
+                                ?>
                                 <div class="card-body">
                                 <form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
                                     <div class="mb-3">
-                                        <label class="form-label lb" for="name">Enter Tournament Name</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Enter Tournament Name" name="tname" required>
+                                        <label class="form-label lb" for="name">Tournament Name</label>
+                                        <input type="text" class="form-control" id="name" placeholder="Enter Tournament Name" name="tname" value="<?php echo $name;?>" required>
                                         <div class="invalid-feedback">
                                             Please Enter Tournament Name..
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label lb" for="category">Enter Tournament Category</label>
+                                        <label class="form-label lb" for="category">Tournament Category</label>
                                         <select class="form-select" data-choices name="tcategory" id="category" required>
                                             <option value="" selected disabled>Select Category</option>
-                                            <option value="college">College</option>
-                                            <option value="district">District</option>
-                                            <option value="national">National</option>
-                                            <option value="open">Open</option>
-                                            <option value="other">Other</option>
+                                            <option value="college" <?php if($cat == "college") echo "selected";?>>College</option>
+                                            <option value="district" <?php if($cat == "district") echo "selected";?>>District</option>
+                                            <option value="national" <?php if($cat == "national") echo "selected"; ?>>National</option>
+                                            <option value="open" <?php if($cat == "open") echo "selected"; ?>>Open</option>
+                                            <option value="other" <?php if($cat == "other") echo "selected"; ?>>Other</option>
                                         </select>
                                         <div class="invalid-feedback">
                                             Please Provide Tournament Category..
                                         </div>
                                     </div>                                    
                                     <div class="mb-3">
-                                        <label class="form-label lb" for="logo">Enter Tournament Logo</label>
-                                        <input type="file" class="form-control" id="logo" placeholder="Enter Logo" name="tlogo" required>
+                                        <label class="form-label lb" for="logo">Tournament Logo</label>
+                                        <input type="file" class="form-control" id="logo" name="tlogo" required><?php echo $logo;?>
                                         <div class="invalid-feedback">
                                             Please Choose Tournament Logo..
                                         </div>
                                     </div>                                                                        
-                                    <button class="btn btn-primary lb w-25" name="btn" type="submit">Insert</button>
+                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['tid'])){ echo 'Update';} else { echo 'Insert';}?></button>
                                 </form>
                                 </div> <!-- end card body-->
                             </div> <!-- end card -->

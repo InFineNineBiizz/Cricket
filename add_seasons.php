@@ -1,8 +1,84 @@
+<?php 
+    include "connection.php";
+    $tid=$name=$logo=$cname=$gname=$sdate=$edate=$btype=$gtype=$mtype=$over=$img="";
+
+    $sql="select * from tournaments";
+    $resq=mysqli_query($conn,$sql);
+                                                    
+    if(isset($_GET['id']))
+    {
+        $id=$_GET['id'];
+        $str="select * from seasons where id=".$id."";
+        $res=mysqli_query($conn,$str);
+        $row=mysqli_fetch_array($res);
+        $tid=$row['tid'];
+        $name=$row['name'];
+        $logo=$row['logo'];
+        $cname=$row['cname'];
+        $gname=$row['gname'];
+        $sdate=$row['sdate'];
+        $edate=$row['edate'];
+        $btype=$row['btype'];
+        $gtype=$row['gtype'];
+        $mtype=$row['mtype'];
+        $over=$row['overs'];
+    }
+
+    if(isset($_POST['btn']))
+    {   
+        if(empty($_GET['id']))
+        {    
+            move_uploaded_file($_FILES['slogo']['tmp_name'],"images/".$_FILES['slogo']['name']);
+            $img=$_FILES['slogo']['name']; 
+            
+            $mt=$_POST['mtype'];
+            if($mt == "Limited Overs")
+            {
+                $ov=$_POST['overs'];          
+            }
+            else
+            {            
+                $ov="NULL";            
+            }
+
+            $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo) values('".$_POST['sname']."','".$_POST['tname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."')";
+            $res=mysqli_query($conn,$str);
+            if ($res) 
+            { 
+                $valid = "<div class='alert alert-success text-center'><strong>Season Added!</strong></div>";
+            } 
+            else 
+            {
+                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+            }
+        }
+        else
+        {
+            move_uploaded_file($_FILES['slogo']['tmp_name'],"images/".$_FILES['slogo']['name']);
+            $img=$_FILES['slogo']['name'];
+
+            $mt=$_POST['mtype'];
+            if($mt == "Limited Overs")
+            {
+                $ov=$_POST['overs'];          
+            }
+            else
+            {            
+                $ov="NULL";            
+            }
+            
+            $str="update seasons set tid='".$_POST['tname']."',name='".$_POST['sname']."',logo='".$img."',cname='".$_POST['cname']."',gname='".$_POST['gname']."',sdate='".$_POST['sdate']."',edate='".$_POST['edate']."',btype='".$_POST['btype']."',gtype='".$_POST['gtype']."',mtype='".$_POST['mtype']."',overs='".$ov."' where id=".$id."";
+            $res=mysqli_query($conn,$str);
+            header('location:manage_seasons.php');
+        }  
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard</title>
+    <title>Add Seasons | CrickFolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
     <meta content="Coderthemes" name="author" />
@@ -32,12 +108,12 @@
                 <!-- Topbar Page Title -->
                 <div class="topbar-item d-none d-md-flex px-2">                 
                     <div>
-                        <h4 class="page-title fs-20 fw-semibold mb-0">Dashboard</h4>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Seasons / Create</h4>
                     </div>
                 </div>
             </div>
         </div>
-        </header>        
+        </header>
         <?php 
             include "topbar.php";
         ?>
@@ -49,7 +125,181 @@
         <!-- ============================================================== -->
         
         <div class="page-content">
+            <div class="page-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Add Seasons</h4>
+                                </div>                                                                
+                                <br>
+                                <?php 
+                                    if(isset($valid))
+                                    {
+                                        echo $valid;
+                                    }
+                                ?>
+                                <div class="card-body">
+                                <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="name">Season Name</label>
+                                                <input type="text" class="form-control" id="name" placeholder="Enter Season Name" name="sname" value="<?php echo $name;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter Season Name..
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="tname">Tournaments</label>
+                                                <select class="form-select" data-choices name="tname" id="tname" required>
+                                                    <option value="" selected disabled>Selct Tournament Name</option>
+                                                    <?php while($row=mysqli_fetch_assoc($resq)){?>
+                                                        <option value="<?php echo $row['tid'];?>" <?php if($tid==$row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
+                                                    <?php }?>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Please Provide Tournament Name..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="cname">City Name</label>
+                                                <input type="text" class="form-control" id="cname" placeholder="Enter City Name" name="cname" value="<?php echo $cname;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter City Name..
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="gname">Ground Name</label>
+                                                <input type="text" class="form-control" id="gname" placeholder="Enter Gound Name" name="gname" value="<?php echo $gname;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter Ground Name..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="sdate">Season Start Date</label>
+                                                <!-- <input type="text" id="sdate" name="sdate" class="form-control flatpickr-input" data-provider="flatpickr" data-date-format="d M, Y" readonly="readonly" required> -->
+                                                <!-- <i class="ti ti-calendar-event" height="36" width="36"></i> -->
+                                                <div class="input-group has-validation">
+                                                    <input type="text" class="form-control flatpickr-input" placeholder="Select Season Start Date" id="sdate" name="sdate" data-provider="flatpickr" data-date-format="Y-m-d" readonly="readonly" value="<?php echo $sdate;?>" required>
+                                                    <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                                </div>
+                                                <div id="season_start_error" class="invalid-feedback d-none">
+                                                    Please Provide Season Start Date..
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="edate">Season End Date</label>
+                                                <!-- <input type="text" id="edate" name="edate" class="form-control flatpickr-input" data-provider="flatpickr" data-date-format="d M, Y" readonly="readonly" required> -->
+                                                <!-- <i class="bi bi-calendar-event"></i>-->
+                                                <div class="input-group has-validation">
+                                                    <input type="text" class="form-control flatpickr-input" placeholder="Select Season End Date" id="edate" name="edate" data-provider="flatpickr" data-date-format="Y-m-d" readonly="readonly" value="<?php echo $edate;?>" required>
+                                                    <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                                </div>
+                                                <div id="season_end_error" class="invalid-feedback d-none">
+                                                    Please Provide Season End Date..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="btype">Ball Type</label>
+                                                <select class="form-select" data-choices name="btype" id="btype" required>
+                                                    <option value="" selected disabled>Select Ball Type</option>
+                                                    <option value="soft tennis" <?php if($btype=="soft tennis"){echo 'selected';}?>>Soft Tennis</option>
+                                                    <option value="hard tennis" <?php if($btype=="hard tennis"){echo 'selected';}?>>Hard Tennis</option>
+                                                    <option value="leather" <?php if($btype=="leather"){echo 'selected';}?>>Leather</option>
+                                                    <option value="plastic" <?php if($btype=="plastic"){echo 'selected';}?>>Plastic</option>
+                                                    <option value="other" <?php if($btype=="other"){echo 'selected';}?>>Other</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Please Provide Ball Type..
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="gtype">Ground Type</label>
+                                                <select class="form-select" data-choices name="gtype" id="gtype" required>
+                                                    <option value="" selected disabled>Select Ground Type</option>
+                                                    <option value="ground" <?php if($gtype=="ground"){echo 'selected';}?>>Ground</option>
+                                                    <option value="box or turf" <?php if($gtype=="box or turf"){echo 'selected';}?>>Box Or Turf</option>
+                                                    <option value="gully" <?php if($gtype=="gully"){echo 'selected';}?>>Gully</option>                                                    
+                                                    <option value="other" <?php if($gtype=="other"){echo 'selected';}?>>Other</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Please Provide Ground Type..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="mtype">Match Type</label>
+                                                <select class="form-select" data-choices name="mtype" id="mtype" required>
+                                                    <option value="" selected disabled>Select Match Type</option>
+                                                    <option value="T10" <?php if($mtype=="T10"){echo 'selected';}?>>T10</option>
+                                                    <option value="T20" <?php if($mtype=="T20"){echo 'selected';}?>>T20</option>
+                                                    <option value="OneDay 50" <?php if($mtype=="OneDay 50"){echo 'selected';}?>>OneDay 50</option>
+                                                    <option value="Limited Overs" <?php if($mtype=="Limited Overs"){echo 'selected';}?>>Limited Overs</option>
+                                                    <option value="Test Match" <?php if($mtype=="Test Match"){echo 'selected';}?>>Test Match</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Please Provide Match Type..
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3 d-none" id="overs-textbox-div">
+                                                <label for="overs" class="form-label lb">Overs</label>
+                                                <input type="text" class="form-control" id="overs" name="overs" placeholder="E.g., 35" value="<?php echo $over;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Provide Overs..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="slogo">Upload Logo</label>
+                                                <input type="file" class="form-control" id="slogo" name="slogo" required><?php echo $logo;?>
+                                                <div class="invalid-feedback">
+                                                    Please Choose Logo..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                                        
+                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
+                                </form>
+                                </div> <!-- end card body-->
+                            </div> <!-- end card -->
+                        </div><!-- end col-->
+                    </div> <!-- end row-->
+                </div>
+            </div>
             <!-- Footer Start -->
 
             <?php 
@@ -492,6 +742,48 @@
     <?php 
         include "scripts.php";
     ?>
+    
+    <script>
+        // $(document).ready(function() {
+        //     $('#mtype').on('change', function() {
+                
+        //         // Get the currently selected value
+        //         var selectedValue = $(this).val();
+
+        //         // Check if the value is 'limited overs'
+        //         if (selectedValue === 'Limited Overs') {
+        //             // If yes, find the textbox div and remove 'd-none' to show it
+        //             $('#overs-textbox-div').removeClass('d-none');
+        //         } else {
+        //             // Otherwise, add 'd-none' to hide it
+        //             $('#overs-textbox-div').addClass('d-none');
+        //         }
+        //     });
+        // });
+    </script>
+
+<script>
+$(document).ready(function() {
+    function updateOversVisibility() {
+        var selectedValue = $('#mtype').val() || '';
+
+        // Show overs for 'Limited Overs' OR where the value contains digits (T10, T20, OneDay 50)
+        var showOvers = selectedValue === 'Limited Overs';
+
+        if (showOvers) {
+            $('#overs-textbox-div').removeClass('d-none');
+            $('#overs').attr('required', true);
+        } else {
+            $('#overs-textbox-div').addClass('d-none');
+            $('#overs').removeAttr('required').val('');
+        }
+    }
+
+    // run on change (and on load for preselected values)
+    $('#mtype').on('change', updateOversVisibility);
+    updateOversVisibility();
+});
+</script>
 
 </body>
 </html>

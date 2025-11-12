@@ -91,6 +91,29 @@
                     </ul>
                 </div>
             </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPagesSeason" aria-expanded="false"
+                    aria-controls="sidebarPagesSeason" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-cricket"></i></span>
+                    <span class="menu-text"> Seasons </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPagesSeason">
+                    <ul class="sub-menu">
+                        <li class="side-nav-item">
+                            <a href="add_seasons.php" class="side-nav-link">
+                                <span class="menu-text">Add Seasons</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_seasons.php" class="side-nav-link">
+                                <span class="menu-text">Manage Seasons</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
             
             <li class="side-nav-title mt-2">Custom</li>
 

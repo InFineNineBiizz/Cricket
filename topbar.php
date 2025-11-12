@@ -23,14 +23,7 @@
             <!-- Horizontal Menu Toggle Button -->
             <button class="topnav-toggle-button px-2" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
                 <i class="ri-menu-5-line fs-24"></i>
-            </button>
-
-            <!-- Topbar Page Title -->
-            <div class="topbar-item d-none d-md-flex px-2">                        
-                <div>
-                    <h4 class="page-title fs-20 fw-semibold mb-0">Dashboard</h4>
-                </div>
-            </div>
+            </button>                        
         </div>
 
         <div class="d-flex align-items-center gap-2">                    

@@ -1,8 +1,25 @@
+<?php 
+    include "connection.php";    
+
+    $str="select * from seasons";
+    $res=mysqli_query($conn,$str);
+?>
+
+<?php
+      if(isset($_GET['id']))
+      {   
+         $id=$_GET['id'];
+         $sql="delete from seasons where id=".$id."";
+         mysqli_query($conn,$sql);
+         header("location:manage_seasons.php");
+      }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard</title>
+    <title>Manage Seasons | CrickFolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
     <meta content="Coderthemes" name="author" />
@@ -26,18 +43,20 @@
         <!-- Sidenav Menu End -->
         
         <!-- Topbar Start -->
+        
         <header class="app-topbar" id="header">
         <div class="page-container topbar-menu">
             <div class="d-flex align-items-center gap-2">    
                 <!-- Topbar Page Title -->
                 <div class="topbar-item d-none d-md-flex px-2">                 
                     <div>
-                        <h4 class="page-title fs-20 fw-semibold mb-0">Dashboard</h4>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Manage Seasons</h4>
                     </div>
                 </div>
             </div>
         </div>
-        </header>        
+        </header>
+
         <?php 
             include "topbar.php";
         ?>
@@ -49,7 +68,71 @@
         <!-- ============================================================== -->
         
         <div class="page-content">
-
+            <div class="page-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">                                
+                                <div class="card-body">                                
+                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Season ID</th>
+                                            <th>Season Logo</th>                                    
+                                            <th>Season Name</th>
+                                            <th>Tournament ID</th>
+                                            <th>City Name</th>
+                                            <th>Ground Name</th>
+                                            <th>Season Start Date</th>
+                                            <th>Season End Date</th>
+                                            <th>Bowling Type</th>
+                                            <th>Ground Type</th>
+                                            <th>Match Type</th>
+                                            <th>Overs</th>
+                                            <th>Status[Active/Inactive]</th>
+                                            <th>Created_AT</th>  
+                                            <th>Action</th>  
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php  
+                                            while($row = mysqli_fetch_assoc($res)){
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $row['id'];?></td>
+                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>
+                                            <td><?php echo $row['name'];?></td>                                            
+                                            <td><?php echo $row['tid'];?></td>
+                                            <td><?php echo $row['cname'];?></td>
+                                            <td><?php echo $row['gname'];?></td>
+                                            <td><?php echo $row['sdate'];?></td>
+                                            <td><?php echo $row['edate'];?></td>
+                                            <td><?php echo $row['btype'];?></td>
+                                            <td><?php echo $row['gtype'];?></td>
+                                            <td><?php echo $row['mtype'];?></td>
+                                            <td><?php echo $row['overs'];?></td>
+                                            <td>
+                                                <div>
+                                                    <input type="checkbox" id="switch<?php echo $row['id'];?>" checked data-switch="success" />
+                                                    <label for="switch<?php echo $row['id'];?>" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
+                                                </div>
+                                            </td>
+                                            <td><?php echo $row['created_at'];?></td>                                            
+                                            <td>
+                                                <a class="fa fa-trash fa-lg" onclick="return confirm('Do you want to delete this record?')" href="?id=<?php echo $row['id'];?>"></a> &nbsp;|&nbsp; 
+                                                <a class="fa fa-pencil fa-lg" href="add_seasons.php?id=<?php echo $row['id'];?>"></a>
+                                            </td>
+                                        </tr>
+                                        <?php 
+                                            }
+                                        ?>
+                                    </tbody>
+                                </table>
+                                </div> <!-- end card body-->
+                            </div> <!-- end card -->
+                        </div><!-- end col-->
+                    </div> <!-- end row-->
+                </div>
+            </div>
             <!-- Footer Start -->
 
             <?php 
@@ -488,10 +571,8 @@
             </div>
         </div>
     </div>
-    
     <?php 
         include "scripts.php";
     ?>
-
 </body>
 </html>
