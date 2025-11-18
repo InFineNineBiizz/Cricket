@@ -114,3 +114,252 @@ $("#myForm").on("submit", function(e){
     });
 });
 </script>
+
+<script>
+$(document).on("click", ".statusBtn", function () {
+    let btn = $(this);
+    let id = btn.data("id");
+    let status = btn.data("status");
+    let table = btn.data("table");
+
+    $.ajax({
+        url: "update_status.php",
+        type: "POST",
+        data: { id, status, table },
+        success: function (response) {
+            if (response == "1") {
+                let newStatus = status == 1 ? 0 : 1;
+                btn.data("status", newStatus);
+
+                if (newStatus == 1) {
+                    btn.removeClass("btn-danger").addClass("btn-success").text("Active");
+                } else {
+                    btn.removeClass("btn-success").addClass("btn-danger").text("Inactive");
+                }
+            } 
+        }
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('camt')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#camt', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('bamt')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#bamt', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('base_price')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#base_price', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sameInput = document.getElementById('sameType');
+    const groupInput = document.getElementById('groupType');
+    const sameArea = document.getElementById('sameArea');    // optional: area shown for 'same'
+    const groupArea = document.getElementById('groupArea');  // optional: area shown for 'group'
+    const addGroupBtn = document.getElementById('addGroupBtn');
+    const labels = document.querySelectorAll('input.btn-check + label');
+
+    // safety: log if elements missing
+    if (!sameInput) console.warn('sameType radio not found');
+    if (!groupInput) console.warn('groupType radio not found');
+    if (!addGroupBtn) console.warn('addGroupBtn not found - ensure button markup is present with id="addGroupBtn"');
+
+    function updateUI() {
+        const isSame = !!(sameInput && sameInput.checked);
+
+        // show/hide areas (if these IDs exist)
+        if (sameArea) sameArea.style.display = isSame ? '' : 'none';
+        if (groupArea) groupArea.style.display = isSame ? 'none' : '';
+
+        // show/hide Add Group button
+        if (addGroupBtn) {
+            addGroupBtn.classList.toggle('d-none', isSame);
+        }
+
+        // update labels visual state
+        labels.forEach(label => {
+            const forId = label.getAttribute('for');
+            const inp = document.getElementById(forId);
+            if (!inp) return;
+            if (inp.checked) {
+                label.classList.remove('btn-outline-primary');
+                label.classList.add('btn-primary', 'text-white');
+            } else {
+                label.classList.remove('btn-primary', 'text-white');
+                label.classList.add('btn-outline-primary');
+            }
+        });
+    }
+
+    // attach events if inputs exist
+    if (sameInput) sameInput.addEventListener('change', updateUI);
+    if (groupInput) groupInput.addEventListener('change', updateUI);
+
+    // initial run after DOM ready
+    updateUI();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('player_base')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#player_base', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('bid_increment')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#bid_increment', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('max_bid_player')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#max_bid_player', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // destroy any existing instance (safe-guard)
+  try {
+    const existing = Choices && Choices.getInstance ? Choices.getInstance(document.getElementById('total_max_group')) : null;
+    if (existing) existing.destroy();
+  } catch(e){}
+
+  new Choices('#total_max_group', {
+    shouldSort: false,
+    shouldSortItems: false,
+    searchEnabled: true,
+    itemSelectText: ''
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('addGroupForm');
+  if (!form) return; // nothing to do
+
+  // Ensure native validation UI is disabled (defensive)
+  form.setAttribute('novalidate', true);
+
+  function markInvalid(el, message) {
+    if (!el) return;
+    el.classList.add('is-invalid');
+    const fb = el.closest('.col-md-6')?.querySelector('.invalid-feedback') || el.parentElement.querySelector('.invalid-feedback');
+    if (fb && message) fb.textContent = message;
+  }
+  function clearInvalid(el) {
+    if (!el) return;
+    el.classList.remove('is-invalid');
+  }
+
+  form.addEventListener('input', e => clearInvalid(e.target));
+  form.addEventListener('change', e => clearInvalid(e.target));
+
+  form.addEventListener('submit', function (ev) {    
+
+    form.classList.add('was-validated');
+
+    // Built-in constraint check
+    if (!form.checkValidity()) {
+      const firstInvalid = form.querySelector(':invalid');
+      if (firstInvalid) firstInvalid.focus();
+      return; // stop — browser built-in constraints failed
+    }
+
+    // Custom checks (min <= max)
+    const minEl = document.getElementById('min_per_team');
+    const maxEl = document.getElementById('max_per_team');
+    if (minEl && maxEl) {
+      const minVal = Number(minEl.value || 0);
+      const maxVal = Number(maxEl.value || 0);
+      if (minVal > maxVal) {
+        markInvalid(maxEl, 'Max must be greater than or equal to Min');
+        maxEl.focus();
+        return;
+      }
+    }
+
+    // ALL VALID — submit the form programmatically
+    // using form.submit() does not re-trigger this submit event so it's safe
+    form.submit();
+  });
+});
+</script>

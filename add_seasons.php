@@ -180,7 +180,7 @@
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="gname">Ground Name</label>
-                                                <input type="text" class="form-control" id="gname" placeholder="Enter Gound Name" name="gname" value="<?php echo $gname;?>" required>
+                                                <input type="text" class="form-control" id="gname" placeholder="Enter Ground Name" name="gname" value="<?php echo $gname;?>" required>
                                                 <div class="invalid-feedback">
                                                     Please Enter Ground Name..
                                                 </div>
@@ -742,25 +742,6 @@
     <?php 
         include "scripts.php";
     ?>
-    
-    <script>
-        // $(document).ready(function() {
-        //     $('#mtype').on('change', function() {
-                
-        //         // Get the currently selected value
-        //         var selectedValue = $(this).val();
-
-        //         // Check if the value is 'limited overs'
-        //         if (selectedValue === 'Limited Overs') {
-        //             // If yes, find the textbox div and remove 'd-none' to show it
-        //             $('#overs-textbox-div').removeClass('d-none');
-        //         } else {
-        //             // Otherwise, add 'd-none' to hide it
-        //             $('#overs-textbox-div').addClass('d-none');
-        //         }
-        //     });
-        // });
-    </script>
 
 <script>
 $(document).ready(function() {

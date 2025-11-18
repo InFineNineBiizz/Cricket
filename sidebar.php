@@ -111,6 +111,49 @@
                                 <span class="menu-text">Manage Seasons</span>
                             </a>
                         </li>
+                        <li class="side-nav-item">
+                            <a href="add_organizer.php" class="side-nav-link">
+                                <span class="menu-text">Add Organizer</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_organizer.php" class="side-nav-link">
+                                <span class="menu-text">Manage Organizer</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="add_sponsor.php" class="side-nav-link">
+                                <span class="menu-text">Add Sponsor</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_sponsor.php" class="side-nav-link">
+                                <span class="menu-text">Manage Sponsor</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPagesAuc" aria-expanded="false"
+                    aria-controls="sidebarPagesAuc" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-cricket"></i></span>
+                    <span class="menu-text"> Auctions </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPagesAuc">
+                    <ul class="sub-menu">
+                        <li class="side-nav-item">
+                            <a href="add_auctions.php" class="side-nav-link">
+                                <span class="menu-text">Add Auctions</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_auctions.php" class="side-nav-link">
+                                <span class="menu-text">Manage Auctions</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>

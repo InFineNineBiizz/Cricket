@@ -102,8 +102,8 @@
                                             </td>
                                             <td><?php echo $row['created_at'];?></td>
                                             <td>
-                                                <a class="fa fa-trash fa-lg" onclick="return confirm('Do you want to delete this record?')" href="?tid=<?php echo $row['tid'];?>"></a> | 
-                                                <a class="fa fa-pencil fa-lg" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
+                                                <a class="fa fa-trash fa-lg btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this record?')" href="?tid=<?php echo $row['tid'];?>"></a>
+                                                <a class="fa fa-pencil fa-lg btn btn-success btn-sm" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
                                             </td>
                                         </tr>
                                         <?php 

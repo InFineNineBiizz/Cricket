@@ -50,7 +50,7 @@
                 <!-- Topbar Page Title -->
                 <div class="topbar-item d-none d-md-flex px-2">                 
                     <div>
-                        <h4 class="page-title fs-20 fw-semibold mb-0">Manage Seasons</h4>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Seasons / Details</h4>
                     </div>
                 </div>
             </div>
@@ -71,7 +71,10 @@
             <div class="page-container">
                     <div class="row">
                         <div class="col-12">
-                            <div class="card">                                
+                            <div class="card">    
+                                <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                                <h4 class="header-title">Season Details</h4>
+                            </div>                            
                                 <div class="card-body">                                
                                 <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
                                     <thead>
