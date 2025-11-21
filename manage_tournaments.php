@@ -71,7 +71,10 @@
             <div class="page-container">
                     <div class="row">
                         <div class="col-12">
-                            <div class="card">                                
+                            <div class="card">
+                                <div class="card-header border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Tournaments Details</h4>
+                                </div>                                
                                 <div class="card-body">                                
                                 <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
                                     <thead>
@@ -95,15 +98,18 @@
                                             <td><?php echo $row['name'];?></td>                                            
                                             <td><?php echo $row['category'];?></td>
                                             <td>
-                                                <div>
-                                                    <input type="checkbox" id="switch<?php echo $row['tid'];?>" checked data-switch="success" />
-                                                    <label for="switch<?php echo $row['tid'];?>" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
-                                                </div>
+                                            <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['tid']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="tournaments">
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
                                             </td>
                                             <td><?php echo $row['created_at'];?></td>
                                             <td>
-                                                <a class="fa fa-trash fa-lg btn btn-danger btn-sm" onclick="return confirm('Do you want to delete this record?')" href="?tid=<?php echo $row['tid'];?>"></a>
-                                                <a class="fa fa-pencil fa-lg btn btn-success btn-sm" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
+                                                <a class="fa fa-trash fa-lg btn btn-danger"  href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['tid']; ?>)"></a>
+                                                <a class="fa fa-pencil fa-lg btn btn-success" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
                                             </td>
                                         </tr>
                                         <?php 

@@ -1,20 +1,18 @@
 <?php
-  
-   include 'connection.php';
-  //include 'index.php'
+    include 'connection.php';
 
-   $str="select * from sponsers";
-   $res=mysqli_query($conn,$str);   
- ?> 
+    $str="select * from sponsers";
+    $res=mysqli_query($conn,$str);   
+?> 
 
- <?php
-      if(isset($_GET['id']))
-      {   
-         $id=$_GET['id'];
-         $sql="delete from sponsers where id=".$id."";
-         mysqli_query($conn,$sql);
-         header("location:manage_sponsor.php");
-      }
+<?php
+    if(isset($_GET['id']))
+    {   
+        $id=$_GET['id'];
+        $sql="delete from sponsers where id=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_sponsor.php");
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +38,7 @@
                 <div class="d-flex align-items-center gap-2">
                      <div class="topbar-item d-none d-md-flex px-2">                        
                         <div>
-                            <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors</h4>
+                            <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors / Details</h4>
                         </div>
                      </div>
                 </div>
@@ -80,30 +78,32 @@
                                         <th>ACTION</th>
 
                                         </tr>
-                                                </thead>
-                                            <tbody>
+                                        </thead>
+                                        
+                                        <tbody>
                                         <?php while($row=mysqli_fetch_array($res)){?>
                                         <tr>
-                                        <td><?php echo $row['id'];?></td>
-                                        <td><?php echo $row['name'];?></td>
-                                        <td><?php echo $row['title'];?></td>
-                                        <td><?php echo $row['type'];?></td>
-                                        <td><?php echo $row['number'];?></td>
-                                        <td><?php echo $row['email'];?></td>
-                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius:30px"></td>
-                                        <td>
-                                            <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['id']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="sponsers">    <!-- 👈 table name here -->
+                                            <td><?php echo $row['id'];?></td>
+                                            <td><?php echo $row['name'];?></td>
+                                            <td><?php echo $row['title'];?></td>
+                                            <td><?php echo $row['type'];?></td>
+                                            <td><?php echo $row['number'];?></td>
+                                            <td><?php echo $row['email'];?></td>
+                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius:30px"></td>
+                                            <td>
+                                                <button class="statusBtn btn 
+                                                    <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                    data-id="<?php echo $row['id']; ?>" 
+                                                    data-status="<?php echo $row['status']; ?>"
+                                                    data-table="sponsers">    <!-- 👈 table name here -->
 
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>
-                                        <td><a class="fa fa-trash fa-lg" onclick="return confirm('Do you want to delete this record?')" href="manage_sponsor?id=<?php echo $row['id'];?>"></a> | <a class="fa fa-pencil fa-lg" href="add_sponsor.php?id=<?php echo $row['id'];?>"></a></td>
-                                        </tr>
+                                                    <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                                </button>
+                                            </td>
+                                            <td><?php echo $row['created_at'];?></td>
+                                            <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
+                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_sponsor.php?id=<?php echo $row['id'];?>"></a></td>
+                                            </tr>
                                         <?php } ?>
                                         </tbody> 
                                     </table>
@@ -111,13 +111,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-            <!-- Footer Start -->
-                <?php 
-                    include "footer.php";
-                ?>
-            <!-- end Footer -->
+                </div>            
         </div>
         <!-- ============================================================== -->
         <!-- End Page content -->

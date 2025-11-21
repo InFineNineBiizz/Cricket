@@ -1,8 +1,47 @@
 <?php 
-    session_start();
-   // echo "<pre>";
-   // print_r($_SESSION);die;
+    session_start();   
     include "connection.php";
+    $name=$tour_id=$sea_id=$venue=$sdate=$edate=$logo=$cr_type=$max=$min=$res=$camt=$bidamt=$bprice=$img="";
+
+    if(isset($_GET['id']))
+    {
+        $auc_id = $_GET['id'];
+        
+        //Auction table values
+        $qk = "select * from auctions where id='".$auc_id."'";
+        $qk1 = mysqli_query($conn,$qk);
+        $qk2 = mysqli_fetch_assoc($qk1);
+        $name = $qk2['name'];
+        $tour_id = $qk2['tour_id'];
+        $sea_id = $qk2['sea_id'];     
+        $venue = $qk2['venue'];     
+        $sdate = $qk2['sdate'];     
+        $edate = $qk2['edate'];     
+        $logo = $qk2['logo'];     
+        $cr_type = $qk2['credit_type'];     
+        $min = $qk2['minplayer'];     
+        $max = $qk2['maxplayer'];     
+        $res = $qk2['resplayer'];     
+        $camt = $qk2['camt'];     
+        $bidamt = $qk2['bidamt'];     
+        $bprice = $qk2['bprice'];
+        
+        //Auction manager table values 
+        $qk3 = "select * from auc_man where aid='".$auc_id."'";
+        $qk4 = mysqli_query($conn,$qk3);
+        $qk5 = mysqli_fetch_assoc($qk4);
+        $fname=$qk5['fname'];
+        $lname=$qk5['lname'];
+        $num=$qk5['number'];
+
+        //Lead auctioner table values 
+        $qk6 = "select * from lead_auc where aid='".$auc_id."'";
+        $qk7 = mysqli_query($conn,$qk6);
+        $qk8 = mysqli_fetch_assoc($qk7);
+        $fname1=$qk8['fname'];
+        $lname1=$qk8['lname'];
+        $num1=$qk8['number'];
+    }
 
     if(isset($_POST['saveGroupBtn']))
     {
@@ -34,49 +73,73 @@
         move_uploaded_file($_FILES['alogo']['tmp_name'],"images/".$_FILES['alogo']['name']);
         $img=$_FILES['alogo']['name'];
 
-        if ($base_type == "same" && isset($_POST['base_price']) && $_POST['base_price'] !== '') 
-        {
-            $bp = $_POST['base_price']; // numeric, will be inserted as number
-        } 
-        else 
-        {
-            $bp = "NULL"; // SQL NULL (must NOT be quoted in SQL)
-        }
-
-        $qr="insert into auctions(name,tour_id,sea_id,venue,sdate,edate,logo,credit_type,minplayer,maxplayer,resplayer,camt,bidamt,bprice) 
-        values('".$_POST['aname']."','".$_POST['tname']."','".$_POST['sname']."','".$_POST['avenue']."','".$_POST['sdate']."','".$_POST['edate']."','".$img."','".$_POST['credit_type']."','".$_POST['min']."','".$_POST['max']."','".$_POST['reserve']."','".$_POST['camt']."','".$_POST['bamt']."','".$bp."')";
-        $res=mysqli_query($conn,$qr);
-
-        if($res)
-        {
-            $_SESSION['last_aid'] = mysqli_insert_id($conn);
-        }
-
-        $qr1="insert into auc_man(fname,lname,number) values('".$_POST['fname']."','".$_POST['lname']."','".$_POST['num']."')";
-        $res1=mysqli_query($conn,$qr1);
-
-        $qr2="insert into lead_auc(fname,lname,number) values('".$_POST['fname1']."','".$_POST['lname1']."','".$_POST['num1']."')";
-        $res2=mysqli_query($conn,$qr2);  
-        
-        if ($res && $res1 && $res2) 
-        {               
-            if(isset($_SESSION['last_gid']))
-            {                
-                $gid = $_SESSION['last_gid'];
-                $aid = $_SESSION['last_aid'];
-
-                $link = "insert into grp_auc(aid,gid) values('".$aid."','".$gid."')";
-                mysqli_query($conn, $link);
+        if(empty($_GET['id']))
+        {            
+            if ($base_type == "same" && isset($_POST['base_price']) && $_POST['base_price'] !== '') 
+            {
+                $bp = $_POST['base_price']; // numeric, will be inserted as number
+            } 
+            else 
+            {
+                $bp = "NULL"; // SQL NULL (must NOT be quoted in SQL)
             }
+
+            $qr="insert into auctions(name,tour_id,sea_id,venue,sdate,edate,logo,credit_type,minplayer,maxplayer,resplayer,camt,bidamt,bprice)
+            values('".$_POST['aname']."','".$_POST['tname']."','".$_POST['sname']."','".$_POST['avenue']."','".$_POST['sdate']."','".$_POST['edate']."','".$img."','".$_POST['credit_type']."','".$_POST['min']."','".$_POST['max']."','".$_POST['reserve']."','".$_POST['camt']."','".$_POST['bamt']."','".$bp."')";
+            $res=mysqli_query($conn,$qr);
+
+            if($res)
+            {
+                $_SESSION['last_aid'] = mysqli_insert_id($conn);
+                $aid = $_SESSION['last_aid'];
+            }
+
+            $qr1="insert into auc_man(aid,fname,lname,number) values('".$aid."','".$_POST['fname']."','".$_POST['lname']."','".$_POST['num']."')";
+            $res1=mysqli_query($conn,$qr1);
+
+            $qr2="insert into lead_auc(aid,fname,lname,number) values('".$aid."','".$_POST['fname1']."','".$_POST['lname1']."','".$_POST['num1']."')";
+            $res2=mysqli_query($conn,$qr2);  
             
-            $valid = "<div class='alert alert-success text-center'><strong>Auction Added!</strong></div>";
-        } 
-        else 
+            if ($res && $res1 && $res2) 
+            {               
+                if(isset($_SESSION['last_gid']))
+                {                
+                    $gid = $_SESSION['last_gid'];
+
+                    $link = "insert into grp_auc(aid,gid) values('".$aid."','".$gid."')";
+                    mysqli_query($conn, $link);
+                }
+                
+                $valid = "<div class='alert alert-success text-center'><strong>Auction Added!</strong></div>";
+            }
+            else 
+            {
+                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+            }
+        }
+        else
         {
-            $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+            if ($base_type == "same" && isset($_POST['base_price']) && $_POST['base_price'] !== '') 
+            {
+                $bp = $_POST['base_price']; // numeric, will be inserted as number
+            } 
+            else 
+            {
+                $bp = "NULL"; // SQL NULL (must NOT be quoted in SQL)
+            }
+
+            $upd="update auctions set name='".$_POST['aname']."',tour_id='".$_POST['tname']."',sea_id='".$_POST['sname']."',venue='".$_POST['avenue']."',sdate='".$_POST['sdate']."',edate='".$_POST['edate']."',logo='".$img."',credit_type='".$_POST['credit_type']."',minplayer='".$_POST['min']."',maxplayer='".$_POST['max']."',resplayer='".$_POST['reserve']."',camt='".$_POST['camt']."',bidamt='".$_POST['bamt']."',bprice='".$bp."' where id='".$auc_id."'";
+            $upd1=mysqli_query($conn,$upd);
+
+            $upd2="update auc_man set fname='".$_POST['fname']."',lname='".$_POST['lname']."',number='".$_POST['num']."' where aid='".$auc_id."'";
+            $upd3=mysqli_query($conn,$upd2);
+
+            $upd4="update lead_auc set fname='".$_POST['fname1']."',lname='".$_POST['lname1']."',number='".$_POST['num1']."' where aid='".$auc_id."'";
+            $upd5=mysqli_query($conn,$upd4);
+
+            header("location:manage_auctions.php");
         }
     }
-
 ?>
 
 <?php
@@ -187,7 +250,7 @@ $amounts[] = 100000;
                                                 <select class="form-select" data-choices name="tname" id="tname" required>
                                                     <option value="" selected disabled>Select Tournament Name</option>
                                                     <?php while($row=mysqli_fetch_assoc($result)){?>
-                                                        <option value="<?php echo $row['tid'];?>"><?php echo $row['name'];?></option>
+                                                        <option value="<?php echo $row['tid'];?>" <?php if($tour_id == $row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
                                                     <?php }?>
                                                 </select>
                                                 <div class="invalid-feedback">
@@ -201,7 +264,7 @@ $amounts[] = 100000;
                                                 <select class="form-select" data-choices name="sname" id="sname" required>
                                                     <option value="" selected disabled>Select Season Name</option>
                                                     <?php while($row=mysqli_fetch_assoc($resq)){?>
-                                                        <option value="<?php echo $row['id'];?>"><?php echo $row['name'];?></option>
+                                                        <option value="<?php echo $row['id'];?>" <?php if($sea_id==$row['id']){echo 'selected';}?>><?php echo $row['name'];?></option>
                                                     <?php }?>
                                                 </select>
                                                 <div class="invalid-feedback">
@@ -215,7 +278,7 @@ $amounts[] = 100000;
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="aname">Auction Name</label>
-                                                <input type="text" class="form-control" id="aname" placeholder="Enter Auction Name" name="aname" required>
+                                                <input type="text" name="aname" class="form-control" id="aname" value="<?php echo $name;?>" placeholder="Enter Auction Name" required>
                                                 <div class="invalid-feedback">
                                                     Please Enter Auction Name..
                                                 </div>
@@ -224,7 +287,7 @@ $amounts[] = 100000;
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="avenue">Auction Venue</label>
-                                                <input type="text" class="form-control" id="avenue" placeholder="Enter Auction Venue" name="avenue" required>
+                                                <input type="text" name="avenue" class="form-control" id="avenue" value="<?php echo $venue;?>" placeholder="Enter Auction Venue" required>
                                                 <div class="invalid-feedback">
                                                     Please Enter Auction Venue..
                                                 </div>
@@ -237,7 +300,7 @@ $amounts[] = 100000;
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="sdate">Auction Start Date</label>                                                
                                                 <div class="input-group has-validation">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction Start Date" data-date-format="Y-m-d" data-enable-time id="sdate" data-min-date="today" name="sdate" required>
+                                                    <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction Start Date" data-date-format="Y-m-d" data-enable-time id="sdate" data-min-date="today" value="<?php echo $sdate;?>" name="sdate" required>
                                                     <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                                 </div>
                                                 <div id="season_start_error" class="invalid-feedback d-none">
@@ -249,7 +312,7 @@ $amounts[] = 100000;
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="edate">Auction End Date</label>                                                
                                                 <div class="input-group has-validation">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction End Date" data-date-format="Y-m-d" data-enable-time id="edate" data-min-date="today" name="edate" required>
+                                                    <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction End Date" data-date-format="Y-m-d" data-enable-time id="edate" data-min-date="today" value="<?php echo $edate;?>" name="edate" required>
                                                     <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                                 </div>
                                                 <div id="season_end_error" class="invalid-feedback d-none">
@@ -263,7 +326,7 @@ $amounts[] = 100000;
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="alogo">Upload Logo</label>
-                                                <input type="file" class="form-control" id="alogo" name="alogo" required>
+                                                <input type="file" class="form-control" id="alogo" name="alogo" required><?php echo $logo;?>
                                                 <div class="invalid-feedback">
                                                     Please Choose Logo..
                                                 </div>
@@ -292,7 +355,7 @@ $amounts[] = 100000;
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="num">Phone number</label>
-                                                <input type="text" class="form-control" id="num" name="num" placeholder="Enter Phone Number" required>
+                                                <input type="text" class="form-control" id="num" name="num" placeholder="Enter Phone Number" value="<?php echo $num;?>" required>
                                                 <div class="invalid-feedback">
                                                     Enter Phone Number..
                                                 </div>
@@ -301,7 +364,7 @@ $amounts[] = 100000;
                                         <div class="col-6">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="num1">Phone number</label>
-                                                <input type="text" class="form-control" id="num1" name="num1" placeholder="Enter Phone Number" required>
+                                                <input type="text" class="form-control" id="num1" name="num1" placeholder="Enter Phone Number" value="<?php echo $num1;?>" required>
                                                 <div class="invalid-feedback">
                                                     Enter Phone Number..
                                                 </div>
@@ -313,7 +376,7 @@ $amounts[] = 100000;
                                         <div class="col-3">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="fname">First Name</label>
-                                                <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" required>
+                                                <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" value="<?php echo $fname;?>" required>
                                                 <div class="invalid-feedback">
                                                     Enter First Name..
                                                 </div>
@@ -322,7 +385,7 @@ $amounts[] = 100000;
                                         <div class="col-3">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="lname">Last Name</label>
-                                                <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" required>
+                                                <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" value="<?php echo $lname;?>" required>
                                                 <div class="invalid-feedback">
                                                     Enter Last Name..
                                                 </div>
@@ -331,7 +394,7 @@ $amounts[] = 100000;
                                         <div class="col-3">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="fname1">First Name</label>
-                                                <input type="text" class="form-control" id="fname1" name="fname1" placeholder="Enter First Name" required>
+                                                <input type="text" class="form-control" id="fname1" name="fname1" placeholder="Enter First Name" value="<?php echo $fname1;?>" required>
                                                 <div class="invalid-feedback">
                                                     Enter First Name..
                                                 </div>
@@ -340,7 +403,7 @@ $amounts[] = 100000;
                                         <div class="col-3">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="lname1">Last Name</label>
-                                                <input type="text" class="form-control" id="lname1" name="lname1" placeholder="Enter Last Name" required>
+                                                <input type="text" class="form-control" id="lname1" name="lname1" placeholder="Enter Last Name" value="<?php echo $lname1;?>" required>
                                                 <div class="invalid-feedback">
                                                     Enter Last Name..
                                                 </div>
@@ -358,16 +421,16 @@ $amounts[] = 100000;
                                     <label class="form-label lb">Auction Credit Type</label>
                                     
                                     <div class="d-flex gap-3 flex-wrap">
-                                        <input type="radio" class="btn-check" name="credit_type" id="type1" value="Points">
+                                        <input type="radio" class="btn-check" name="credit_type" id="type1" value="Points" <?php if($cr_type=="Points"){echo 'checked';}?>>
                                         <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type1">Points</label>
 
-                                        <input type="radio" class="btn-check" name="credit_type" id="type2" value="Credits">
+                                        <input type="radio" class="btn-check" name="credit_type" id="type2" value="Credits" <?php if($cr_type=="Credits"){echo 'checked';}?>>
                                         <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type2">Credits</label>
 
-                                        <input type="radio" class="btn-check" name="credit_type" id="type3" value="Coins">
+                                        <input type="radio" class="btn-check" name="credit_type" id="type3" value="Coins" <?php if($cr_type=="Coins"){echo 'checked';}?>>
                                         <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type3">Coins</label>
 
-                                        <input type="radio" class="btn-check" name="credit_type" id="type4" value="None">
+                                        <input type="radio" class="btn-check" name="credit_type" id="type4" value="None" <?php if($cr_type=="None"){echo 'checked';}?>>
                                         <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type4">None</label>
                                     </div>
                                     
@@ -377,7 +440,7 @@ $amounts[] = 100000;
                                         <div class="col-4">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="min">Minimum Player Per Team</label>
-                                                <input type="text" class="form-control" id="min" name="min" placeholder="Enter Minimum Player Per Team" required>
+                                                <input type="text" class="form-control" id="min" name="min" value="<?php echo $min;?>" placeholder="Enter Minimum Player Per Team" required>
                                                 <div class="invalid-feedback">
                                                     Enter Minimum Player Per Team..
                                                 </div>
@@ -386,7 +449,7 @@ $amounts[] = 100000;
                                         <div class="col-4">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="max">Maximum Player Per Team</label>
-                                                <input type="text" class="form-control" id="max" name="max" placeholder="Enter Maximum Player Per Team" required>
+                                                <input type="text" class="form-control" id="max" name="max" value="<?php echo $max;?>" placeholder="Enter Maximum Player Per Team" required>
                                                 <div class="invalid-feedback">
                                                     Enter Maximum Player Per Team..
                                                 </div>
@@ -395,7 +458,7 @@ $amounts[] = 100000;
                                         <div class="col-4">
                                             <div class="mb-3">
                                                 <label class="form-label lb" for="reserve">Maximum Reserve Player Per Team</label>
-                                                <input type="text" class="form-control" id="reserve" name="reserve" placeholder="Enter Maximum Reserve Player Per Team" required>
+                                                <input type="text" class="form-control" id="reserve" name="reserve" value="<?php echo $res;?>" placeholder="Enter Maximum Reserve Player Per Team" required>
                                                 <div class="invalid-feedback">
                                                     Enter Maximum Reserve Player Per Team..
                                                 </div>
@@ -410,7 +473,7 @@ $amounts[] = 100000;
                                                 <select class="form-select" name="camt" id="camt" required>
                                                     <option value="" selected disabled>Select Credit Amount Per Team</option>
                                                     <?php foreach ($amounts as $value): ?>
-                                                        <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
+                                                        <option value="<?= $value ?>" <?php if($camt==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
                                                     <?php endforeach; ?>
                                                 </select>                                                
                                                 <div class="invalid-feedback">
@@ -424,7 +487,7 @@ $amounts[] = 100000;
                                                 <select class="form-select" name="bamt" id="bamt" required>
                                                     <option value="" selected disabled>Select Bid Increase Amount</option>
                                                     <?php foreach ($amounts as $value): ?>
-                                                        <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
+                                                        <option value="<?= $value ?>" <?php if($bidamt==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                                 <div class="invalid-feedback">
@@ -460,7 +523,7 @@ $amounts[] = 100000;
                                                 <select class="form-select" name="base_price" id="base_price" required>
                                                     <option value="" selected disabled>Select Base Price</option>
                                                     <?php foreach ($amounts as $value): ?>
-                                                        <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
+                                                        <option value="<?= $value ?>" <?php if($bprice==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                                 <div class="invalid-feedback">
@@ -479,7 +542,7 @@ $amounts[] = 100000;
                                     <button id="addGroupBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">Add Group</button>
                                     </div>                                    
                                                                         
-                                    <button class="btn btn-primary lb w-25" name="btn" type="submit">Insert</button>
+                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';} else { echo 'Insert';}?></button>
                                 </form>
                                 
                                 <!-- Modal -->

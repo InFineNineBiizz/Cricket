@@ -114,15 +114,19 @@
                                             <td><?php echo $row['mtype'];?></td>
                                             <td><?php echo $row['overs'];?></td>
                                             <td>
-                                                <div>
-                                                    <input type="checkbox" id="switch<?php echo $row['id'];?>" checked data-switch="success" />
-                                                    <label for="switch<?php echo $row['id'];?>" data-on-label="Yes" data-off-label="No" class="mb-0 d-block"></label>
-                                                </div>
+                                                <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['id']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="sponsers">    <!-- 👈 table name here -->
+
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
                                             </td>
                                             <td><?php echo $row['created_at'];?></td>                                            
                                             <td>
-                                                <a class="fa fa-trash fa-lg" onclick="return confirm('Do you want to delete this record?')" href="?id=<?php echo $row['id'];?>"></a> &nbsp;|&nbsp; 
-                                                <a class="fa fa-pencil fa-lg" href="add_seasons.php?id=<?php echo $row['id'];?>"></a>
+                                                <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a> 
+                                                <a class="fa fa-pencil fa-lg btn btn-success" href="add_seasons.php?id=<?php echo $row['id'];?>"></a>
                                             </td>
                                         </tr>
                                         <?php 

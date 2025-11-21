@@ -1,21 +1,20 @@
 <?php
-  
-   include 'connection.php';
-  //include 'index.php'
+    include 'connection.php';
+    
+    $str="select * from organizers";
+    $res=mysqli_query($conn,$str);   
+?> 
 
-   $str="select * from organizers";
-   $res=mysqli_query($conn,$str);   
- ?> 
-
- <?php
-      if(isset($_GET['id']))
-      {   
-         $id=$_GET['id'];
-         $sql="delete from organizers where id=".$id."";
-         mysqli_query($conn,$sql);
-         header("location:manage_organizer.php");
-      }
+<?php
+    if(isset($_GET['id']))
+    {   
+        $id=$_GET['id'];
+        $sql="delete from organizers where id=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_organizer.php");
+    }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,7 +31,7 @@
         <!-- Menu -->
         <!-- Sidenav Menu Start -->
         <?php
-        include 'sidebar.php';
+            include 'sidebar.php';
         ?>
         <!-- Topbar Start -->
          <header class="app-topbar" id="header">
@@ -40,16 +39,15 @@
                 <div class="d-flex align-items-center gap-2">
                      <div class="topbar-item d-none d-md-flex px-2">
                         <div>
-                            <h4 class="page-title fs-20 fw-semibold mb-0">Season / Organizer</h4>
+                            <h4 class="page-title fs-20 fw-semibold mb-0">Season / Organizer / Details</h4>
                         </div>
                      </div>
                 </div>
             </div>
         </header>
 
-        <?php 
-         
-        include 'topbar.php';
+        <?php          
+            include 'topbar.php';
         ?>    
         
         <!-- ============================================================== -->
@@ -78,44 +76,38 @@
                                         <th>STATUS</th>
                                         <th>CREATED_AT</th>
                                         <th>ACTION</th>
-
                                         </tr>
-                                        </thead>
+                                    </thead>
                                         
-                                        <tbody>
+                                    <tbody>
                                         <?php while($row=mysqli_fetch_array($res)){?>
                                         <tr>
-                                        <td><?php echo $row['id'];?></td>
-                                        <td><?php echo $row['name'];?></td>
-                                        <td><?php echo $row['email'];?></td>
-                                        <td><?php echo $row['number'];?></td>
-                                        <td>  
-                                            <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['id']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="organizers">    <!--  table name here -->
+                                            <td><?php echo $row['id'];?></td>
+                                            <td><?php echo $row['name'];?></td>
+                                            <td><?php echo $row['email'];?></td>
+                                            <td><?php echo $row['number'];?></td>
+                                            <td>  
+                                                <button class="statusBtn btn 
+                                                    <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                    data-id="<?php echo $row['id']; ?>" 
+                                                    data-status="<?php echo $row['status']; ?>"
+                                                    data-table="organizers">
 
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>
-                                        <td><a class="fa fa-trash fa-lg" onclick="return confirm('Do you want to delete this record?')" href="manage_organizer?id=<?php echo $row['id'];?>"></a> | <a class="fa fa-pencil fa-lg" href="add_organizer.php?id=<?php echo $row['id'];?>"></a></td>
+                                                    <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                                </button>
+                                            </td>
+                                            <td><?php echo $row['created_at'];?></td>
+                                            <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
+                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_organizer.php?id=<?php echo $row['id'];?>"></a></td>
                                         </tr>
-                                        <?php } ?>  
-                                            </tbody> 
+                                        <?php } ?>
+                                    </tbody> 
                                     </table>
                                 </form>   
                             </div>
                         </div>
                     </div>  
                 </div>
-
-            <!-- Footer Start -->
-                <?php 
-                    include "footer.php";
-                ?>
-            <!-- end Footer -->
         </div>
 
         <!-- ============================================================== -->

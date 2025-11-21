@@ -1,159 +1,169 @@
-<?php
-    include 'connection.php';    
-    $nm=$title=$tp=$no=$em=$logo="";
+<?php 
+    include "connection.php";
+    $name=$ttid=$logo=$img=$totbudget=$rembudget="";
 
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
-        $str="select * from sponsers where id=".$id."";
+        $str="select * from teams where id=".$id."";
         $res=mysqli_query($conn,$str);
         $row=mysqli_fetch_array($res);
-        $nm=$row['name'];
-        $title=$row['title'];
-        $tp=$row['type'];
-        $no=$row['number'];
-        $em=$row['email'];
+        $name=$row['name'];
+        $ttid=$row['tid'];
         $logo=$row['logo'];
+        $totbudget=$row['tbudget'];
+        $rembudget=$row['rbudget'];
     }
-   
+
+    $sql="select * from tournaments";
+    $tournaments_result = mysqli_query($conn,$sql);
+    if (!$tournaments_result) 
+    {
+        die("<div class='alert alert-danger'>Error fetching tournaments: " . mysqli_error($conn) . "</div>");
+    }
 
     if(isset($_POST['btn']))
-    {
-        if(!empty($_GET['id']))
+    {            
+        if(empty($_GET['id']))
         {
+            move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
+            $img=$_FILES['ttlogo']['name'];
 
-            move_uploaded_file($_FILES['profile']['tmp_name'],"images/".$_FILES['profile']['name']);
-            $img=$_FILES['profile']['name'];
-            $str="update sponsers set name='".$_POST['name']."',title='".$_POST['title']."',type='".$_POST['type']."',number='".$_POST['number']."',email='".$_POST['email']."',logo='".$img."' where id=".$id."";
+            $str="insert into teams(tid,name,logo,tbudget,rbudget) values('".$_POST['tourname']."','".$_POST['ttname']."','".$img."','".$_POST['tbudget']."','".$_POST['rbudget']."')";
             $res=mysqli_query($conn,$str);
-            header("location:manage_sponsor.php");
-              mysqli_query($mysqli, $str);
-        }
+            if ($res) 
+            { 
+                $valid = "<div class='alert alert-success text-center'><strong>Team Added!</strong></div>";
+            } 
+                else 
+            {
+                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+            }
+        }        
         else
         {
-            move_uploaded_file($_FILES['profile']['tmp_name'],"images/".$_FILES['profile']['name']);
-            $img=$_FILES['profile']['name'];
-            $str="insert into sponsers(name,title,type,number,email,logo) values('".$_POST['name']."','".$_POST['title']."','".$_POST['type']."','".$_POST['number']."','".$_POST['email']."','".$img."')";
+            move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
+            $img=$_FILES['ttlogo']['name'];
+
+            $str="update teams set tid='".$_POST['tourname']."',name='".$_POST['ttname']."',logo='".$img."',tbudget='".$_POST['tbudget']."',rbudget='".$_POST['rbudget']."' where id=".$id."";
             $res=mysqli_query($conn,$str);
+            header("location:manage_team.php");
         }
     }
-?>   
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-        include 'links.php';
+    <meta charset="utf-8" />
+    <title>Add Teams | CrickFolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+
+    <?php 
+        include "links.php";
     ?>
+    
 </head>
 
 <body>
-    <!-- Begin page -->
     <div class="wrapper">
-
         <!-- Menu -->
+
         <!-- Sidenav Menu Start -->
-        <?php
-        include 'sidebar.php';
+        
+        <?php 
+            include "sidebar.php";
         ?>
+        
+        <!-- Sidenav Menu End -->
+        
         <!-- Topbar Start -->
-         <header class="app-topbar" id="header">
-             <div class="page-container topbar-menu">
-                <div class="d-flex align-items-center gap-2">
-                     <div class="topbar-item d-none d-md-flex px-2">                        
-                            <div>
-                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors / Add</h4>
-                            </div>
-                     </div>
+        <header class="app-topbar" id="header">
+        <div class="page-container topbar-menu">
+            <div class="d-flex align-items-center gap-2">    
+                <!-- Topbar Page Title -->
+                <div class="topbar-item d-none d-md-flex px-2">                 
+                    <div>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Auction / Teams / Create</h4>
+                    </div>
                 </div>
             </div>
+        </div>
         </header>
-
         <?php 
-         
-        include 'topbar.php';
-        ?>   
-
+            include "topbar.php";
+        ?>
+        
+        <!-- Topbar End -->
+        
         <!-- ============================================================== -->
         <!-- Start Page Content here -->
         <!-- ============================================================== -->
-
+        
         <div class="page-content">
-
             <div class="page-container">
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header border-bottom border-dashed d-flex align-items-center">
-                                <h4 class="header-title">Add Sponsor</h4>
-                            </div>
-
-                            <div class="card-body">                            
-                                <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                    <div class="row g-3">                               
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="nm">Sponsor name</label>
-                                            <input type="text" value="<?php echo $nm;?>" id="nm" name="name" class="form-control" placeholder="Enter Sponsor name" required>
-                                            <div class="invalid-feedback">
-                                                Please add sponsor name
-                                            </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">  
+                                <div class="card-header border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Add Team Details</h4>
+                                </div>                                                                                                                              
+                                <br>
+                                <?php 
+                                    if(isset($valid))
+                                    {
+                                        echo $valid;
+                                    }
+                                ?>
+                                <div class="card-body">
+                                <form class="needs-validation" novalidate method="POST" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                      <label class="form-label lb" for="teamSelect">Tournament Name</label>
+                                         <select class="form-select" data-choices name="tourname" id="tourname" required>
+                                            <option disabled selected value="">Select Tournament Name</option>
+                                            <?php while ($row = mysqli_fetch_assoc($tournaments_result)){ ?>
+                                            <option value="<?php echo $row['tid'];?>"<?php if($ttid==$row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Please select a team.
                                         </div>
-                                                                        
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="title">Sponsor title</label>
-                                            <input type="text" value="<?php echo $title;?>" id="title" name="title" class="form-control" id="validationCustom02"
-                                            placeholder="Enter sponsor title" required>
-                                            <div class="invalid-feedback">
-                                                please add sponsor title
-                                            </div>
-                                        </div>  
-                                                                            
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="tp">Sponsor type</label>
-                                            <select name="type" id="tp" class="form-control select2" data-toggle="select2" required>
-                                                <option value="" selected disabled>Select Sponser Type</option>
-                                                <option value="Auction Sponsor"<?php if($tp == "Auction Sponsor") echo "selected"; ?>>Auction Sponsor</option>
-                                                <option value="Banner Sponsor"<?php if($tp == "Banner Sponsor") echo "selected"; ?>>Banner Sponsor</option>
-                                                <option value="Man Of The Match Award"<?php if($tp == "Man Of The Match Award") echo "selected"; ?>>Man Of The Match Award</option>
-                                                <option value="Tournament Champions Trophy"<?php if($tp == "Tournament Champions Trophy") echo "selected"; ?>>Tournament Champions Trophy</option>
-                                                <option value="Tshirts Sponsor"<?php if($tp == "Tshirts Sponsor") echo "selected"; ?>>Tshirts Sponsor</option>
-                                            </select>
-                                                <div class="invalid-feedback">
-                                                select sponsor type
-                                            </div>
-                                        </div>  
-                            
-                                        <div class="col-6">
-                                            <label class="form-label lb" for="no">Sponsor number</label>
-                                            <input type="text" value="<?php echo $no;?>"  id="no" name="number" class="form-control" placeholder="Enter Sponsor number" required>
-                                            <div class="invalid-feedback">
-                                                Please provide a valid number.
-                                            </div>
-                                        </div>
-                                                                    
-                                        <div class="col-6">
-                                            <label class="form-label lb" for="em">Sponsor email</label>
-                                            <input type="text" value="<?php echo $em;?>"  id="em" name="email" class="form-control" placeholder="Enter Sponsor email" required>
-                                            <div class="invalid-feedback">
-                                                Please provide a valid email.
-                                            </div>
-                                        </div>
-
+                                    </div>
                                         <div class="mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label lb" for="logo">Sponsor logo</label>
-                                                <input type="file"  name="profile" id="logo" class="form-control" required><?php echo $logo;?>
-                                                <div class="invalid-feedback">
-                                                    Please provide a logo.
-                                                </div>
-                                            </div>
+                                        <label class="form-label lb" for="ttname">Team name</label>
+                                        <input type="text" class="form-control" placeholder="Enter Team name" name="ttname" id="ttname" value="<?php echo $name;?>" required>
+                                        <div class="invalid-feedback">
+                                           please enter a team name
                                         </div>
-                                    </div>                                                                       
-                                    <button class="btn btn-primary w-25" name='btn' type="submit">Insert</button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label lb" for="ttlogo">logo</label>                                      
+                                        <input type="file" class="form-control" name="ttlogo" id="ttlogo"  required><?php echo $logo;?>
+                                        <div class="invalid-feedback">
+                                            Please choose a Team logo
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label lb" for="tbudget">Total Budget</label>
+                                        <input type="text" class="form-control" placeholder="Enter Total Budget" name="tbudget" id="tbudget" value="<?php echo $totbudget;?>" required>
+                                        <div class="invalid-feedback">
+                                            Please provide Total Budget.
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label lb" for="rbudget">Remaining Budget</label>
+                                        <input type="text" class="form-control" placeholder="Remaining Budget" name="rbudget" id="rbudget" value="<?php echo $rembudget;?>" required>
+                                        <div class="invalid-feedback">
+                                            Please provide Remaining Budget.
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
                                 </form>
                             </div> <!-- end card-body-->
                         </div> <!-- end card-->
-                    </div> <!-- end col-->
+                    </div> <!-- end col-->            
         </div>
 
         <!-- ============================================================== -->
@@ -585,7 +595,6 @@
             </div>
         </div>
     </div>
-
     <?php 
         include "scripts.php";
     ?>

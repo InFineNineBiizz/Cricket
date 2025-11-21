@@ -1,159 +1,165 @@
+<?php 
+    include "connection.php";    
+
+    $str="select * from players";
+    $res=mysqli_query($conn,$str);
+?>
+
 <?php
-    include 'connection.php';    
-    $nm=$title=$tp=$no=$em=$logo="";
+      if(isset($_GET['id']))
+      {   
+         $id=$_GET['id'];
+         $sql="delete from players where id=".$id."";
+         mysqli_query($conn,$sql);
+         header("location:manage_players.php");
+      }
+?>
 
-    if(isset($_GET['id']))
-    {
-        $id=$_GET['id'];
-        $str="select * from sponsers where id=".$id."";
-        $res=mysqli_query($conn,$str);
-        $row=mysqli_fetch_array($res);
-        $nm=$row['name'];
-        $title=$row['title'];
-        $tp=$row['type'];
-        $no=$row['number'];
-        $em=$row['email'];
-        $logo=$row['logo'];
-    }
-   
-
-    if(isset($_POST['btn']))
-    {
-        if(!empty($_GET['id']))
-        {
-
-            move_uploaded_file($_FILES['profile']['tmp_name'],"images/".$_FILES['profile']['name']);
-            $img=$_FILES['profile']['name'];
-            $str="update sponsers set name='".$_POST['name']."',title='".$_POST['title']."',type='".$_POST['type']."',number='".$_POST['number']."',email='".$_POST['email']."',logo='".$img."' where id=".$id."";
-            $res=mysqli_query($conn,$str);
-            header("location:manage_sponsor.php");
-              mysqli_query($mysqli, $str);
-        }
-        else
-        {
-            move_uploaded_file($_FILES['profile']['tmp_name'],"images/".$_FILES['profile']['name']);
-            $img=$_FILES['profile']['name'];
-            $str="insert into sponsers(name,title,type,number,email,logo) values('".$_POST['name']."','".$_POST['title']."','".$_POST['type']."','".$_POST['number']."','".$_POST['email']."','".$img."')";
-            $res=mysqli_query($conn,$str);
-        }
-    }
-?>   
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-        include 'links.php';
+    <meta charset="utf-8" />
+    <title>Manage Players | CrickFolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+
+    <?php 
+        include "links.php";
     ?>
+    
 </head>
 
 <body>
-    <!-- Begin page -->
     <div class="wrapper">
-
         <!-- Menu -->
+
         <!-- Sidenav Menu Start -->
-        <?php
-        include 'sidebar.php';
+        
+        <?php 
+            include "sidebar.php";
         ?>
+        
+        <!-- Sidenav Menu End -->
+        
         <!-- Topbar Start -->
-         <header class="app-topbar" id="header">
-             <div class="page-container topbar-menu">
-                <div class="d-flex align-items-center gap-2">
-                     <div class="topbar-item d-none d-md-flex px-2">                        
-                            <div>
-                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors / Add</h4>
-                            </div>
-                     </div>
+        
+        <header class="app-topbar" id="header">
+        <div class="page-container topbar-menu">
+            <div class="d-flex align-items-center gap-2">    
+                <!-- Topbar Page Title -->
+                <div class="topbar-item d-none d-md-flex px-2">                 
+                    <div>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Auction / Teams / Players / Details</h4>
+                    </div>
                 </div>
             </div>
+        </div>
         </header>
 
         <?php 
-         
-        include 'topbar.php';
-        ?>   
-
+            include "topbar.php";
+        ?>
+        
+        <!-- Topbar End -->
+        
         <!-- ============================================================== -->
         <!-- Start Page Content here -->
         <!-- ============================================================== -->
-
+        
         <div class="page-content">
-
             <div class="page-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Players Details</h4>
+                                </div>                                
+                                <div class="card-body">                                
+                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>PLAYER ID</th>
+                                            <th>FIRST NAME</th>                                    
+                                            <th>LAST NAME</th>
+                                            <th>NUMBER</th>
+                                            <th>LOGO</th>
+                                            <th>ROLE</th>
+                                            <th>BATSTYLE</th>
+                                            <th>BOWLSTYLE</th>
+                                            <th>TSHIRT NAME</th>
+                                            <th>SIZE</th>
+                                            <th>NUMBER</th>
+                                            <th>Status[Active/Inactive]</th>
+                                            <th>Created_AT</th>                                            
+                                            <th>Action</th>                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody> 
+                                        <?php  
+                                            while($row = mysqli_fetch_assoc($res)){
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $row['id'];?></td>
+                                            <td><?php echo $row['fname'];?></td>
+                                            <td><?php echo $row['lname'];?></td>
+                                            <td><?php echo $row['number'];?></td>   
+                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
+                                            <td><?php echo $row['role'];?></td>
+                                            <td>
+                                                <?php 
+                                                    if(!empty($row['batstyle'])) {
+                                                        echo $row['batstyle'];
+                                                    } else {
+                                                        echo "—"; // dash if empty
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td>
+                                                <?php 
+                                                    if(!empty($row['bowlstyle'])) {
+                                                        echo $row['bowlstyle'];
+                                                    } else {
+                                                        echo "—";
+                                                    }
+                                                ?>
+                                            </td>                                   
+                                            <td><?php echo $row['tname'];?></td>
+                                            <td><?php echo $row['tsize'];?></td>
+                                            <td><?php echo $row['tnumber'];?></td>
+                                            <td>
+                                            <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['id']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="players">
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
+                                            </td>
+                                            <td><?php echo $row['created_at'];?></td>
+                                            <td>
+                                                <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
+                                                <a class="fa fa-pencil fa-lg btn btn-success" href="add_players.php?id=<?php echo $row['id'];?>"></a>
+                                            </td>
+                                        </tr>
+                                        <?php 
+                                            }
+                                        ?>
+                                    </tbody>
+                                </table>
+                                </div> <!-- end card body-->
+                            </div> <!-- end card -->
+                        </div><!-- end col-->
+                    </div> <!-- end row-->
+                </div>
+            </div>
+            <!-- Footer Start -->
 
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header border-bottom border-dashed d-flex align-items-center">
-                                <h4 class="header-title">Add Sponsor</h4>
-                            </div>
+            <?php 
+                include "footer.php";
+            ?>
 
-                            <div class="card-body">                            
-                                <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                    <div class="row g-3">                               
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="nm">Sponsor name</label>
-                                            <input type="text" value="<?php echo $nm;?>" id="nm" name="name" class="form-control" placeholder="Enter Sponsor name" required>
-                                            <div class="invalid-feedback">
-                                                Please add sponsor name
-                                            </div>
-                                        </div>
-                                                                        
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="title">Sponsor title</label>
-                                            <input type="text" value="<?php echo $title;?>" id="title" name="title" class="form-control" id="validationCustom02"
-                                            placeholder="Enter sponsor title" required>
-                                            <div class="invalid-feedback">
-                                                please add sponsor title
-                                            </div>
-                                        </div>  
-                                                                            
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="tp">Sponsor type</label>
-                                            <select name="type" id="tp" class="form-control select2" data-toggle="select2" required>
-                                                <option value="" selected disabled>Select Sponser Type</option>
-                                                <option value="Auction Sponsor"<?php if($tp == "Auction Sponsor") echo "selected"; ?>>Auction Sponsor</option>
-                                                <option value="Banner Sponsor"<?php if($tp == "Banner Sponsor") echo "selected"; ?>>Banner Sponsor</option>
-                                                <option value="Man Of The Match Award"<?php if($tp == "Man Of The Match Award") echo "selected"; ?>>Man Of The Match Award</option>
-                                                <option value="Tournament Champions Trophy"<?php if($tp == "Tournament Champions Trophy") echo "selected"; ?>>Tournament Champions Trophy</option>
-                                                <option value="Tshirts Sponsor"<?php if($tp == "Tshirts Sponsor") echo "selected"; ?>>Tshirts Sponsor</option>
-                                            </select>
-                                                <div class="invalid-feedback">
-                                                select sponsor type
-                                            </div>
-                                        </div>  
-                            
-                                        <div class="col-6">
-                                            <label class="form-label lb" for="no">Sponsor number</label>
-                                            <input type="text" value="<?php echo $no;?>"  id="no" name="number" class="form-control" placeholder="Enter Sponsor number" required>
-                                            <div class="invalid-feedback">
-                                                Please provide a valid number.
-                                            </div>
-                                        </div>
-                                                                    
-                                        <div class="col-6">
-                                            <label class="form-label lb" for="em">Sponsor email</label>
-                                            <input type="text" value="<?php echo $em;?>"  id="em" name="email" class="form-control" placeholder="Enter Sponsor email" required>
-                                            <div class="invalid-feedback">
-                                                Please provide a valid email.
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label lb" for="logo">Sponsor logo</label>
-                                                <input type="file"  name="profile" id="logo" class="form-control" required><?php echo $logo;?>
-                                                <div class="invalid-feedback">
-                                                    Please provide a logo.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>                                                                       
-                                    <button class="btn btn-primary w-25" name='btn' type="submit">Insert</button>
-                                </form>
-                            </div> <!-- end card-body-->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
+            <!-- Footer End -->
         </div>
 
         <!-- ============================================================== -->
@@ -585,7 +591,6 @@
             </div>
         </div>
     </div>
-
     <?php 
         include "scripts.php";
     ?>

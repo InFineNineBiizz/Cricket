@@ -1,159 +1,336 @@
-<?php
-    include 'connection.php';    
-    $nm=$title=$tp=$no=$em=$logo="";
+<?php 
+    include "connection.php";
+    $fn=$ln=$no=$logo=$tn=$tss=$tno="";
 
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
-        $str="select * from sponsers where id=".$id."";
+        $str="select * from players where id=".$id."";
         $res=mysqli_query($conn,$str);
         $row=mysqli_fetch_array($res);
-        $nm=$row['name'];
-        $title=$row['title'];
-        $tp=$row['type'];
+        $fn=$row['fname'];
+        $ln=$row['lname'];
         $no=$row['number'];
-        $em=$row['email'];
         $logo=$row['logo'];
+        $tn=$row['tname'];
+        $tss=$row['tsize'];
+        $tno=$row['tnumber']; 
+        
+        $roles_str = $row['role'];
+        $bat_str   = $row['batstyle'];
+        $bowl_str  = $row['bowlstyle'];
+       
     }
-   
 
     if(isset($_POST['btn']))
     {
-        if(!empty($_GET['id']))
-        {
+        // ----- ROLES -----
+        $roles = $_POST['roles'] ?? [];   // array
+        // ----- CHILD TYPES -----
+        $bat_type  = $_POST['bat_type']  ?? [];
+        $bowl_type = $_POST['bowl_type'] ?? [];
+        $wk_type   = $_POST['wk_type']   ?? [];
+        // ----- CONVERT TO STRING -----
+        $roles_str = implode(", ", $roles);
+        $bat_str   = implode(", ", $bat_type);
+        $bowl_str  = implode(", ", $bowl_type);
+        $wk_str    = implode(", ", $wk_type);
 
-            move_uploaded_file($_FILES['profile']['tmp_name'],"images/".$_FILES['profile']['name']);
-            $img=$_FILES['profile']['name'];
-            $str="update sponsers set name='".$_POST['name']."',title='".$_POST['title']."',type='".$_POST['type']."',number='".$_POST['number']."',email='".$_POST['email']."',logo='".$img."' where id=".$id."";
+        if(empty($_GET['id']))
+        {
+            move_uploaded_file($_FILES['plogo']['tmp_name'],"images/".$_FILES['plogo']['name']);
+            $img=$_FILES['plogo']['name'];                
+            
+            $str="insert into players(fname,lname,number,logo,role,batstyle,bowlstyle,wicketkeep,tname,tsize,tnumber) 
+            values('".$_POST['fname']."','".$_POST['lname']."','".$_POST['number']."','".$img."','".$roles_str."','".$bat_str."','".$bowl_str."','".$_POST['tname']."','".$_POST['tsize']."','".$_POST['tnumber']."')";
             $res=mysqli_query($conn,$str);
-            header("location:manage_sponsor.php");
-              mysqli_query($mysqli, $str);
+            if ($res) 
+            { 
+                $valid = "<div class='alert alert-success text-center'><strong>Players Added!</strong></div>";
+            } 
+            else 
+            {
+                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+            }        
+            
         }
         else
         {
-            move_uploaded_file($_FILES['profile']['tmp_name'],"images/".$_FILES['profile']['name']);
-            $img=$_FILES['profile']['name'];
-            $str="insert into sponsers(name,title,type,number,email,logo) values('".$_POST['name']."','".$_POST['title']."','".$_POST['type']."','".$_POST['number']."','".$_POST['email']."','".$img."')";
+            move_uploaded_file($_FILES['plogo']['tmp_name'],"images/".$_FILES['plogo']['name']);
+            $img=$_FILES['plogo']['name'];
+
+            $str="update players set fname='".$_POST['fname']."',lname='".$_POST['lname']."',number='".$_POST['number']."',logo='".$img."',role='".$roles_str."',batstyle='".$bat_str."',bowlstyle='".$bowl_str."',
+            tname='".$_POST['tname']."',tsize='".$_POST['tsize']."',tnumber='".$_POST['tnumber']."' where id=".$id."";
             $res=mysqli_query($conn,$str);
+            header("location:manage_players.php");
         }
     }
-?>   
+    
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?php
-        include 'links.php';
+    <meta charset="utf-8" />
+    <title>Add Players | CrickFolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <?php 
+        include "links.php";
     ?>
+    
 </head>
 
 <body>
-    <!-- Begin page -->
     <div class="wrapper">
-
         <!-- Menu -->
+
         <!-- Sidenav Menu Start -->
-        <?php
-        include 'sidebar.php';
+        
+        <?php 
+            include "sidebar.php";
         ?>
+        
+        <!-- Sidenav Menu End -->
+        
         <!-- Topbar Start -->
-         <header class="app-topbar" id="header">
-             <div class="page-container topbar-menu">
-                <div class="d-flex align-items-center gap-2">
-                     <div class="topbar-item d-none d-md-flex px-2">                        
-                            <div>
-                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors / Add</h4>
-                            </div>
-                     </div>
+        <header class="app-topbar" id="header">
+        <div class="page-container topbar-menu">
+            <div class="d-flex align-items-center gap-2">    
+                <!-- Topbar Page Title -->
+                <div class="topbar-item d-none d-md-flex px-2">                 
+                    <div>
+                        <h4 class="page-title fs-20 fw-semibol mb-0">Auction / Teams / Players / Add</h4>
+                    </div>
                 </div>
             </div>
+        </div>
         </header>
-
         <?php 
-         
-        include 'topbar.php';
-        ?>   
-
+            include "topbar.php";
+        ?>
+        
+        <!-- Topbar End -->
+        
         <!-- ============================================================== -->
         <!-- Start Page Content here -->
         <!-- ============================================================== -->
-
+        
         <div class="page-content">
-
             <div class="page-container">
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header border-bottom border-dashed d-flex align-items-center">
-                                <h4 class="header-title">Add Sponsor</h4>
-                            </div>
-
-                            <div class="card-body">                            
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Add players</h4>
+                                </div>                                                                
+                                <br>
+                                <?php 
+                                    if(isset($valid))
+                                    {
+                                        echo $valid;
+                                    }
+                                ?>
+                                <div class="card-body">
                                 <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                    <div class="row g-3">                               
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="nm">Sponsor name</label>
-                                            <input type="text" value="<?php echo $nm;?>" id="nm" name="name" class="form-control" placeholder="Enter Sponsor name" required>
-                                            <div class="invalid-feedback">
-                                                Please add sponsor name
-                                            </div>
-                                        </div>
-                                                                        
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="title">Sponsor title</label>
-                                            <input type="text" value="<?php echo $title;?>" id="title" name="title" class="form-control" id="validationCustom02"
-                                            placeholder="Enter sponsor title" required>
-                                            <div class="invalid-feedback">
-                                                please add sponsor title
-                                            </div>
-                                        </div>  
-                                                                            
-                                        <div class="col-md-6">
-                                            <label class="form-label lb" for="tp">Sponsor type</label>
-                                            <select name="type" id="tp" class="form-control select2" data-toggle="select2" required>
-                                                <option value="" selected disabled>Select Sponser Type</option>
-                                                <option value="Auction Sponsor"<?php if($tp == "Auction Sponsor") echo "selected"; ?>>Auction Sponsor</option>
-                                                <option value="Banner Sponsor"<?php if($tp == "Banner Sponsor") echo "selected"; ?>>Banner Sponsor</option>
-                                                <option value="Man Of The Match Award"<?php if($tp == "Man Of The Match Award") echo "selected"; ?>>Man Of The Match Award</option>
-                                                <option value="Tournament Champions Trophy"<?php if($tp == "Tournament Champions Trophy") echo "selected"; ?>>Tournament Champions Trophy</option>
-                                                <option value="Tshirts Sponsor"<?php if($tp == "Tshirts Sponsor") echo "selected"; ?>>Tshirts Sponsor</option>
-                                            </select>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="name">First Name</label>
+                                                <input type="text" value="<?php echo $fn;?>" class="form-control" id="name" placeholder="Enter First Name" name="fname" required>
                                                 <div class="invalid-feedback">
-                                                select sponsor type
+                                                    Please Enter First Name..
+                                                </div>
+                                            </div>  
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="lname">Last Name</label>
+                                                <input type="text" class="form-control" id="lname" placeholder="Enter Last Name" name="lname" value="<?php echo $ln;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter Last Name..
+                                                </div>
+                                            </div>
+                                        </div>       
+                                    </div>
+
+                                    <div class="row">   
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="number">Phone Number</label>
+                                                <input type="text" class="form-control" id="number" placeholder="Enter Phone Number" name="number" value="<?php echo $no;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter Valid Number..
+                                                </div>
                                             </div>
                                         </div>  
-                            
-                                        <div class="col-6">
-                                            <label class="form-label lb" for="no">Sponsor number</label>
-                                            <input type="text" value="<?php echo $no;?>"  id="no" name="number" class="form-control" placeholder="Enter Sponsor number" required>
-                                            <div class="invalid-feedback">
-                                                Please provide a valid number.
-                                            </div>
-                                        </div>
-                                                                    
-                                        <div class="col-6">
-                                            <label class="form-label lb" for="em">Sponsor email</label>
-                                            <input type="text" value="<?php echo $em;?>"  id="em" name="email" class="form-control" placeholder="Enter Sponsor email" required>
-                                            <div class="invalid-feedback">
-                                                Please provide a valid email.
-                                            </div>
-                                        </div>
 
-                                        <div class="mb-3">
-                                            <div class="col-6">
-                                                <label class="form-label lb" for="logo">Sponsor logo</label>
-                                                <input type="file"  name="profile" id="logo" class="form-control" required><?php echo $logo;?>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="logo">Player logo</label>
+                                                <input type="file"  name="plogo" id="logo" class="form-control" 
+                                                placeholder="add logo" required ><?php echo $logo;?>
                                                 <div class="invalid-feedback">
                                                     Please provide a logo.
                                                 </div>
                                             </div>
+                                        </div> 
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="tname">Tshirt Name</label>
+                                                <input type="text" class="form-control" id="tname" placeholder="Enter Tshirt Name" name="tname" value="<?php echo $tn;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter Tshirt Name..
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>                                                                       
-                                    <button class="btn btn-primary w-25" name='btn' type="submit">Insert</button>
+                                    
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="ts">Tshirt Size</label>
+                                                    <select name="tsize"  id="ts"  class="form-select" data-choices required>
+                                                        <option value="" selected disabled>Select Size</option>
+                                                        <option value="XS" <?php if($tss == "XS") echo "selected";?>>XS</option>
+                                                        <option value="S" <?php if($tss == "S") echo "selected";?>>S</option>
+                                                        <option value="M" <?php if($tss == "M") echo "selected";?>>M</option>
+                                                        <option value="L" <?php if($tss == "L") echo "selected";?>>L</option>
+                                                        <option value="XL" <?php if($tss == "XL") echo "selected";?>>XL</option>
+                                                        <option value="XXL" <?php if($tss == "XXL") echo "selected";?>>XXL</option>
+                                                        <option value="XXXL" <?php if($tss == "XXXL") echo "selected";?>>XXXL</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">
+                                                        select Tshirt Size
+                                                    </div>
+                                            </div>
+                                        </div> 
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label lb" for="tnumber">Tshirt Number</label>
+                                                <input type="text" class="form-control" id="tnumber" placeholder="Enter Tshirt Number" name="tnumber" value="<?php echo $tno;?>" required>
+                                                <div class="invalid-feedback">
+                                                    Please Enter Tshirt Number..
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>   
+                                    
+                                    <!-- ================= PLAYER ROLE SELECTION ================= -->
+                                    <!-- All Rounder -->
+                                    <div class="mb-3">
+                                    <h5>All Rounder</h5>
+                                    <input type="checkbox" class="btn-check role-check" name="roles[]" id="allrounder" value="All Rounder">
+                                    <label class="btn btn-outline-primary" for="allrounder">All Rounder</label>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                    <h5>Batter</h5>
+
+                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="batsman" value="Batsman">
+                                    <label class="btn btn-outline-primary" for="batsman">Batsman</label>
+                                    &nbsp;&nbsp;&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="rightbat" value="Right Hand Bat">
+                                    <label class="btn btn-outline-primary" for="rightbat">Right Hand Bat</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="leftbat" value="Left Hand Bat">
+                                    <label class="btn btn-outline-primary" for="leftbat">Left Hand Bat</label>
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <h5>Bowler</h5>
+
+                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="bowler" value="Bowler">
+                                    <label class="btn btn-outline-primary" for="bowler">Bowler</label>
+                                    &nbsp;&nbsp;&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightfast" value="Right-Arm-Fast">
+                                    <label class="btn btn-outline-primary" for="rightfast">Right-Arm-Fast</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightmedium" value="Right-Arm-Medium">
+                                    <label class="btn btn-outline-primary" for="rightmedium">Right-Arm-Medium</label>
+                                    </div>
+
+                                    <h5>Wicket Keeper</h5>
+
+                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="wk" value="Wicket Keeper">
+                                    <label class="btn btn-outline-primary" for="wk">Wicket Keeper</label>&nbsp;&nbsp;&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-wk" data-parent="wk" name="wk_type[]" id="wkbat" value="WK-Batsman">
+                                    <label class="btn btn-outline-primary" for="wkbat">WK-Batsman</label>
+
+                                    <script>
+
+                                        // AUTO SELECT PARENT IF CHILD CLICKED
+                                        $(".child-bat").on("change", function () {
+                                            $("#batsman").prop("checked", true);
+                                        });
+
+                                        $(".child-bowl").on("change", function () {
+                                            $("#bowler").prop("checked", true);
+                                        });
+
+                                        $(".child-wk").on("change", function () {
+                                            $("#wk").prop("checked", true);
+                                        });
+
+                                        // ONLY ONE CHILD PER GROUP
+                                        $(".child-bat").on("change", function () {
+                                            $(".child-bat").not(this).prop("checked", false);
+                                        });
+
+                                        $(".child-bowl").on("change", function () {
+                                            $(".child-bowl").not(this).prop("checked", false);
+                                        });
+
+                                        $(".child-wk").on("change", function () {
+                                            $(".child-wk").not(this).prop("checked", false);
+                                        });
+
+                                        // UNCHECK PARENT → REMOVE CHILDREN
+                                        $("#batsman").on("change", function() {
+                                            if (!this.checked) $(".child-bat").prop("checked", false);
+                                        });
+
+                                        $("#bowler").on("change", function() {
+                                            if (!this.checked) $(".child-bowl").prop("checked", false);
+                                        });
+
+                                        $("#wk").on("change", function() {
+                                            if (!this.checked) $(".child-wk").prop("checked", false);
+                                        });
+
+                                        // NO SPECIAL LOGIC FOR ALL-ROUNDER
+                                        // User can select/deselect independently
+
+                                        </script>
+                                        
+                                    <br></br>
+                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
                                 </form>
-                            </div> <!-- end card-body-->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->
+                                </div> <!-- end card body-->
+                            </div> <!-- end card -->
+                        </div><!-- end col-->
+                    </div> <!-- end row-->
+                </div>
+            </div>
+            <!-- Footer Start -->
+
+            <?php 
+                include "footer.php";
+            ?>
+
+            <!-- Footer End -->
         </div>
 
         <!-- ============================================================== -->
@@ -585,9 +762,42 @@
             </div>
         </div>
     </div>
-
+    
     <?php 
         include "scripts.php";
     ?>
+    
+    <script>
+    $(document).ready(function(){
+
+        // Restore roles checkboxes
+        let roles = "<?php echo $roles_str ?? '' ?>".split(", ");
+        roles.forEach(function(r){
+            let id = r.replace(/ /g, '').toLowerCase(); 
+            $("#"+id).prop("checked", true);
+        });
+
+        // Restore Bat Style
+        let bat = "<?php echo $bat_str ?? '' ?>";
+        if(bat != ""){
+            $("input[value='"+bat+"']").prop("checked", true);
+            $("#batsman").prop("checked", true);
+        }
+
+        // Restore Bowl Style
+        let bowl = "<?php echo $bowl_str ?? '' ?>";
+        if(bowl != ""){
+            $("input[value='"+bowl+"']").prop("checked", true);
+            $("#bowler").prop("checked", true);
+        }
+
+        // Restore Wicket Keeper role
+        let wk_role = "<?php echo $roles_str ?? '' ?>";
+        if (wk_role.includes("Wicket Keeper")) {
+            $("#wk").prop("checked", true);
+        }
+
+        });
+    </script>
 </body>
 </html>

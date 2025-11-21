@@ -54,7 +54,7 @@
                 <div class="d-flex align-items-center gap-2">
                      <div class="topbar-item d-none d-md-flex px-2">                        
                             <div>
-                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Organizer</h4>
+                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Organizer / Add</h4>
                             </div>
                      </div>
                 </div>
@@ -86,7 +86,7 @@
                                 <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
                                       <div class="row g-3">
                                            <div class="col-6">
-                                                <label class="form-label" for="nm">Organizer name</label>
+                                                <label class="form-label lb" for="nm">Organizer name</label>
                                                 <input type="text" value="<?php echo $nm;?>" id="nm" name="name" class="form-control" placeholder="Enter Organizer name" required>
                                                 <div class="invalid-feedback">
                                                     Please Enter organizer name.
@@ -94,7 +94,7 @@
                                             </div>
                                 
                                             <div class="col-6">
-                                                <label class="form-label" for="no">Organizer number</label>
+                                                <label class="form-label lb" for="no">Organizer number</label>
                                                 <input type="text" value="<?php echo $no;?>" id="no" name="number" class="form-control" placeholder="Enter Organizer number" required>
                                                 <div class="invalid-feedback">
                                                     Please provide a valid number.
@@ -102,7 +102,7 @@
                                             </div>
                                                                         
                                             <div class="col-6">
-                                                <label class="form-label" for="em">Organizer email</label>
+                                                <label class="form-label lb" for="em">Organizer email</label>
                                                 <input type="text" value="<?php echo $em;?>" id="em" name="email" class="form-control" placeholder="Enter Organizer email" required>
                                                 <div class="invalid-feedback">
                                                     Please provide a valid email.

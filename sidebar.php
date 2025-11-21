@@ -154,6 +154,26 @@
                                 <span class="menu-text">Manage Auctions</span>
                             </a>
                         </li>
+                        <li class="side-nav-item">
+                            <a href="add_teams.php" class="side-nav-link">
+                                <span class="menu-text">Add Teams</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_team.php" class="side-nav-link">
+                                <span class="menu-text">Manage Teams</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="add_players.php" class="side-nav-link">
+                                <span class="menu-text">Add Players</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_players.php" class="side-nav-link">
+                                <span class="menu-text">Manage Players</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>

@@ -15,10 +15,14 @@
         "tournaments" => "tid",
         "seasons"     => "id",
         "organizers"  => "id",
-        "sponsers"     => "id"
+        "sponsers"     => "id",
+        "auctions" => "id",
+        "teams" => "id",
+        "players" => "id",
     ];
 
-    if (!array_key_exists($table, $primary_keys)) {
+    if (!array_key_exists($table, $primary_keys)) 
+    {
         echo "0";
         exit;
     }
@@ -27,9 +31,12 @@
 
     $sql = "UPDATE $table SET status='$newStatus' WHERE $pk='$id'";
 
-    if (mysqli_query($conn, $sql)) {
+    if (mysqli_query($conn, $sql)) 
+    {
         echo "1";
-    } else {
+    } 
+    else 
+    {
         echo "0";
     }
 ?>
