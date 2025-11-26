@@ -19,6 +19,10 @@
         "auctions" => "id",
         "teams" => "id",
         "players" => "id",
+        "auc_man"=>"amid",
+        "lead_auc"=>"lid",
+        "group_auction"=>"gid",
+        "grp_auc"=>"gaid"
     ];
 
     if (!array_key_exists($table, $primary_keys)) 

@@ -69,104 +69,103 @@
         
         <div class="page-content">
             <div class="page-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-bottom border-dashed">
-                                    <h4 class="card-title mb-0 flex-grow-1">Players Details</h4>
-                                </div>                                
-                                <div class="card-body">                                
-                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
-                                    <thead>
-                                        <tr>
-                                            <th>PLAYER ID</th>
-                                            <th>FIRST NAME</th>                                    
-                                            <th>LAST NAME</th>
-                                            <th>NUMBER</th>
-                                            <th>LOGO</th>
-                                            <th>ROLE</th>
-                                            <th>BATSTYLE</th>
-                                            <th>BOWLSTYLE</th>
-                                            <th>TSHIRT NAME</th>
-                                            <th>SIZE</th>
-                                            <th>NUMBER</th>
-                                            <th>Status[Active/Inactive]</th>
-                                            <th>Created_AT</th>                                            
-                                            <th>Action</th>                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody> 
-                                        <?php  
-                                            while($row = mysqli_fetch_assoc($res)){
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $row['id'];?></td>
-                                            <td><?php echo $row['fname'];?></td>
-                                            <td><?php echo $row['lname'];?></td>
-                                            <td><?php echo $row['number'];?></td>   
-                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
-                                            <td><?php echo $row['role'];?></td>
-                                            <td>
-                                                <?php 
-                                                    if(!empty($row['batstyle'])) {
-                                                        echo $row['batstyle'];
-                                                    } else {
-                                                        echo "—"; // dash if empty
-                                                    }
-                                                ?>
-                                            </td>
-                                            <td>
-                                                <?php 
-                                                    if(!empty($row['bowlstyle'])) {
-                                                        echo $row['bowlstyle'];
-                                                    } else {
-                                                        echo "—";
-                                                    }
-                                                ?>
-                                            </td>                                   
-                                            <td><?php echo $row['tname'];?></td>
-                                            <td><?php echo $row['tsize'];?></td>
-                                            <td><?php echo $row['tnumber'];?></td>
-                                            <td>
-                                            <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['id']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="players">
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                            </td>
-                                            <td><?php echo $row['created_at'];?></td>
-                                            <td>
-                                                <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                                <a class="fa fa-pencil fa-lg btn btn-success" href="add_players.php?id=<?php echo $row['id'];?>"></a>
-                                            </td>
-                                        </tr>
-                                        <?php 
-                                            }
-                                        ?>
-                                    </tbody>
-                                </table>
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-                        </div><!-- end col-->
-                    </div> <!-- end row-->
-                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header border-bottom border-dashed">
+                                <h4 class="card-title mb-0 flex-grow-1">Players Details</h4>
+                            </div>                                
+                            
+                            <div class="card-body">                                
+                            <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                <thead>
+                                    <tr>
+                                        <th>PLAYER ID</th>
+                                        <th>FIRST NAME</th>                                    
+                                        <th>LAST NAME</th>
+                                        <th>NUMBER</th>
+                                        <th>LOGO</th>
+                                        <th>ROLE</th>
+                                        <th>BATSTYLE</th>
+                                        <th>BOWLSTYLE</th>
+                                        <th>TSHIRT NAME</th>
+                                        <th>SIZE</th>
+                                        <th>NUMBER</th>
+                                        <th>Status[Active/Inactive]</th>
+                                        <th>Created_AT</th>                                            
+                                        <th>Action</th>                                            
+                                    </tr>
+                                </thead>
+                                <tbody> 
+                                    <?php  
+                                        while($row = mysqli_fetch_assoc($res)){
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $row['id'];?></td>
+                                        <td><?php echo $row['fname'];?></td>
+                                        <td><?php echo $row['lname'];?></td>
+                                        <td><?php echo $row['number'];?></td>   
+                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
+                                        <td><?php echo $row['role'];?></td>
+                                        <td>
+                                            <?php 
+                                                if(!empty($row['batstyle'])) {
+                                                    echo $row['batstyle'];
+                                                } else {
+                                                    echo "—"; // dash if empty
+                                                }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                                if(!empty($row['bowlstyle'])) {
+                                                    echo $row['bowlstyle'];
+                                                } else {
+                                                    echo "—";
+                                                }
+                                            ?>
+                                        </td>                                   
+                                        <td><?php echo $row['tname'];?></td>
+                                        <td><?php echo $row['tsize'];?></td>
+                                        <td><?php echo $row['tnumber'];?></td>
+                                        <td>
+                                        <button class="statusBtn btn 
+                                            <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                            data-id="<?php echo $row['id']; ?>" 
+                                            data-status="<?php echo $row['status']; ?>"
+                                            data-table="players">
+                                            <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                        </button>
+                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>
+                                        <td>
+                                            <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
+                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_players.php?id=<?php echo $row['id'];?>"></a>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
             </div>
-            <!-- Footer Start -->
-
-            <?php 
-                include "footer.php";
-            ?>
-
-            <!-- Footer End -->
         </div>
+        <!-- Footer Start -->
+
+        <?php 
+            include "footer.php";
+        ?>
+
+        <!-- Footer End -->
+    </div>
 
         <!-- ============================================================== -->
         <!-- End Page content -->
-        <!-- ============================================================== -->
-
-    </div>
+        <!-- ============================================================== -->    
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

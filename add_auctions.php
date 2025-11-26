@@ -2,7 +2,8 @@
     session_start();   
     include "connection.php";
     $name=$tour_id=$sea_id=$venue=$sdate=$edate=$logo=$cr_type=$max=$min=$res=$camt=$bidamt=$bprice=$img="";
-
+    $fname=$lname=$num=$fname1=$lname1=$num1="";
+    
     if(isset($_GET['id']))
     {
         $auc_id = $_GET['id'];
@@ -228,439 +229,432 @@ $amounts[] = 100000;
         
         <div class="page-content">
             <div class="page-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-bottom border-dashed">
-                                    <h4 class="card-title mb-0 flex-grow-1">Add Auction Details</h4>
-                                </div>                                                                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header border-bottom border-dashed">
+                                <h4 class="card-title mb-0 flex-grow-1">Add Auction Details</h4>
+                            </div>                                                                
+                            <br>
+                            <?php 
+                                if(isset($valid))
+                                {
+                                    echo $valid;
+                                }
+                            ?>
+                            <div class="card-body">
+                            <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+                                <div class="row">                                        
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="tname">Tournament Name</label>
+                                            <select class="form-select" data-choices name="tname" id="tname" required>
+                                                <option value="" selected disabled>Select Tournament Name</option>
+                                                <?php while($row=mysqli_fetch_assoc($result)){?>
+                                                    <option value="<?php echo $row['tid'];?>" <?php if($tour_id == $row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
+                                                <?php }?>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Please Provide Tournament Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="sname">Season Name</label>
+                                            <select class="form-select" data-choices name="sname" id="sname" required>
+                                                <option value="" selected disabled>Select Season Name</option>
+                                                <?php while($row=mysqli_fetch_assoc($resq)){?>
+                                                    <option value="<?php echo $row['id'];?>" <?php if($sea_id==$row['id']){echo 'selected';}?>><?php echo $row['name'];?></option>
+                                                <?php }?>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Please Provide Season Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="aname">Auction Name</label>
+                                            <input type="text" name="aname" class="form-control" id="aname" value="<?php echo $name;?>" placeholder="Enter Auction Name" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter Auction Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="avenue">Auction Venue</label>
+                                            <input type="text" name="avenue" class="form-control" id="avenue" value="<?php echo $venue;?>" placeholder="Enter Auction Venue" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter Auction Venue..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="sdate">Auction Start Date</label>                                                
+                                            <div class="input-group has-validation">
+                                                <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction Start Date" data-date-format="Y-m-d" data-enable-time id="sdate" data-min-date="today" value="<?php echo $sdate;?>" name="sdate" required>
+                                                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                            </div>
+                                            <div id="season_start_error" class="invalid-feedback d-none">
+                                                Please Provide Auction Start Date..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="edate">Auction End Date</label>                                                
+                                            <div class="input-group has-validation">
+                                                <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction End Date" data-date-format="Y-m-d" data-enable-time id="edate" data-min-date="today" value="<?php echo $edate;?>" name="edate" required>
+                                                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                            </div>
+                                            <div id="season_end_error" class="invalid-feedback d-none">
+                                                Please Provide Auction End Date..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                                                                    
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="alogo">Upload Logo</label>
+                                            <input type="file" class="form-control" id="alogo" name="alogo" required><?php echo $logo;?>
+                                            <div class="invalid-feedback">
+                                                Please Choose Logo..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <br>
-                                <?php 
-                                    if(isset($valid))
-                                    {
-                                        echo $valid;
-                                    }
-                                ?>
-                                <div class="card-body">
-                                <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                    <div class="row">                                        
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="tname">Tournament Name</label>
-                                                <select class="form-select" data-choices name="tname" id="tname" required>
-                                                    <option value="" selected disabled>Select Tournament Name</option>
-                                                    <?php while($row=mysqli_fetch_assoc($result)){?>
-                                                        <option value="<?php echo $row['tid'];?>" <?php if($tour_id == $row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
-                                                    <?php }?>
-                                                </select>
-                                                <div class="invalid-feedback">
-                                                    Please Provide Tournament Name..
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="sname">Season Name</label>
-                                                <select class="form-select" data-choices name="sname" id="sname" required>
-                                                    <option value="" selected disabled>Select Season Name</option>
-                                                    <?php while($row=mysqli_fetch_assoc($resq)){?>
-                                                        <option value="<?php echo $row['id'];?>" <?php if($sea_id==$row['id']){echo 'selected';}?>><?php echo $row['name'];?></option>
-                                                    <?php }?>
-                                                </select>
-                                                <div class="invalid-feedback">
-                                                    Please Provide Season Name..
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="aname">Auction Name</label>
-                                                <input type="text" name="aname" class="form-control" id="aname" value="<?php echo $name;?>" placeholder="Enter Auction Name" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter Auction Name..
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="avenue">Auction Venue</label>
-                                                <input type="text" name="avenue" class="form-control" id="avenue" value="<?php echo $venue;?>" placeholder="Enter Auction Venue" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter Auction Venue..
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="sdate">Auction Start Date</label>                                                
-                                                <div class="input-group has-validation">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction Start Date" data-date-format="Y-m-d" data-enable-time id="sdate" data-min-date="today" value="<?php echo $sdate;?>" name="sdate" required>
-                                                    <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
-                                                </div>
-                                                <div id="season_start_error" class="invalid-feedback d-none">
-                                                    Please Provide Auction Start Date..
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="edate">Auction End Date</label>                                                
-                                                <div class="input-group has-validation">
-                                                    <input type="text" class="form-control" data-provider="flatpickr" placeholder="Select Auction End Date" data-date-format="Y-m-d" data-enable-time id="edate" data-min-date="today" value="<?php echo $edate;?>" name="edate" required>
-                                                    <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
-                                                </div>
-                                                <div id="season_end_error" class="invalid-feedback d-none">
-                                                    Please Provide Auction End Date..
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                                                                                        
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="alogo">Upload Logo</label>
-                                                <input type="file" class="form-control" id="alogo" name="alogo" required><?php echo $logo;?>
-                                                <div class="invalid-feedback">
-                                                    Please Choose Logo..
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
+                                <div class="border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Add Management Details</h4>
                                     <br>
-                                    <div class="border-bottom border-dashed">
-                                        <h4 class="card-title mb-0 flex-grow-1">Add Management Details</h4>
-                                        <br>
+                                </div>
+                                <br>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h4 class="card-title mb-0 flex-grow-1">Auction Manager</h4>
                                     </div>
+                                    <div class="col-6">
+                                        <h4 class="card-title mb-0 flex-grow-1">Lead Auctioneer</h4>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="num">Phone number</label>
+                                            <input type="text" class="form-control" id="num" name="num" placeholder="Enter Phone Number" value="<?php echo $num;?>" required>
+                                            <div class="invalid-feedback">
+                                                Enter Phone Number..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="num1">Phone number</label>
+                                            <input type="text" class="form-control" id="num1" name="num1" placeholder="Enter Phone Number" value="<?php echo $num1;?>" required>
+                                            <div class="invalid-feedback">
+                                                Enter Phone Number..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="fname">First Name</label>
+                                            <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" value="<?php echo $fname;?>" required>
+                                            <div class="invalid-feedback">
+                                                Enter First Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="lname">Last Name</label>
+                                            <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" value="<?php echo $lname;?>" required>
+                                            <div class="invalid-feedback">
+                                                Enter Last Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="fname1">First Name</label>
+                                            <input type="text" class="form-control" id="fname1" name="fname1" placeholder="Enter First Name" value="<?php echo $fname1;?>" required>
+                                            <div class="invalid-feedback">
+                                                Enter First Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="lname1">Last Name</label>
+                                            <input type="text" class="form-control" id="lname1" name="lname1" placeholder="Enter Last Name" value="<?php echo $lname1;?>" required>
+                                            <div class="invalid-feedback">
+                                                Enter Last Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <br>
+                                <div class="border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Auction Information</h4>
                                     <br>
-                                    
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <h4 class="card-title mb-0 flex-grow-1">Auction Manager</h4>
-                                        </div>
-                                        <div class="col-6">
-                                            <h4 class="card-title mb-0 flex-grow-1">Lead Auctioneer</h4>
+                                </div>
+                                <br>
+                                
+                                <label class="form-label lb">Auction Credit Type</label>
+                                
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <input type="radio" class="btn-check" name="credit_type" id="type1" value="Points" <?php if($cr_type=="Points"){echo 'checked';}?>>
+                                    <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type1">Points</label>
+
+                                    <input type="radio" class="btn-check" name="credit_type" id="type2" value="Credits" <?php if($cr_type=="Credits"){echo 'checked';}?>>
+                                    <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type2">Credits</label>
+
+                                    <input type="radio" class="btn-check" name="credit_type" id="type3" value="Coins" <?php if($cr_type=="Coins"){echo 'checked';}?>>
+                                    <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type3">Coins</label>
+
+                                    <input type="radio" class="btn-check" name="credit_type" id="type4" value="None" <?php if($cr_type=="None"){echo 'checked';}?>>
+                                    <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type4">None</label>
+                                </div>
+                                
+                                <br>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="min">Minimum Player Per Team</label>
+                                            <input type="text" class="form-control" id="min" name="min" value="<?php echo $min;?>" placeholder="Enter Minimum Player Per Team" required>
+                                            <div class="invalid-feedback">
+                                                Enter Minimum Player Per Team..
+                                            </div>
                                         </div>
                                     </div>
-
+                                    <div class="col-4">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="max">Maximum Player Per Team</label>
+                                            <input type="text" class="form-control" id="max" name="max" value="<?php echo $max;?>" placeholder="Enter Maximum Player Per Team" required>
+                                            <div class="invalid-feedback">
+                                                Enter Maximum Player Per Team..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="reserve">Maximum Reserve Player Per Team</label>
+                                            <input type="text" class="form-control" id="reserve" name="reserve" value="<?php echo $res;?>" placeholder="Enter Maximum Reserve Player Per Team" required>
+                                            <div class="invalid-feedback">
+                                                Enter Maximum Reserve Player Per Team..
+                                            </div>
+                                        </div>
+                                    </div>                                        
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="camt">Credit Available Per Team</label>
+                                            <select class="form-select" name="camt" id="camt" required>
+                                                <option value="" selected disabled>Select Credit Amount Per Team</option>
+                                                <?php foreach ($amounts as $value): ?>
+                                                    <option value="<?= $value ?>" <?php if($camt==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>                                                
+                                            <div class="invalid-feedback">
+                                                Select Credit Available Per Team..
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="bamt">Bid Increase</label>
+                                            <select class="form-select" name="bamt" id="bamt" required>
+                                                <option value="" selected disabled>Select Bid Increase Amount</option>
+                                                <?php foreach ($amounts as $value): ?>
+                                                    <option value="<?= $value ?>" <?php if($bidamt==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Select Bid Increase..
+                                            </div>
+                                        </div>
+                                    </div>                                        
+                                </div>
+                                
+                                <br>
+                                <div class="border-bottom border-dashed">
+                                    <h4 class="card-title mb-0 flex-grow-1">Auction Basic Price Type</h4>
                                     <br>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="num">Phone number</label>
-                                                <input type="text" class="form-control" id="num" name="num" placeholder="Enter Phone Number" value="<?php echo $num;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Enter Phone Number..
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="num1">Phone number</label>
-                                                <input type="text" class="form-control" id="num1" name="num1" placeholder="Enter Phone Number" value="<?php echo $num1;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Enter Phone Number..
-                                                </div>
+                                </div>
+                                <br>
+
+                                <div class="d-flex gap-3 mb-4">
+                                    <input class="btn-check" type="radio" name="base_type" id="sameType" autocomplete="off" value="same" <?= ($base_type === 'same') ? 'checked' : '' ?>>
+                                    <label class="btn btn-outline-primary rounded-3 px-4 py-3 flex-fill text-center" for="sameType">
+                                        Same Base Price For All Players
+                                    </label>
+
+                                    <input class="btn-check" type="radio" name="base_type" id="groupType" autocomplete="off" value="group" <?= ($base_type === 'group') ? 'checked' : '' ?>>
+                                    <label class="btn btn-outline-primary rounded-3 px-4 py-3 flex-fill text-center" for="groupType">
+                                        Group-Wise Base Price[Slab Wise]
+                                    </label>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div id="sameArea" class="mb-3">
+                                            <label class="form-label lb" for="base_price">Base Price</label>
+                                            <select class="form-select" name="base_price" id="base_price" required>
+                                                <option value="" selected disabled>Select Base Price</option>
+                                                <?php foreach ($amounts as $value): ?>
+                                                    <option value="<?= $value ?>" <?php if($bprice==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Select Base Price..
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                
+                                <!-- <div class="text-end">
+                                    <button id="addGroupBtn" type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#addGroupModal">Add Group</button>
+                                </div> -->
 
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="fname">First Name</label>
-                                                <input type="text" class="form-control" id="fname" name="fname" placeholder="Enter First Name" value="<?php echo $fname;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Enter First Name..
-                                                </div>
-                                            </div>
+                                <!-- ADD GROUP BUTTON (kept outside the hidden container) -->
+                                <div class="text-end mb-3">
+                                <button id="addGroupBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">Add Group</button>
+                                </div>                                    
+                                                                    
+                                <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';} else { echo 'Insert';}?></button>
+                            </form>
+                            
+                            <!-- Modal -->
+                                <div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                    <form method="POST" id="addGroupForm" novalidate> <!-- set action if needed -->
+                                        <div class="modal-header">
+                                        <h4 class="modal-title" id="addGroupModalLabel">Add auction price slab</h4>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <div class="col-3">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="lname">Last Name</label>
-                                                <input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Last Name" value="<?php echo $lname;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Enter Last Name..
-                                                </div>
+
+                                        <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                            <label class="form-label lb" for="group_name">Group Name</label>
+                                            <input id="group_name" name="group_name" type="text" class="form-control" placeholder="Enter group name" required>
+                                            <div class="invalid-feedback">
+                                                Enter Group Name..
                                             </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="fname1">First Name</label>
-                                                <input type="text" class="form-control" id="fname1" name="fname1" placeholder="Enter First Name" value="<?php echo $fname1;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Enter First Name..
-                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="lname1">Last Name</label>
-                                                <input type="text" class="form-control" id="lname1" name="lname1" placeholder="Enter Last Name" value="<?php echo $lname1;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Enter Last Name..
-                                                </div>
+
+                                            <div class="col-md-6">
+                                            <label class="form-label lb" for="player_base">Player Base Price</label>
+                                            <select class="form-select" name="player_base" id="player_base" required>
+                                                <option value="" selected disabled>Select Player Base Price</option>
+                                                <?php foreach ($amounts as $value): ?>
+                                                    <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Select Player Base Price..
                                             </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <br>
-                                    <div class="border-bottom border-dashed">
-                                        <h4 class="card-title mb-0 flex-grow-1">Auction Information</h4>
-                                        <br>
-                                    </div>
-                                    <br>
-                                    
-                                    <label class="form-label lb">Auction Credit Type</label>
-                                    
-                                    <div class="d-flex gap-3 flex-wrap">
-                                        <input type="radio" class="btn-check" name="credit_type" id="type1" value="Points" <?php if($cr_type=="Points"){echo 'checked';}?>>
-                                        <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type1">Points</label>
+                                            </div>
 
-                                        <input type="radio" class="btn-check" name="credit_type" id="type2" value="Credits" <?php if($cr_type=="Credits"){echo 'checked';}?>>
-                                        <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type2">Credits</label>
-
-                                        <input type="radio" class="btn-check" name="credit_type" id="type3" value="Coins" <?php if($cr_type=="Coins"){echo 'checked';}?>>
-                                        <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type3">Coins</label>
-
-                                        <input type="radio" class="btn-check" name="credit_type" id="type4" value="None" <?php if($cr_type=="None"){echo 'checked';}?>>
-                                        <label class="btn btn-outline-primary rounded-3 px-3 py-2 position-relative" for="type4">None</label>
-                                    </div>
-                                    
-                                    <br>
-
-                                    <div class="row">
-                                        <div class="col-4">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="min">Minimum Player Per Team</label>
-                                                <input type="text" class="form-control" id="min" name="min" value="<?php echo $min;?>" placeholder="Enter Minimum Player Per Team" required>
+                                            <div class="col-md-6">
+                                                <label class="form-label lb" for="min_per_team">Min Player Per Team</label>
+                                                <input id="min_per_team" name="min_per_team" type="number" min="0" class="form-control" placeholder="Enter min player per team" required>
                                                 <div class="invalid-feedback">
                                                     Enter Minimum Player Per Team..
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="max">Maximum Player Per Team</label>
-                                                <input type="text" class="form-control" id="max" name="max" value="<?php echo $max;?>" placeholder="Enter Maximum Player Per Team" required>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label lb" for="max_per_team">Max Player Per Team</label>
+                                                <input id="max_per_team" name="max_per_team" type="number" min="0" class="form-control" placeholder="Enter max player per team" required>
                                                 <div class="invalid-feedback">
                                                     Enter Maximum Player Per Team..
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="reserve">Maximum Reserve Player Per Team</label>
-                                                <input type="text" class="form-control" id="reserve" name="reserve" value="<?php echo $res;?>" placeholder="Enter Maximum Reserve Player Per Team" required>
-                                                <div class="invalid-feedback">
-                                                    Enter Maximum Reserve Player Per Team..
-                                                </div>
-                                            </div>
-                                        </div>                                        
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="camt">Credit Available Per Team</label>
-                                                <select class="form-select" name="camt" id="camt" required>
-                                                    <option value="" selected disabled>Select Credit Amount Per Team</option>
-                                                    <?php foreach ($amounts as $value): ?>
-                                                        <option value="<?= $value ?>" <?php if($camt==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>                                                
-                                                <div class="invalid-feedback">
-                                                    Select Credit Available Per Team..
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="bamt">Bid Increase</label>
-                                                <select class="form-select" name="bamt" id="bamt" required>
-                                                    <option value="" selected disabled>Select Bid Increase Amount</option>
-                                                    <?php foreach ($amounts as $value): ?>
-                                                        <option value="<?= $value ?>" <?php if($bidamt==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <div class="invalid-feedback">
-                                                    Select Bid Increase..
-                                                </div>
-                                            </div>
-                                        </div>                                        
-                                    </div>
-                                    
-                                    <br>
-                                    <div class="border-bottom border-dashed">
-                                        <h4 class="card-title mb-0 flex-grow-1">Auction Basic Price Type</h4>
-                                        <br>
-                                    </div>
-                                    <br>
 
-                                    <div class="d-flex gap-3 mb-4">
-                                        <input class="btn-check" type="radio" name="base_type" id="sameType" autocomplete="off" value="same" <?= ($base_type === 'same') ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-primary rounded-3 px-4 py-3 flex-fill text-center" for="sameType">
-                                            Same Base Price For All Players
-                                        </label>
-
-                                        <input class="btn-check" type="radio" name="base_type" id="groupType" autocomplete="off" value="group" <?= ($base_type === 'group') ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-primary rounded-3 px-4 py-3 flex-fill text-center" for="groupType">
-                                            Group-Wise Base Price[Slab Wise]
-                                        </label>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div id="sameArea" class="mb-3">
-                                                <label class="form-label lb" for="base_price">Base Price</label>
-                                                <select class="form-select" name="base_price" id="base_price" required>
-                                                    <option value="" selected disabled>Select Base Price</option>
-                                                    <?php foreach ($amounts as $value): ?>
-                                                        <option value="<?= $value ?>" <?php if($bprice==$value){echo 'selected';}?>><?= formatAmount($value) ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <div class="invalid-feedback">
-                                                    Select Base Price..
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- <div class="text-end">
-                                        <button id="addGroupBtn" type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#addGroupModal">Add Group</button>
-                                    </div> -->
-
-                                    <!-- ADD GROUP BUTTON (kept outside the hidden container) -->
-                                    <div class="text-end mb-3">
-                                    <button id="addGroupBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">Add Group</button>
-                                    </div>                                    
-                                                                        
-                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';} else { echo 'Insert';}?></button>
-                                </form>
-                                
-                                <!-- Modal -->
-                                    <div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                        <form method="POST" id="addGroupForm" novalidate> <!-- set action if needed -->
-                                            <div class="modal-header">
-                                            <h4 class="modal-title" id="addGroupModalLabel">Add auction price slab</h4>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                <label class="form-label lb" for="group_name">Group Name</label>
-                                                <input id="group_name" name="group_name" type="text" class="form-control" placeholder="Enter group name" required>
-                                                <div class="invalid-feedback">
-                                                    Enter Group Name..
-                                                </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                <label class="form-label lb" for="player_base">Player Base Price</label>
-                                                <select class="form-select" name="player_base" id="player_base" required>
-                                                    <option value="" selected disabled>Select Player Base Price</option>
+                                            <div class="col-md-6">
+                                                <label class="form-label lb" for="bid_increment">Bid Increment Amount</label>
+                                                <select class="form-select" name="bid_increment" id="bid_increment" required>
+                                                    <option value="" selected disabled>Select Bid Increment Amount</option>
                                                     <?php foreach ($amounts as $value): ?>
                                                         <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
                                                     <?php endforeach; ?>
                                                 </select>
                                                 <div class="invalid-feedback">
-                                                    Select Player Base Price..
+                                                    Select Bid Increment Amount..
                                                 </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label lb" for="min_per_team">Min Player Per Team</label>
-                                                    <input id="min_per_team" name="min_per_team" type="number" min="0" class="form-control" placeholder="Enter min player per team" required>
-                                                    <div class="invalid-feedback">
-                                                        Enter Minimum Player Per Team..
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label lb" for="max_per_team">Max Player Per Team</label>
-                                                    <input id="max_per_team" name="max_per_team" type="number" min="0" class="form-control" placeholder="Enter max player per team" required>
-                                                    <div class="invalid-feedback">
-                                                        Enter Maximum Player Per Team..
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label lb" for="bid_increment">Bid Increment Amount</label>
-                                                    <select class="form-select" name="bid_increment" id="bid_increment" required>
-                                                        <option value="" selected disabled>Select Bid Increment Amount</option>
-                                                        <?php foreach ($amounts as $value): ?>
-                                                            <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        Select Bid Increment Amount..
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label lb" for="">Max Bid Amount Per Player</label>
-                                                    <select class="form-select" name="max_bid_player" id="max_bid_player" required>
-                                                        <option value="" selected disabled>Select Max Bid Amount Per Player</option>
-                                                        <?php foreach ($amounts as $value): ?>
-                                                            <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        Select Max Bid Amount Per Player..
-                                                    </div>
-                                                    <div class="form-text">No team can bid above this amount for a single player.</div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <label class="form-label lb" for="total_max_group">Total Max Bid Allow For Group</label>
-                                                    <select class="form-select" name="total_max_group" id="total_max_group" required>
-                                                        <option value="" selected disabled>Select Max Bid Amount Per Player</option>
-                                                        <?php foreach ($amounts as $value): ?>
-                                                            <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
-                                                        <?php endforeach; ?>
-                                                    </select>
-                                                    <div class="form-text">The total sum of the maximum bids agreed for all players in this category group.</div>
-                                                </div>                                            
-                                            </div> <!-- /row -->
-                                            </div> <!-- /modal-body -->
-
-                                            <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" name="saveGroupBtn" class="btn btn-primary">Save Group</button>
                                             </div>
-                                        </form>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label lb" for="">Max Bid Amount Per Player</label>
+                                                <select class="form-select" name="max_bid_player" id="max_bid_player" required>
+                                                    <option value="" selected disabled>Select Max Bid Amount Per Player</option>
+                                                    <?php foreach ($amounts as $value): ?>
+                                                        <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Select Max Bid Amount Per Player..
+                                                </div>
+                                                <div class="form-text">No team can bid above this amount for a single player.</div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label lb" for="total_max_group">Total Max Bid Allow For Group</label>
+                                                <select class="form-select" name="total_max_group" id="total_max_group" required>
+                                                    <option value="" selected disabled>Select Max Bid Amount Per Player</option>
+                                                    <?php foreach ($amounts as $value): ?>
+                                                        <option value="<?= $value ?>"><?= formatAmount($value) ?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <div class="form-text">The total sum of the maximum bids agreed for all players in this category group.</div>
+                                            </div>                                            
+                                        </div> <!-- /row -->
+                                        </div> <!-- /modal-body -->
+
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" name="saveGroupBtn" class="btn btn-primary">Save Group</button>
                                         </div>
+                                    </form>
                                     </div>
                                 </div>
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-                        </div><!-- end col-->
-                    </div> <!-- end row-->
-                </div>
+                            </div>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
             </div>
-            <!-- Footer Start -->
-
-            <?php 
-                include "footer.php";
-            ?>
-
-            <!-- Footer End -->
         </div>
 
-        <!-- ============================================================== -->
-        <!-- End Page content -->
-        <!-- ============================================================== -->
-
+        <!-- Footer Start -->
+        <?php 
+            include "footer.php";
+        ?>
+        <!-- Footer End -->
     </div>
     <!-- END wrapper -->
 

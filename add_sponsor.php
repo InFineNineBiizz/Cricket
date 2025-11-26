@@ -50,27 +50,26 @@
     <!-- Begin page -->
     <div class="wrapper">
 
-        <!-- Menu -->
         <!-- Sidenav Menu Start -->
         <?php
-        include 'sidebar.php';
+            include 'sidebar.php';
         ?>
+
         <!-- Topbar Start -->
          <header class="app-topbar" id="header">
              <div class="page-container topbar-menu">
                 <div class="d-flex align-items-center gap-2">
                      <div class="topbar-item d-none d-md-flex px-2">                        
-                            <div>
-                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors / Add</h4>
-                            </div>
+                        <div>
+                            <h4 class="page-title fs-20 fw-semibold mb-0">Season / Sponsors / Add</h4>
+                        </div>
                      </div>
                 </div>
             </div>
         </header>
 
-        <?php 
-         
-        include 'topbar.php';
+        <?php          
+            include 'topbar.php';
         ?>   
 
         <!-- ============================================================== -->
@@ -78,9 +77,7 @@
         <!-- ============================================================== -->
 
         <div class="page-content">
-
             <div class="page-container">
-
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card">
@@ -154,12 +151,9 @@
                             </div> <!-- end card-body-->
                         </div> <!-- end card-->
                     </div> <!-- end col-->
-        </div>
-
-        <!-- ============================================================== -->
-        <!-- End Page content -->
-        <!-- ============================================================== -->
-
+                </div> <!-- end row-->
+            </div>
+        </div>        
     </div>
     <!-- END wrapper -->
 

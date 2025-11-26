@@ -95,67 +95,60 @@
         
         <div class="page-content">
             <div class="page-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">                                                                
-                                <br>
-                                <?php 
-                                    if(isset($valid))
-                                    {
-                                        echo $valid;
-                                    }
-                                ?>
-                                <div class="card-body">
-                                <form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                    <div class="mb-3">
-                                        <label class="form-label lb" for="name">Tournament Name</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Enter Tournament Name" name="tname" value="<?php echo $name;?>" required>
-                                        <div class="invalid-feedback">
-                                            Please Enter Tournament Name..
-                                        </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">                                                                
+                            <br>
+                            <?php 
+                                if(isset($valid))
+                                {
+                                    echo $valid;
+                                }
+                            ?>
+                            <div class="card-body">
+                            <form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+                                <div class="mb-3">
+                                    <label class="form-label lb" for="name">Tournament Name</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Enter Tournament Name" name="tname" value="<?php echo $name;?>" required>
+                                    <div class="invalid-feedback">
+                                        Please Enter Tournament Name..
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label lb" for="category">Tournament Category</label>
-                                        <select class="form-select" data-choices name="tcategory" id="category" required>
-                                            <option value="" selected disabled>Select Category</option>
-                                            <option value="college" <?php if($cat == "college") echo "selected";?>>College</option>
-                                            <option value="district" <?php if($cat == "district") echo "selected";?>>District</option>
-                                            <option value="national" <?php if($cat == "national") echo "selected"; ?>>National</option>
-                                            <option value="open" <?php if($cat == "open") echo "selected"; ?>>Open</option>
-                                            <option value="other" <?php if($cat == "other") echo "selected"; ?>>Other</option>
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            Please Provide Tournament Category..
-                                        </div>
-                                    </div>                                    
-                                    <div class="mb-3">
-                                        <label class="form-label lb" for="logo">Tournament Logo</label>
-                                        <input type="file" class="form-control" id="logo" name="tlogo" required><?php echo $logo;?>
-                                        <div class="invalid-feedback">
-                                            Please Choose Tournament Logo..
-                                        </div>
-                                    </div>                                                                        
-                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['tid'])){ echo 'Update';} else { echo 'Insert';}?></button>
-                                </form>
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-                        </div><!-- end col-->
-                    </div> <!-- end row-->
-                </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label lb" for="category">Tournament Category</label>
+                                    <select class="form-select" data-choices name="tcategory" id="category" required>
+                                        <option value="" selected disabled>Select Category</option>
+                                        <option value="college" <?php if($cat == "college") echo "selected";?>>College</option>
+                                        <option value="district" <?php if($cat == "district") echo "selected";?>>District</option>
+                                        <option value="national" <?php if($cat == "national") echo "selected"; ?>>National</option>
+                                        <option value="open" <?php if($cat == "open") echo "selected"; ?>>Open</option>
+                                        <option value="other" <?php if($cat == "other") echo "selected"; ?>>Other</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please Provide Tournament Category..
+                                    </div>
+                                </div>                                    
+                                <div class="mb-3">
+                                    <label class="form-label lb" for="logo">Tournament Logo</label>
+                                    <input type="file" class="form-control" id="logo" name="tlogo" required><?php echo $logo;?>
+                                    <div class="invalid-feedback">
+                                        Please Choose Tournament Logo..
+                                    </div>
+                                </div>                                                                        
+                                <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['tid'])){ echo 'Update';} else { echo 'Insert';}?></button>
+                            </form>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
             </div>
-            <!-- Footer Start -->
-
-            <?php 
-                include "footer.php";
-            ?>
-
-            <!-- Footer End -->
         </div>
-
-        <!-- ============================================================== -->
-        <!-- End Page content -->
-        <!-- ============================================================== -->
-
+        
+        <!-- Footer Start -->
+        <?php 
+            include "footer.php";
+        ?>
+        <!-- Footer End -->
     </div>
     <!-- END wrapper -->
 

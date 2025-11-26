@@ -55,66 +55,61 @@
         <!-- ============================================================== -->
 
         <div class="page-content">
-
             <div class="page-container">
-
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header border-bottom border-dashed d-flex align-items-center">
                                 <h4 class="header-title">Organizer Details</h4>
                             </div>
-                            <div class="card-body">                                                          
-                                <form method="POST">    
-                                    <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
-                                    <thead>
-                                        <tr>                                        
-                                        <th>ID</th>
-                                        <th>NAME</th>
-                                        <th>EMAIL</th>
-                                        <th>NUMBER</th>
-                                        <th>STATUS</th>
-                                        <th>CREATED_AT</th>
-                                        <th>ACTION</th>
-                                        </tr>
-                                    </thead>
-                                        
-                                    <tbody>
-                                        <?php while($row=mysqli_fetch_array($res)){?>
-                                        <tr>
-                                            <td><?php echo $row['id'];?></td>
-                                            <td><?php echo $row['name'];?></td>
-                                            <td><?php echo $row['email'];?></td>
-                                            <td><?php echo $row['number'];?></td>
-                                            <td>  
-                                                <button class="statusBtn btn 
-                                                    <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                    data-id="<?php echo $row['id']; ?>" 
-                                                    data-status="<?php echo $row['status']; ?>"
-                                                    data-table="organizers">
 
-                                                    <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                                </button>
-                                            </td>
-                                            <td><?php echo $row['created_at'];?></td>
-                                            <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_organizer.php?id=<?php echo $row['id'];?>"></a></td>
-                                        </tr>
-                                        <?php } ?>
-                                    </tbody> 
-                                    </table>
-                                </form>   
-                            </div>
-                        </div>
-                    </div>  
-                </div>
+                            <div class="card-body">                                                                                          
+                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                <thead>
+                                    <tr>                                        
+                                    <th>ID</th>
+                                    <th>NAME</th>
+                                    <th>EMAIL</th>
+                                    <th>NUMBER</th>
+                                    <th>STATUS</th>
+                                    <th>CREATED_AT</th>
+                                    <th>ACTION</th>
+                                    </tr>
+                                </thead>                                    
+                                <tbody>
+                                    <?php while($row=mysqli_fetch_array($res)){?>
+                                    <tr>
+                                        <td><?php echo $row['id'];?></td>
+                                        <td><?php echo $row['name'];?></td>
+                                        <td><?php echo $row['email'];?></td>
+                                        <td><?php echo $row['number'];?></td>
+                                        <td>  
+                                            <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['id']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="organizers">
+
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
+                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>
+                                        <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
+                                        <a class="fa fa-pencil fa-lg btn btn-success" href="add_organizer.php?id=<?php echo $row['id'];?>"></a></td>
+                                    </tr>
+                                    <?php } ?>
+                                </tbody> 
+                                </table>                                  
+                            </div> <!-- end card body -->
+                        </div> <!-- end card -->
+                    </div>  <!-- end col -->
+                </div> <!-- end row -->
+            </div>
         </div>
-
+    </div>
         <!-- ============================================================== -->
         <!-- End Page content -->
         <!-- ============================================================== -->
-
-    </div>
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

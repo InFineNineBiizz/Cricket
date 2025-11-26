@@ -1,54 +1,30 @@
 <?php 
-    include "connection.php";
-    $name=$ttid=$logo=$img=$totbudget=$rembudget="";
+    include "connection.php";    
 
+    $str="select * from group_auction";
+    $res=mysqli_query($conn,$str);
+
+    $str1="SELECT grp.*, a.name AS auction_name , ga.gname AS group_name
+        FROM grp_auc grp
+        JOIN auctions a ON grp.aid = a.id
+        JOIN group_auction ga ON ga.gid = grp.gid";
+    $res1=mysqli_query($conn,$str1);
+?>
+
+<?php
     if(isset($_GET['id']))
-    {
+    {   
         $id=$_GET['id'];
-        $str="select * from teams where id=".$id."";
-        $res=mysqli_query($conn,$str);
-        $row=mysqli_fetch_array($res);
-        $name=$row['name'];
-        $ttid=$row['tid'];
-        $logo=$row['logo'];
-        $totbudget=$row['tbudget'];
-        $rembudget=$row['rbudget'];
+        $sql="delete from group_auction where gid=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_grp_auc.php");
     }
-
-    $sql="select * from tournaments";
-    $tournaments_result = mysqli_query($conn,$sql);
-    if (!$tournaments_result) 
-    {
-        die("<div class='alert alert-danger'>Error fetching tournaments: " . mysqli_error($conn) . "</div>");
-    }
-
-    if(isset($_POST['btn']))
-    {            
-        if(empty($_GET['id']))
-        {
-            move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
-            $img=$_FILES['ttlogo']['name'];
-
-            $str="insert into teams(tid,name,logo,tbudget,rbudget) values('".$_POST['tourname']."','".$_POST['ttname']."','".$img."','".$_POST['tbudget']."','".$_POST['rbudget']."')";
-            $res=mysqli_query($conn,$str);
-            if ($res) 
-            { 
-                $valid = "<div class='alert alert-success text-center'><strong>Team Added!</strong></div>";
-            } 
-                else 
-            {
-                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
-            }
-        }        
-        else
-        {
-            move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
-            $img=$_FILES['ttlogo']['name'];
-
-            $str="update teams set tid='".$_POST['tourname']."',name='".$_POST['ttname']."',logo='".$img."',tbudget='".$_POST['tbudget']."',rbudget='".$_POST['rbudget']."' where id=".$id."";
-            $res=mysqli_query($conn,$str);
-            header("location:manage_team.php");
-        }
+    if(isset($_GET['id']))
+    {   
+        $id=$_GET['id'];
+        $sql="delete from grp_auc where gaid=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_grp_auc.php");
     }
 ?>
 
@@ -56,7 +32,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Add Teams | CrickFolio</title>
+    <title>Group Auction | CrickFolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
     <meta content="Coderthemes" name="author" />
@@ -80,18 +56,20 @@
         <!-- Sidenav Menu End -->
         
         <!-- Topbar Start -->
+        
         <header class="app-topbar" id="header">
         <div class="page-container topbar-menu">
             <div class="d-flex align-items-center gap-2">    
                 <!-- Topbar Page Title -->
                 <div class="topbar-item d-none d-md-flex px-2">                 
                     <div>
-                        <h4 class="page-title fs-20 fw-semibold mb-0">Auction / Teams / Create</h4>
+                        <h4 class="page-title fs-20 fw-semibold mb-0">Group Auction / Details</h4>
                     </div>
                 </div>
             </div>
         </div>
-        </header>
+        </header>   
+
         <?php 
             include "topbar.php";
         ?>
@@ -106,68 +84,131 @@
             <div class="page-container">
                 <div class="row">
                     <div class="col-12">
-                        <div class="card">  
-                            <div class="card-header border-bottom border-dashed">
-                                <h4 class="card-title mb-0 flex-grow-1">Add Team Details</h4>
-                            </div>                                                                                                                              
-                            <br>
-                            <?php 
-                                if(isset($valid))
-                                {
-                                    echo $valid;
-                                }
-                            ?>
-                            <div class="card-body">
-                            <form class="needs-validation" novalidate method="POST" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label class="form-label lb" for="teamSelect">Tournament Name</label>
-                                        <select class="form-select" data-choices name="tourname" id="tourname" required>
-                                        <option disabled selected value="">Select Tournament Name</option>
-                                        <?php while ($row = mysqli_fetch_assoc($tournaments_result)){ ?>
-                                        <option value="<?php echo $row['tid'];?>"<?php if($ttid==$row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Please select a team.
-                                    </div>
-                                </div>
-                                    <div class="mb-3">
-                                    <label class="form-label lb" for="ttname">Team name</label>
-                                    <input type="text" class="form-control" placeholder="Enter Team name" name="ttname" id="ttname" value="<?php echo $name;?>" required>
-                                    <div class="invalid-feedback">
-                                        please enter a team name
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label lb" for="ttlogo">logo</label>                                      
-                                    <input type="file" class="form-control" name="ttlogo" id="ttlogo"  required><?php echo $logo;?>
-                                    <div class="invalid-feedback">
-                                        Please choose a Team logo
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label lb" for="tbudget">Total Budget</label>
-                                    <input type="text" class="form-control" placeholder="Enter Total Budget" name="tbudget" id="tbudget" value="<?php echo $totbudget;?>" required>
-                                    <div class="invalid-feedback">
-                                        Please provide Total Budget.
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label lb" for="rbudget">Remaining Budget</label>
-                                    <input type="text" class="form-control" placeholder="Remaining Budget" name="rbudget" id="rbudget" value="<?php echo $rembudget;?>" required>
-                                    <div class="invalid-feedback">
-                                        Please provide Remaining Budget.
-                                    </div>
-                                </div>
-                                <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
-                            </form>
-                            </div> <!-- end card-body-->
-                        </div> <!-- end card-->
-                    </div> <!-- end col-->            
+                        <div class="card">    
+                            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                            <h4 class="header-title">Group Auction Details</h4>
+                            </div>                            
+                            
+                            <div class="card-body">                                
+                            <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Group Name</th>                                    
+                                        <th>Base Price</th>
+                                        <th>Min Player</th>
+                                        <th>Max Player</th>
+                                        <th>Bid Increment</th>
+                                        <th>Max Bid Increment</th>
+                                        <th>Max Bid Increment Group</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        while($row = mysqli_fetch_assoc($res)){
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $row['gid'];?></td>
+                                        <td><?php echo $row['gname'];?></td>
+                                        <td><?php echo $row['bprice'];?></td>                                            
+                                        <td><?php echo $row['minplayer'];?></td>
+                                        <td><?php echo $row['maxplayer'];?></td>
+                                        <td><?php echo $row['bidamt'];?></td>
+                                        <td><?php echo $row['mbidamt'];?></td>
+                                        <td><?php echo $row['maxbid'];?></td>
+                                        <td>  
+                                            <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['gid']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="group_auction">
+
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
+                                        </td>                                                                 
+                                        <td>
+                                            <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['gid']; ?>)"></a>                                                 
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">    
+                            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                                <h4 class="header-title">Group Auction Details</h4>
+                            </div>
+                            
+                            <div class="card-body">                                
+                            <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Auction ID</th>                                  
+                                        <th>Auction Name</th>                                 
+                                        <th>Group ID</th>
+                                        <th>Group Name</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        while($row = mysqli_fetch_assoc($res1)){
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $row['gaid'];?></td>
+                                        <td><?php echo $row['aid'];?></td>
+                                        <td><?php echo $row['auction_name'];?></td>
+                                        <td><?php echo $row['gid'];?></td>
+                                        <td><?php echo $row['group_name'];?></td>
+                                        <td>  
+                                            <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['gaid']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="grp_auc">
+
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
+                                        </td>                                                                 
+                                        <td>
+                                            <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['gaid']; ?>)"></a>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
                 </div> <!-- end row-->
             </div>
         </div>
+        <!-- Footer Start -->
+
+        <?php 
+            include "footer.php";
+        ?>
+
+        <!-- Footer End -->
     </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->    
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

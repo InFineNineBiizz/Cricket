@@ -15,15 +15,11 @@
 
 <body>
     <div class="wrapper">
-        <!-- Menu -->
-
-        <!-- Sidenav Menu Start -->
         
+        <!-- Sidenav Menu Start -->
         <?php 
             include "sidebar.php";
         ?>
-        
-        <!-- Sidenav Menu End -->
         
         <!-- Topbar Start -->
         <header class="app-topbar" id="header">
@@ -51,12 +47,11 @@
         <div class="page-content">
 
             <!-- Footer Start -->
-
             <?php 
                 include "footer.php";
             ?>
-
             <!-- Footer End -->
+             
         </div>
 
         <!-- ============================================================== -->

@@ -25,13 +25,13 @@
 
 <body>
     <!-- Begin page -->
-    <div class="wrapper">
-
-        <!-- Menu -->
+    <div class="wrapper">        
+        
         <!-- Sidenav Menu Start -->
         <?php
-        include 'sidebar.php';
+            include 'sidebar.php';
         ?>
+
         <!-- Topbar Start -->
          <header class="app-topbar" id="header">
              <div class="page-container topbar-menu">
@@ -61,63 +61,60 @@
                             <div class="card-header border-bottom border-dashed d-flex align-items-center">
                                 <h4 class="header-title">Sponsor Details</h4>
                             </div>        
-                            <div class="card-body">
-                                <form method="POST">                                    
-                                    <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">                                
-                                    <thead>
-                                        <tr>                                        
-                                        <th>ID</th>
-                                        <th>NAME</th>
-                                        <th>TITLE</th>
-                                        <th>TYPE</th>
-                                        <th>NUMBER</th>
-                                        <th>EMAIL</th>
-                                        <th>LOGO</th>
-                                        <th>STATUS</th>
-                                        <th>CREATED_AT</th>
-                                        <th>ACTION</th>
+                            
+                            <div class="card-body">                                
+                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">                                
+                                <thead>
+                                    <tr>                                        
+                                    <th>ID</th>
+                                    <th>NAME</th>
+                                    <th>TITLE</th>
+                                    <th>TYPE</th>
+                                    <th>NUMBER</th>
+                                    <th>EMAIL</th>
+                                    <th>LOGO</th>
+                                    <th>STATUS</th>
+                                    <th>CREATED_AT</th>
+                                    <th>ACTION</th>
+                                    </tr>
+                                </thead>                                        
+                                <tbody>
+                                    <?php while($row=mysqli_fetch_array($res)){?>
+                                    <tr>
+                                        <td><?php echo $row['id'];?></td>
+                                        <td><?php echo $row['name'];?></td>
+                                        <td><?php echo $row['title'];?></td>
+                                        <td><?php echo $row['type'];?></td>
+                                        <td><?php echo $row['number'];?></td>
+                                        <td><?php echo $row['email'];?></td>
+                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius:30px"></td>
+                                        <td>
+                                            <button class="statusBtn btn 
+                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                                data-id="<?php echo $row['id']; ?>" 
+                                                data-status="<?php echo $row['status']; ?>"
+                                                data-table="sponsers">    <!-- 👈 table name here -->
 
-                                        </tr>
-                                        </thead>
-                                        
-                                        <tbody>
-                                        <?php while($row=mysqli_fetch_array($res)){?>
-                                        <tr>
-                                            <td><?php echo $row['id'];?></td>
-                                            <td><?php echo $row['name'];?></td>
-                                            <td><?php echo $row['title'];?></td>
-                                            <td><?php echo $row['type'];?></td>
-                                            <td><?php echo $row['number'];?></td>
-                                            <td><?php echo $row['email'];?></td>
-                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius:30px"></td>
-                                            <td>
-                                                <button class="statusBtn btn 
-                                                    <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                    data-id="<?php echo $row['id']; ?>" 
-                                                    data-status="<?php echo $row['status']; ?>"
-                                                    data-table="sponsers">    <!-- 👈 table name here -->
-
-                                                    <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                                </button>
-                                            </td>
-                                            <td><?php echo $row['created_at'];?></td>
-                                            <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_sponsor.php?id=<?php echo $row['id'];?>"></a></td>
-                                            </tr>
-                                        <?php } ?>
-                                        </tbody> 
-                                    </table>
-                                </form>   
-                            </div>
-                        </div>
-                    </div>
-                </div>            
+                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                            </button>
+                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>
+                                        <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
+                                        <a class="fa fa-pencil fa-lg btn btn-success" href="add_sponsor.php?id=<?php echo $row['id'];?>"></a></td>
+                                    </tr>
+                                    <?php } ?>
+                                    </tbody> 
+                                </table>                                
+                            </div> <!-- end card body -->
+                        </div> <!-- end card -->
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+            </div>
         </div>
+    </div>                                        
         <!-- ============================================================== -->
         <!-- End Page content -->
         <!-- ============================================================== -->
-
-    </div>
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

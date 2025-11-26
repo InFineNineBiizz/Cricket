@@ -24,6 +24,7 @@
             <button class="topnav-toggle-button px-2" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
                 <i class="ri-menu-5-line fs-24"></i>
             </button>                        
+            
         </div>
 
         <div class="d-flex align-items-center gap-2">                    

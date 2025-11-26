@@ -123,221 +123,218 @@
         
         <div class="page-content">
             <div class="page-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-bottom border-dashed">
-                                    <h4 class="card-title mb-0 flex-grow-1">Add players</h4>
-                                </div>                                                                
-                                <br>
-                                <?php 
-                                    if(isset($valid))
-                                    {
-                                        echo $valid;
-                                    }
-                                ?>
-                                <div class="card-body">
-                                <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="name">First Name</label>
-                                                <input type="text" value="<?php echo $fn;?>" class="form-control" id="name" placeholder="Enter First Name" name="fname" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter First Name..
-                                                </div>
-                                            </div>  
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="lname">Last Name</label>
-                                                <input type="text" class="form-control" id="lname" placeholder="Enter Last Name" name="lname" value="<?php echo $ln;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter Last Name..
-                                                </div>
-                                            </div>
-                                        </div>       
-                                    </div>
-
-                                    <div class="row">   
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="number">Phone Number</label>
-                                                <input type="text" class="form-control" id="number" placeholder="Enter Phone Number" name="number" value="<?php echo $no;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter Valid Number..
-                                                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header border-bottom border-dashed">
+                                <h4 class="card-title mb-0 flex-grow-1">Add players</h4>
+                            </div>                                                                
+                            <br>
+                            <?php 
+                                if(isset($valid))
+                                {
+                                    echo $valid;
+                                }
+                            ?>
+                            <div class="card-body">
+                            <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="name">First Name</label>
+                                            <input type="text" value="<?php echo $fn;?>" class="form-control" id="name" placeholder="Enter First Name" name="fname" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter First Name..
                                             </div>
                                         </div>  
-
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="logo">Player logo</label>
-                                                <input type="file"  name="plogo" id="logo" class="form-control" 
-                                                placeholder="add logo" required ><?php echo $logo;?>
-                                                <div class="invalid-feedback">
-                                                    Please provide a logo.
-                                                </div>
-                                            </div>
-                                        </div> 
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="tname">Tshirt Name</label>
-                                                <input type="text" class="form-control" id="tname" placeholder="Enter Tshirt Name" name="tname" value="<?php echo $tn;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter Tshirt Name..
-                                                </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="lname">Last Name</label>
+                                            <input type="text" class="form-control" id="lname" placeholder="Enter Last Name" name="lname" value="<?php echo $ln;?>" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter Last Name..
                                             </div>
                                         </div>
-                                    
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="ts">Tshirt Size</label>
-                                                    <select name="tsize"  id="ts"  class="form-select" data-choices required>
-                                                        <option value="" selected disabled>Select Size</option>
-                                                        <option value="XS" <?php if($tss == "XS") echo "selected";?>>XS</option>
-                                                        <option value="S" <?php if($tss == "S") echo "selected";?>>S</option>
-                                                        <option value="M" <?php if($tss == "M") echo "selected";?>>M</option>
-                                                        <option value="L" <?php if($tss == "L") echo "selected";?>>L</option>
-                                                        <option value="XL" <?php if($tss == "XL") echo "selected";?>>XL</option>
-                                                        <option value="XXL" <?php if($tss == "XXL") echo "selected";?>>XXL</option>
-                                                        <option value="XXXL" <?php if($tss == "XXXL") echo "selected";?>>XXXL</option>
-                                                    </select>
-                                                    <div class="invalid-feedback">
-                                                        select Tshirt Size
-                                                    </div>
-                                            </div>
-                                        </div> 
-                                    </div>
+                                    </div>       
+                                </div>
 
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label lb" for="tnumber">Tshirt Number</label>
-                                                <input type="text" class="form-control" id="tnumber" placeholder="Enter Tshirt Number" name="tnumber" value="<?php echo $tno;?>" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter Tshirt Number..
-                                                </div>
+                                <div class="row">   
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="number">Phone Number</label>
+                                            <input type="text" class="form-control" id="number" placeholder="Enter Phone Number" name="number" value="<?php echo $no;?>" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter Valid Number..
                                             </div>
                                         </div>
-                                    </div>   
+                                    </div>  
+
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="logo">Player logo</label>
+                                            <input type="file"  name="plogo" id="logo" class="form-control" 
+                                            placeholder="add logo" required ><?php echo $logo;?>
+                                            <div class="invalid-feedback">
+                                                Please provide a logo.
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="tname">Tshirt Name</label>
+                                            <input type="text" class="form-control" id="tname" placeholder="Enter Tshirt Name" name="tname" value="<?php echo $tn;?>" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter Tshirt Name..
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="ts">Tshirt Size</label>
+                                                <select name="tsize"  id="ts"  class="form-select" data-choices required>
+                                                    <option value="" selected disabled>Select Size</option>
+                                                    <option value="XS" <?php if($tss == "XS") echo "selected";?>>XS</option>
+                                                    <option value="S" <?php if($tss == "S") echo "selected";?>>S</option>
+                                                    <option value="M" <?php if($tss == "M") echo "selected";?>>M</option>
+                                                    <option value="L" <?php if($tss == "L") echo "selected";?>>L</option>
+                                                    <option value="XL" <?php if($tss == "XL") echo "selected";?>>XL</option>
+                                                    <option value="XXL" <?php if($tss == "XXL") echo "selected";?>>XXL</option>
+                                                    <option value="XXXL" <?php if($tss == "XXXL") echo "selected";?>>XXXL</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    select Tshirt Size
+                                                </div>
+                                        </div>
+                                    </div> 
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label class="form-label lb" for="tnumber">Tshirt Number</label>
+                                            <input type="text" class="form-control" id="tnumber" placeholder="Enter Tshirt Number" name="tnumber" value="<?php echo $tno;?>" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter Tshirt Number..
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>   
+                                
+                                <!-- ================= PLAYER ROLE SELECTION ================= -->
+                                <!-- All Rounder -->
+                                <div class="mb-3">
+                                <h5>All Rounder</h5>
+                                <input type="checkbox" class="btn-check role-check" name="roles[]" id="allrounder" value="All Rounder">
+                                <label class="btn btn-outline-primary" for="allrounder">All Rounder</label>
+                                </div>
+                                
+                                <div class="mb-3">
+                                <h5>Batter</h5>
+
+                                <input type="checkbox" class="btn-check parent" name="roles[]" id="batsman" value="Batsman">
+                                <label class="btn btn-outline-primary" for="batsman">Batsman</label>
+                                &nbsp;&nbsp;&nbsp;
+
+                                <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="rightbat" value="Right Hand Bat">
+                                <label class="btn btn-outline-primary" for="rightbat">Right Hand Bat</label>&nbsp;
+
+                                <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="leftbat" value="Left Hand Bat">
+                                <label class="btn btn-outline-primary" for="leftbat">Left Hand Bat</label>
+                                </div>
+
+                                <div class="mb-3">
+                                <h5>Bowler</h5>
+
+                                <input type="checkbox" class="btn-check parent" name="roles[]" id="bowler" value="Bowler">
+                                <label class="btn btn-outline-primary" for="bowler">Bowler</label>
+                                &nbsp;&nbsp;&nbsp;
+
+                                <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightfast" value="Right-Arm-Fast">
+                                <label class="btn btn-outline-primary" for="rightfast">Right-Arm-Fast</label>&nbsp;
+
+                                <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightmedium" value="Right-Arm-Medium">
+                                <label class="btn btn-outline-primary" for="rightmedium">Right-Arm-Medium</label>
+                                </div>
+
+                                <h5>Wicket Keeper</h5>
+
+                                <input type="checkbox" class="btn-check parent" name="roles[]" id="wk" value="Wicket Keeper">
+                                <label class="btn btn-outline-primary" for="wk">Wicket Keeper</label>&nbsp;&nbsp;&nbsp;
+
+                                <input type="checkbox" class="btn-check child-wk" data-parent="wk" name="wk_type[]" id="wkbat" value="WK-Batsman">
+                                <label class="btn btn-outline-primary" for="wkbat">WK-Batsman</label>
+
+                                <script>
+
+                                    // AUTO SELECT PARENT IF CHILD CLICKED
+                                    $(".child-bat").on("change", function () {
+                                        $("#batsman").prop("checked", true);
+                                    });
+
+                                    $(".child-bowl").on("change", function () {
+                                        $("#bowler").prop("checked", true);
+                                    });
+
+                                    $(".child-wk").on("change", function () {
+                                        $("#wk").prop("checked", true);
+                                    });
+
+                                    // ONLY ONE CHILD PER GROUP
+                                    $(".child-bat").on("change", function () {
+                                        $(".child-bat").not(this).prop("checked", false);
+                                    });
+
+                                    $(".child-bowl").on("change", function () {
+                                        $(".child-bowl").not(this).prop("checked", false);
+                                    });
+
+                                    $(".child-wk").on("change", function () {
+                                        $(".child-wk").not(this).prop("checked", false);
+                                    });
+
+                                    // UNCHECK PARENT → REMOVE CHILDREN
+                                    $("#batsman").on("change", function() {
+                                        if (!this.checked) $(".child-bat").prop("checked", false);
+                                    });
+
+                                    $("#bowler").on("change", function() {
+                                        if (!this.checked) $(".child-bowl").prop("checked", false);
+                                    });
+
+                                    $("#wk").on("change", function() {
+                                        if (!this.checked) $(".child-wk").prop("checked", false);
+                                    });
+
+                                    // NO SPECIAL LOGIC FOR ALL-ROUNDER
+                                    // User can select/deselect independently
+
+                                    </script>
                                     
-                                    <!-- ================= PLAYER ROLE SELECTION ================= -->
-                                    <!-- All Rounder -->
-                                    <div class="mb-3">
-                                    <h5>All Rounder</h5>
-                                    <input type="checkbox" class="btn-check role-check" name="roles[]" id="allrounder" value="All Rounder">
-                                    <label class="btn btn-outline-primary" for="allrounder">All Rounder</label>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                    <h5>Batter</h5>
-
-                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="batsman" value="Batsman">
-                                    <label class="btn btn-outline-primary" for="batsman">Batsman</label>
-                                    &nbsp;&nbsp;&nbsp;
-
-                                    <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="rightbat" value="Right Hand Bat">
-                                    <label class="btn btn-outline-primary" for="rightbat">Right Hand Bat</label>&nbsp;
-
-                                    <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="leftbat" value="Left Hand Bat">
-                                    <label class="btn btn-outline-primary" for="leftbat">Left Hand Bat</label>
-                                    </div>
-
-                                    <div class="mb-3">
-                                    <h5>Bowler</h5>
-
-                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="bowler" value="Bowler">
-                                    <label class="btn btn-outline-primary" for="bowler">Bowler</label>
-                                    &nbsp;&nbsp;&nbsp;
-
-                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightfast" value="Right-Arm-Fast">
-                                    <label class="btn btn-outline-primary" for="rightfast">Right-Arm-Fast</label>&nbsp;
-
-                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightmedium" value="Right-Arm-Medium">
-                                    <label class="btn btn-outline-primary" for="rightmedium">Right-Arm-Medium</label>
-                                    </div>
-
-                                    <h5>Wicket Keeper</h5>
-
-                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="wk" value="Wicket Keeper">
-                                    <label class="btn btn-outline-primary" for="wk">Wicket Keeper</label>&nbsp;&nbsp;&nbsp;
-
-                                    <input type="checkbox" class="btn-check child-wk" data-parent="wk" name="wk_type[]" id="wkbat" value="WK-Batsman">
-                                    <label class="btn btn-outline-primary" for="wkbat">WK-Batsman</label>
-
-                                    <script>
-
-                                        // AUTO SELECT PARENT IF CHILD CLICKED
-                                        $(".child-bat").on("change", function () {
-                                            $("#batsman").prop("checked", true);
-                                        });
-
-                                        $(".child-bowl").on("change", function () {
-                                            $("#bowler").prop("checked", true);
-                                        });
-
-                                        $(".child-wk").on("change", function () {
-                                            $("#wk").prop("checked", true);
-                                        });
-
-                                        // ONLY ONE CHILD PER GROUP
-                                        $(".child-bat").on("change", function () {
-                                            $(".child-bat").not(this).prop("checked", false);
-                                        });
-
-                                        $(".child-bowl").on("change", function () {
-                                            $(".child-bowl").not(this).prop("checked", false);
-                                        });
-
-                                        $(".child-wk").on("change", function () {
-                                            $(".child-wk").not(this).prop("checked", false);
-                                        });
-
-                                        // UNCHECK PARENT → REMOVE CHILDREN
-                                        $("#batsman").on("change", function() {
-                                            if (!this.checked) $(".child-bat").prop("checked", false);
-                                        });
-
-                                        $("#bowler").on("change", function() {
-                                            if (!this.checked) $(".child-bowl").prop("checked", false);
-                                        });
-
-                                        $("#wk").on("change", function() {
-                                            if (!this.checked) $(".child-wk").prop("checked", false);
-                                        });
-
-                                        // NO SPECIAL LOGIC FOR ALL-ROUNDER
-                                        // User can select/deselect independently
-
-                                        </script>
-                                        
-                                    <br></br>
-                                    <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
-                                </form>
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-                        </div><!-- end col-->
-                    </div> <!-- end row-->
-                </div>
+                                <br></br>
+                                <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
+                            </form>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
             </div>
-            <!-- Footer Start -->
-
-            <?php 
-                include "footer.php";
-            ?>
-
-            <!-- Footer End -->
         </div>
+        <!-- Footer Start -->
 
+        <?php 
+            include "footer.php";
+        ?>
+
+        <!-- Footer End -->
+    </div>
         <!-- ============================================================== -->
         <!-- End Page content -->
         <!-- ============================================================== -->
-
-    </div>
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

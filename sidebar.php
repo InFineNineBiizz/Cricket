@@ -13,9 +13,14 @@
         </span>
     </a>
 
+    <!-- Sidebar Hover Menu Toggle Button -->
+    <button class="button-sm-hover">
+        <i class="ri-circle-line align-middle"></i>
+    </button>
+
     <!-- Sidebar Menu Toggle Button -->
     <button class="sidenav-toggle-button">
-        <i class="ri-menu-5-line fs-20"></i>
+        <i class="ri-menu-5-line fs-24"></i>
     </button>
 
     <!-- Full Sidebar Menu Close Button -->
@@ -155,6 +160,21 @@
                             </a>
                         </li>
                         <li class="side-nav-item">
+                            <a href="auction_manager.php" class="side-nav-link">
+                                <span class="menu-text">Auction Manager</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="lead_auctioner.php" class="side-nav-link">
+                                <span class="menu-text">Lead Auctioner</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_grp_auc.php" class="side-nav-link">
+                                <span class="menu-text">Group Auction</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
                             <a href="add_teams.php" class="side-nav-link">
                                 <span class="menu-text">Add Teams</span>
                             </a>
@@ -279,7 +299,14 @@
                         </li>                        
                     </ul>
                 </div>
-            </li>                    
+            </li>
+            
+            <li class="side-nav-item">
+                <a href="order.php" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-dashboard"></i></span>
+                    <span class="menu-text"> Your Order </span>
+                </a>                
+            </li>
         </ul>
         <div class="clearfix"></div>
     </div>

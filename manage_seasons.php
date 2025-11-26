@@ -69,91 +69,90 @@
         
         <div class="page-content">
             <div class="page-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">    
-                                <div class="card-header border-bottom border-dashed d-flex align-items-center">
-                                <h4 class="header-title">Season Details</h4>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">    
+                            <div class="card-header border-bottom border-dashed d-flex align-items-center">
+                            <h4 class="header-title">Season Details</h4>
                             </div>                            
-                                <div class="card-body">                                
-                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
-                                    <thead>
-                                        <tr>
-                                            <th>Season ID</th>
-                                            <th>Season Logo</th>                                    
-                                            <th>Season Name</th>
-                                            <th>Tournament ID</th>
-                                            <th>City Name</th>
-                                            <th>Ground Name</th>
-                                            <th>Season Start Date</th>
-                                            <th>Season End Date</th>
-                                            <th>Bowling Type</th>
-                                            <th>Ground Type</th>
-                                            <th>Match Type</th>
-                                            <th>Overs</th>
-                                            <th>Status[Active/Inactive]</th>
-                                            <th>Created_AT</th>  
-                                            <th>Action</th>  
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php  
-                                            while($row = mysqli_fetch_assoc($res)){
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $row['id'];?></td>
-                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>
-                                            <td><?php echo $row['name'];?></td>                                            
-                                            <td><?php echo $row['tid'];?></td>
-                                            <td><?php echo $row['cname'];?></td>
-                                            <td><?php echo $row['gname'];?></td>
-                                            <td><?php echo $row['sdate'];?></td>
-                                            <td><?php echo $row['edate'];?></td>
-                                            <td><?php echo $row['btype'];?></td>
-                                            <td><?php echo $row['gtype'];?></td>
-                                            <td><?php echo $row['mtype'];?></td>
-                                            <td><?php echo $row['overs'];?></td>
-                                            <td>
-                                                <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['id']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="sponsers">    <!-- 👈 table name here -->
+                            
+                            <div class="card-body">                                
+                            <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Season ID</th>
+                                        <th>Season Logo</th>                                    
+                                        <th>Season Name</th>
+                                        <th>Tournament ID</th>
+                                        <th>City Name</th>
+                                        <th>Ground Name</th>
+                                        <th>Season Start Date</th>
+                                        <th>Season End Date</th>
+                                        <th>Bowling Type</th>
+                                        <th>Ground Type</th>
+                                        <th>Match Type</th>
+                                        <th>Overs</th>
+                                        <th>Status[Active/Inactive]</th>
+                                        <th>Created_AT</th>  
+                                        <th>Action</th>  
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php  
+                                        while($row = mysqli_fetch_assoc($res)){
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $row['id'];?></td>
+                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>
+                                        <td><?php echo $row['name'];?></td>                                            
+                                        <td><?php echo $row['tid'];?></td>
+                                        <td><?php echo $row['cname'];?></td>
+                                        <td><?php echo $row['gname'];?></td>
+                                        <td><?php echo $row['sdate'];?></td>
+                                        <td><?php echo $row['edate'];?></td>
+                                        <td><?php echo $row['btype'];?></td>
+                                        <td><?php echo $row['gtype'];?></td>
+                                        <td><?php echo $row['mtype'];?></td>
+                                        <td><?php echo $row['overs'];?></td>
+                                        <td>
+                                            <button class="statusBtn btn 
+                                            <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                            data-id="<?php echo $row['id']; ?>" 
+                                            data-status="<?php echo $row['status']; ?>"
+                                            data-table="sponsers">    <!-- 👈 table name here -->
 
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                            </td>
-                                            <td><?php echo $row['created_at'];?></td>                                            
-                                            <td>
-                                                <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a> 
-                                                <a class="fa fa-pencil fa-lg btn btn-success" href="add_seasons.php?id=<?php echo $row['id'];?>"></a>
-                                            </td>
-                                        </tr>
-                                        <?php 
-                                            }
-                                        ?>
-                                    </tbody>
-                                </table>
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-                        </div><!-- end col-->
-                    </div> <!-- end row-->
-                </div>
+                                            <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                        </button>
+                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>                                            
+                                        <td>
+                                            <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a> 
+                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_seasons.php?id=<?php echo $row['id'];?>"></a>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
             </div>
-            <!-- Footer Start -->
-
-            <?php 
-                include "footer.php";
-            ?>
-
-            <!-- Footer End -->
         </div>
+        <!-- Footer Start -->
+
+        <?php 
+            include "footer.php";
+        ?>
+
+        <!-- Footer End -->
+    </div>
 
         <!-- ============================================================== -->
         <!-- End Page content -->
         <!-- ============================================================== -->
-
-    </div>
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

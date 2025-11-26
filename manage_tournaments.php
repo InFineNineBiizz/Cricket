@@ -69,74 +69,72 @@
         
         <div class="page-content">
             <div class="page-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-bottom border-dashed">
-                                    <h4 class="card-title mb-0 flex-grow-1">Tournaments Details</h4>
-                                </div>                                
-                                <div class="card-body">                                
-                                <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
-                                    <thead>
-                                        <tr>
-                                            <th>Tournament ID</th>
-                                            <th>Tournament Logo</th>                                    
-                                            <th>Tournament Name</th>
-                                            <th>Tournament Category</th>
-                                            <th>Status[Active/Inactive]</th>
-                                            <th>Created_AT</th>                                            
-                                            <th>Action</th>                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php  
-                                            while($row = mysqli_fetch_assoc($res)){
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $row['tid'];?></td>
-                                            <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
-                                            <td><?php echo $row['name'];?></td>                                            
-                                            <td><?php echo $row['category'];?></td>
-                                            <td>
-                                            <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['tid']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="tournaments">
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                            </td>
-                                            <td><?php echo $row['created_at'];?></td>
-                                            <td>
-                                                <a class="fa fa-trash fa-lg btn btn-danger"  href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['tid']; ?>)"></a>
-                                                <a class="fa fa-pencil fa-lg btn btn-success" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
-                                            </td>
-                                        </tr>
-                                        <?php 
-                                            }
-                                        ?>
-                                    </tbody>
-                                </table>
-                                </div> <!-- end card body-->
-                            </div> <!-- end card -->
-                        </div><!-- end col-->
-                    </div> <!-- end row-->
-                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header border-bottom border-dashed">
+                                <h4 class="card-title mb-0 flex-grow-1">Tournaments Details</h4>
+                            </div>                                
+                            <div class="card-body">                                
+                            <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Tournament ID</th>
+                                        <th>Tournament Logo</th>                                    
+                                        <th>Tournament Name</th>
+                                        <th>Tournament Category</th>
+                                        <th>Status[Active/Inactive]</th>
+                                        <th>Created_AT</th>                                            
+                                        <th>Action</th>                                            
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php  
+                                        while($row = mysqli_fetch_assoc($res)){
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $row['tid'];?></td>
+                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
+                                        <td><?php echo $row['name'];?></td>                                            
+                                        <td><?php echo $row['category'];?></td>
+                                        <td>
+                                        <button class="statusBtn btn 
+                                            <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
+                                            data-id="<?php echo $row['tid']; ?>" 
+                                            data-status="<?php echo $row['status']; ?>"
+                                            data-table="tournaments">
+                                            <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
+                                        </button>
+                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>
+                                        <td>
+                                            <a class="fa fa-trash fa-lg btn btn-danger"  href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['tid']; ?>)"></a>
+                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            </div> <!-- end card body-->
+                        </div> <!-- end card -->
+                    </div><!-- end col-->
+                </div> <!-- end row-->
             </div>
-            <!-- Footer Start -->
-
-            <?php 
-                include "footer.php";
-            ?>
-
-            <!-- Footer End -->
         </div>
+        <!-- Footer Start -->
+
+        <?php 
+            include "footer.php";
+        ?>
+
+        <!-- Footer End -->
+    </div>
 
         <!-- ============================================================== -->
         <!-- End Page content -->
         <!-- ============================================================== -->
-
-    </div>
     <!-- END wrapper -->
 
     <!-- Theme Settings -->

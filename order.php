@@ -34,7 +34,7 @@ var options = {
     "key": "<?php echo $key_id; ?>",
     "amount": "50000",
     "currency": "INR",
-    "name": "Test Company",
+    "name": "CrickFolio",
     "description": "Test Transaction",
     "order_id": "<?php echo $order_id; ?>",
 
@@ -47,9 +47,9 @@ var options = {
     },
 
     "prefill": {
-        "name": "Test User",
-        "email": "test@example.com",
-        "contact": "9999999999"
+        "name": "Harsh",
+        "email": "crickfolio@gmail.com",
+        "contact": "7862855031"
     },
 
     "theme": {

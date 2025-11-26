@@ -43,19 +43,19 @@
     <!-- Begin page -->
     <div class="wrapper">
 
-        <!-- Menu -->
         <!-- Sidenav Menu Start -->
         <?php
-        include 'sidebar.php';
+            include 'sidebar.php';
         ?>
+
         <!-- Topbar Start -->
          <header class="app-topbar" id="header">
              <div class="page-container topbar-menu">
                 <div class="d-flex align-items-center gap-2">
                      <div class="topbar-item d-none d-md-flex px-2">                        
-                            <div>
-                                <h4 class="page-title fs-20 fw-semibold mb-0">Season / Organizer / Add</h4>
-                            </div>
+                        <div>
+                            <h4 class="page-title fs-20 fw-semibold mb-0">Season / Organizer / Add</h4>
+                        </div>
                      </div>
                 </div>
             </div>
@@ -71,9 +71,7 @@
         <!-- ============================================================== -->
 
         <div class="page-content">
-
             <div class="page-container">
-
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card">
@@ -81,55 +79,42 @@
                                 <h4 class="header-title">Add Organizer</h4>
                             </div>
 
-                            <div class="card-body">
-                                
+                            <div class="card-body">                                
                                 <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
-                                      <div class="row g-3">
-                                           <div class="col-6">
-                                                <label class="form-label lb" for="nm">Organizer name</label>
-                                                <input type="text" value="<?php echo $nm;?>" id="nm" name="name" class="form-control" placeholder="Enter Organizer name" required>
-                                                <div class="invalid-feedback">
-                                                    Please Enter organizer name.
-                                                </div>
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <label class="form-label lb" for="nm">Organizer name</label>
+                                            <input type="text" value="<?php echo $nm;?>" id="nm" name="name" class="form-control" placeholder="Enter Organizer name" required>
+                                            <div class="invalid-feedback">
+                                                Please Enter organizer name.
                                             </div>
-                                
-                                            <div class="col-6">
-                                                <label class="form-label lb" for="no">Organizer number</label>
-                                                <input type="text" value="<?php echo $no;?>" id="no" name="number" class="form-control" placeholder="Enter Organizer number" required>
-                                                <div class="invalid-feedback">
-                                                    Please provide a valid number.
-                                                </div>
+                                        </div>
+                            
+                                        <div class="col-6">
+                                            <label class="form-label lb" for="no">Organizer number</label>
+                                            <input type="text" value="<?php echo $no;?>" id="no" name="number" class="form-control" placeholder="Enter Organizer number" required>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number.
                                             </div>
-                                                                        
-                                            <div class="col-6">
-                                                <label class="form-label lb" for="em">Organizer email</label>
-                                                <input type="text" value="<?php echo $em;?>" id="em" name="email" class="form-control" placeholder="Enter Organizer email" required>
-                                                <div class="invalid-feedback">
-                                                    Please provide a valid email.
-                                                </div>
+                                        </div>
+                                                                    
+                                        <div class="col-6">
+                                            <label class="form-label lb" for="em">Organizer email</label>
+                                            <input type="text" value="<?php echo $em;?>" id="em" name="email" class="form-control" placeholder="Enter Organizer email" required>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid email.
                                             </div>
-                                        
+                                        </div>                                    
                                     </div>
-                                   <br></br>
-                                    
+                                    <br>
                                     <button class="btn btn-primary w-25" name='btn' type="submit">Insert</button>
                                 </form>
                             </div> <!-- end card-body-->
                         </div> <!-- end card-->
                     </div> <!-- end col-->
-
-            <!-- Footer Start -->
-                <?php 
-                    include "footer.php";
-                ?>       
-            <!-- end Footer -->
-
+                </div> <!-- end row-->
+            </div>            
         </div>
-
-        <!-- ============================================================== -->
-        <!-- End Page content -->
-        <!-- ============================================================== -->
-
     </div>
     <!-- END wrapper -->
 
