@@ -171,9 +171,22 @@
                         </li>
                         <li class="side-nav-item">
                             <a href="manage_grp_auc.php" class="side-nav-link">
-                                <span class="menu-text">Group Auction</span>
+                                <span class="menu-text">Group Wise Auction</span>
                             </a>
-                        </li>
+                        </li>                                                
+                    </ul>
+                </div>
+            </li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarPagesTeam" aria-expanded="false"
+                    aria-controls="sidebarPagesTeam" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-trophy"></i></span>
+                    <span class="menu-text"> Teams </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse" id="sidebarPagesTeam">
+                    <ul class="sub-menu">
                         <li class="side-nav-item">
                             <a href="add_teams.php" class="side-nav-link">
                                 <span class="menu-text">Add Teams</span>
@@ -192,6 +205,11 @@
                         <li class="side-nav-item">
                             <a href="manage_players.php" class="side-nav-link">
                                 <span class="menu-text">Manage Players</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_team_players.php" class="side-nav-link">
+                                <span class="menu-text">Manage Sold Players</span>
                             </a>
                         </li>
                     </ul>

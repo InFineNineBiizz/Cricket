@@ -41,18 +41,9 @@
             move_uploaded_file($_FILES['plogo']['tmp_name'],"images/".$_FILES['plogo']['name']);
             $img=$_FILES['plogo']['name'];                
             
-            $str="insert into players(fname,lname,number,logo,role,batstyle,bowlstyle,wicketkeep,tname,tsize,tnumber) 
+            $str="insert into players(fname,lname,number,logo,role,batstyle,bowlstyle,tname,tsize,tnumber) 
             values('".$_POST['fname']."','".$_POST['lname']."','".$_POST['number']."','".$img."','".$roles_str."','".$bat_str."','".$bowl_str."','".$_POST['tname']."','".$_POST['tsize']."','".$_POST['tnumber']."')";
-            $res=mysqli_query($conn,$str);
-            if ($res) 
-            { 
-                $valid = "<div class='alert alert-success text-center'><strong>Players Added!</strong></div>";
-            } 
-            else 
-            {
-                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
-            }        
-            
+            $res=mysqli_query($conn,$str);            
         }
         else
         {
@@ -129,13 +120,7 @@
                             <div class="card-header border-bottom border-dashed">
                                 <h4 class="card-title mb-0 flex-grow-1">Add players</h4>
                             </div>                                                                
-                            <br>
-                            <?php 
-                                if(isset($valid))
-                                {
-                                    echo $valid;
-                                }
-                            ?>
+                            <br>                            
                             <div class="card-body">
                             <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
                                 <div class="row">
@@ -228,39 +213,54 @@
                                 <!-- ================= PLAYER ROLE SELECTION ================= -->
                                 <!-- All Rounder -->
                                 <div class="mb-3">
-                                <h5>All Rounder</h5>
-                                <input type="checkbox" class="btn-check role-check" name="roles[]" id="allrounder" value="All Rounder">
-                                <label class="btn btn-outline-primary" for="allrounder">All Rounder</label>
+                                    <h5>All Rounder</h5>
+                                    <input type="checkbox" class="btn-check role-check" name="roles[]" id="allrounder" value="All Rounder">
+                                    <label class="btn btn-outline-primary" for="allrounder">All Rounder</label>
                                 </div>
                                 
                                 <div class="mb-3">
-                                <h5>Batter</h5>
+                                    <h5>Batter</h5>
 
-                                <input type="checkbox" class="btn-check parent" name="roles[]" id="batsman" value="Batsman">
-                                <label class="btn btn-outline-primary" for="batsman">Batsman</label>
-                                &nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="batsman" value="Batsman">
+                                    <label class="btn btn-outline-primary" for="batsman">Batsman</label>
+                                    &nbsp;&nbsp;&nbsp;
 
-                                <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="rightbat" value="Right Hand Bat">
-                                <label class="btn btn-outline-primary" for="rightbat">Right Hand Bat</label>&nbsp;
+                                    <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="rightbat" value="Right Hand Bat">
+                                    <label class="btn btn-outline-primary" for="rightbat">Right Hand Bat</label>&nbsp;
 
-                                <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="leftbat" value="Left Hand Bat">
-                                <label class="btn btn-outline-primary" for="leftbat">Left Hand Bat</label>
+                                    <input type="checkbox" class="btn-check child-bat" data-parent="batsman" name="bat_type[]" id="leftbat" value="Left Hand Bat">
+                                    <label class="btn btn-outline-primary" for="leftbat">Left Hand Bat</label>
                                 </div>
 
                                 <div class="mb-3">
-                                <h5>Bowler</h5>
+                                    <h5>Bowler</h5>
 
-                                <input type="checkbox" class="btn-check parent" name="roles[]" id="bowler" value="Bowler">
-                                <label class="btn btn-outline-primary" for="bowler">Bowler</label>
-                                &nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" class="btn-check parent" name="roles[]" id="bowler" value="Bowler">
+                                    <label class="btn btn-outline-primary" for="bowler">Bowler</label>
+                                    &nbsp;&nbsp;&nbsp;
 
-                                <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightfast" value="Right-Arm-Fast">
-                                <label class="btn btn-outline-primary" for="rightfast">Right-Arm-Fast</label>&nbsp;
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightfast" value="Right-Arm-Fast">
+                                    <label class="btn btn-outline-primary" for="rightfast">Right-Arm-Fast</label>&nbsp;
 
-                                <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightmedium" value="Right-Arm-Medium">
-                                <label class="btn btn-outline-primary" for="rightmedium">Right-Arm-Medium</label>
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightmedium" value="Right-Arm-Medium">
+                                    <label class="btn btn-outline-primary" for="rightmedium">Right-Arm-Medium</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightoff" value="Right-Arm-Off-Break">
+                                    <label class="btn btn-outline-primary" for="rightoff">Right-Arm-Off-Break</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="rightleg" value="Right-Arm-Leg-Break">
+                                    <label class="btn btn-outline-primary" for="rightleg">Right-Arm-Leg-Break</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="leftfast" value="Left-Arm-Fast">
+                                    <label class="btn btn-outline-primary" for="leftfast">Left-Arm-Fast</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="leftmedium" value="Left-Arm-Medium">
+                                    <label class="btn btn-outline-primary" for="leftmedium">Left-Arm-Medium</label>&nbsp;
+
+                                    <input type="checkbox" class="btn-check child-bowl" data-parent="bowler" name="bowl_type[]" id="leftorthodox" value="Left-Arm-Orthodox">
+                                    <label class="btn btn-outline-primary" for="leftorthodox">Left-Arm-Orthodox</label>
                                 </div>
-
+                                
                                 <h5>Wicket Keeper</h5>
 
                                 <input type="checkbox" class="btn-check parent" name="roles[]" id="wk" value="Wicket Keeper">
@@ -270,7 +270,6 @@
                                 <label class="btn btn-outline-primary" for="wkbat">WK-Batsman</label>
 
                                 <script>
-
                                     // AUTO SELECT PARENT IF CHILD CLICKED
                                     $(".child-bat").on("change", function () {
                                         $("#batsman").prop("checked", true);
@@ -308,13 +307,8 @@
 
                                     $("#wk").on("change", function() {
                                         if (!this.checked) $(".child-wk").prop("checked", false);
-                                    });
-
-                                    // NO SPECIAL LOGIC FOR ALL-ROUNDER
-                                    // User can select/deselect independently
-
-                                    </script>
-                                    
+                                    });                                    
+                                    </script>                                    
                                 <br></br>
                                 <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
                             </form>
@@ -795,6 +789,21 @@
         }
 
         });
+    </script>
+    <script>
+        <?php if(isset($_POST['btn'])){?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Player Added!',
+                text: "New Player has been added successfully!",                
+                confirmButtonText: 'Ok',                
+                confirmButtonColor: '#0d6efd',                                 
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "manage_players.php";
+                }
+            });
+        <?php } ?>
     </script>
 </body>
 </html>

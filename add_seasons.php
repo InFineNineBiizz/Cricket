@@ -42,15 +42,7 @@
             }
 
             $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo) values('".$_POST['sname']."','".$_POST['tname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."')";
-            $res=mysqli_query($conn,$str);
-            if ($res) 
-            { 
-                $valid = "<div class='alert alert-success text-center'><strong>Season Added!</strong></div>";
-            } 
-            else 
-            {
-                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
-            }
+            $res=mysqli_query($conn,$str);            
         }
         else
         {
@@ -129,13 +121,7 @@
                             <div class="card-header border-bottom border-dashed">
                                 <h4 class="card-title mb-0 flex-grow-1">Add Seasons</h4>
                             </div>                                                                
-                            <br>
-                            <?php 
-                                if(isset($valid))
-                                {
-                                    echo $valid;
-                                }
-                            ?>
+                            <br>                            
                             <div class="card-body">
                             <form id="myForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
                                 <div class="row">
@@ -750,6 +736,21 @@ $(document).ready(function() {
     $('#mtype').on('change', updateOversVisibility);
     updateOversVisibility();
 });
+</script>
+<script>
+    <?php if(isset($_POST['btn'])):?>
+        Swal.fire({
+            icon: 'success',
+            title: 'Season Added!',
+            text: "New season has been added successfully!",                
+            confirmButtonText: 'Ok',                
+            confirmButtonColor: '#0d6efd',            
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "manage_seasons.php";
+            }
+        });
+    <?php endif;?>
 </script>
 
 </body>

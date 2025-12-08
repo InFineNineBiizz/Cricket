@@ -20,14 +20,14 @@
     {
         if(!empty($_GET['id']))
         {
-                $str="update organizers set name='".$_POST['name']."',email='".$_POST['email']."',number='".$_POST['number']."' where id=".$id."";
-                $res=mysqli_query($conn,$str);
-                header("location:manage_organizer.php");
+            $str="update organizers set name='".$_POST['name']."',email='".$_POST['email']."',number='".$_POST['number']."' where id=".$id."";
+            $res=mysqli_query($conn,$str);
+            header("location:manage_organizer.php");
         }
         else
         {        
-                $str="insert into organizers(name,email,number) values('".$_POST['name']."','".$_POST['email']."','".$_POST['number']."')";
-                $res=mysqli_query($conn,$str);      
+            $str="insert into organizers(name,email,number) values('".$_POST['name']."','".$_POST['email']."','".$_POST['number']."')";
+            $res=mysqli_query($conn,$str);      
         }
     }
  ?>   
@@ -544,5 +544,21 @@
     <?php 
         include "scripts.php";
     ?>
+    <script>
+        <?php if(isset($_POST['btn'])):?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Organizer Added!',
+                text: "New organizer has been added successfully!",                
+                confirmButtonText: 'Ok',                
+                confirmButtonColor: '#0d6efd',            
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "manage_organizer.php";
+                }
+            });
+        <?php endif;?>
+    </script>
+
 </body>
 </html>

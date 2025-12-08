@@ -66,28 +66,28 @@
                                 <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">                                
                                 <thead>
                                     <tr>                                        
-                                    <th>ID</th>
-                                    <th>NAME</th>
-                                    <th>TITLE</th>
-                                    <th>TYPE</th>
-                                    <th>NUMBER</th>
-                                    <th>EMAIL</th>
-                                    <th>LOGO</th>
-                                    <th>STATUS</th>
-                                    <th>CREATED_AT</th>
-                                    <th>ACTION</th>
+                                        <th>ID</th>
+                                        <th>LOGO</th>
+                                        <th>NAME</th>
+                                        <th>TITLE</th>
+                                        <th>TYPE</th>
+                                        <th>NUMBER</th>
+                                        <th>EMAIL</th>
+                                        <th>STATUS</th>
+                                        <th>CREATED_AT</th>
+                                        <th>ACTION</th>
                                     </tr>
                                 </thead>                                        
                                 <tbody>
                                     <?php while($row=mysqli_fetch_array($res)){?>
                                     <tr>
                                         <td><?php echo $row['id'];?></td>
+                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius:30px"></td>
                                         <td><?php echo $row['name'];?></td>
                                         <td><?php echo $row['title'];?></td>
                                         <td><?php echo $row['type'];?></td>
                                         <td><?php echo $row['number'];?></td>
                                         <td><?php echo $row['email'];?></td>
-                                        <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius:30px"></td>
                                         <td>
                                             <button class="statusBtn btn 
                                                 <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"

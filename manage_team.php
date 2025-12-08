@@ -81,11 +81,9 @@
                                 <thead>
                                     <tr>
                                         <th>Team ID</th>
-                                        <th>Tournament Logo</th>                                    
+                                        <th>Team Logo</th>                                    
                                         <th>Tournament ID</th>                                    
                                         <th>Team Name</th>
-                                        <th>Total Budget</th>
-                                        <th>Remaining Budget</th>
                                         <th>Status[Active/Inactive]</th>
                                         <th>Created_AT</th>                                            
                                         <th>Action</th>                                            
@@ -100,8 +98,6 @@
                                         <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
                                         <td><?php echo $row['tid'];?></td>                                            
                                         <td><?php echo $row['name'];?></td>
-                                        <td><?php echo $row['tbudget'];?></td>
-                                        <td><?php echo $row['rbudget'];?></td>
                                         <td>
                                         <button class="statusBtn btn 
                                             <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
@@ -566,6 +562,6 @@
     </div>
     <?php 
         include "scripts.php";
-    ?>
+    ?>    
 </body>
 </html>

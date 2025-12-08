@@ -4,6 +4,10 @@
 <!-- Theme Config Js -->
 <script src="assets/js/config.js"></script>
 
+<!-- SweetAlert Js -->
+<link rel="stylesheet" href="assets/css/sweetalert2.css">
+<script src="assets/js/sweetalert2.js"></script>
+
 <!-- Vendor css -->
 <link href="assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
 

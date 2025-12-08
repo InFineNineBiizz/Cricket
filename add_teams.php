@@ -1,6 +1,6 @@
 <?php 
     include "connection.php";
-    $name=$ttid=$logo=$img=$totbudget=$rembudget="";
+    $name=$ttid=$logo=$img="";
 
     if(isset($_GET['id']))
     {
@@ -10,9 +10,7 @@
         $row=mysqli_fetch_array($res);
         $name=$row['name'];
         $ttid=$row['tid'];
-        $logo=$row['logo'];
-        $totbudget=$row['tbudget'];
-        $rembudget=$row['rbudget'];
+        $logo=$row['logo'];        
     }
 
     $sql="select * from tournaments";
@@ -23,31 +21,41 @@
     }
 
     if(isset($_POST['btn']))
-    {            
-        if(empty($_GET['id']))
-        {
-            move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
-            $img=$_FILES['ttlogo']['name'];
+    {       
+        move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
+        $img=$_FILES['ttlogo']['name'];         
 
-            $str="insert into teams(tid,name,logo,tbudget,rbudget) values('".$_POST['tourname']."','".$_POST['ttname']."','".$img."','".$_POST['tbudget']."','".$_POST['rbudget']."')";
-            $res=mysqli_query($conn,$str);
-            if ($res) 
-            { 
-                $valid = "<div class='alert alert-success text-center'><strong>Team Added!</strong></div>";
-            } 
-                else 
-            {
-                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
+        $rem = 0;
+        if (isset($_POST['tourname']) && $_POST['tourname'] !== '') {
+            $selectedTid = (int) $_POST['tourname'];
+
+            // try to find an active auction for this tournament
+            $qr = "SELECT camt FROM auctions WHERE tour_id = " . $selectedTid . " AND status = 1 LIMIT 1";
+            $qr1 = mysqli_query($conn, $qr);
+
+            if ($qr1 && mysqli_num_rows($qr1) > 0) {
+                $r = mysqli_fetch_assoc($qr1);
+                $rem = isset($r['camt']) ? (int)$r['camt'] : 0;
+            } else {
+                // No auction found for selected tournament — fallback to 0
+                $rem = 0;
             }
-        }        
-        else
-        {
-            move_uploaded_file($_FILES['ttlogo']['tmp_name'],'images/'.$_FILES['ttlogo']['name']);
-            $img=$_FILES['ttlogo']['name'];
+        } else {
+            // no tournament selected (shouldn't happen because form requires it) — default 0
+            $rem = 0;
+        }
 
-            $str="update teams set tid='".$_POST['tourname']."',name='".$_POST['ttname']."',logo='".$img."',tbudget='".$_POST['tbudget']."',rbudget='".$_POST['rbudget']."' where id=".$id."";
+
+        if(!empty($_GET['id']))
+        {                        
+            $str="update teams set tid='".$_POST['tourname']."',name='".$_POST['ttname']."',logo='".$img."' where id=".$id."";
             $res=mysqli_query($conn,$str);
             header("location:manage_team.php");
+        }        
+        else
+        {                     
+            $str="insert into teams(tid,name,logo,remaining) values('".$_POST['tourname']."','".$_POST['ttname']."','".$img."','".$rem."')";
+            $res=mysqli_query($conn,$str);            
         }
     }
 ?>
@@ -110,18 +118,12 @@
                             <div class="card-header border-bottom border-dashed">
                                 <h4 class="card-title mb-0 flex-grow-1">Add Team Details</h4>
                             </div>                                                                                                                              
-                            <br>
-                            <?php 
-                                if(isset($valid))
-                                {
-                                    echo $valid;
-                                }
-                            ?>
+                            <br>                            
                             <div class="card-body">
                             <form class="needs-validation" novalidate method="POST" enctype="multipart/form-data">
                                 <div class="mb-3">
                                     <label class="form-label lb" for="teamSelect">Tournament Name</label>
-                                        <select class="form-select" data-choices name="tourname" id="tourname" required>
+                                    <select class="form-select" data-choices name="tourname" id="teamSelect" required>
                                         <option disabled selected value="">Select Tournament Name</option>
                                         <?php while ($row = mysqli_fetch_assoc($tournaments_result)){ ?>
                                         <option value="<?php echo $row['tid'];?>"<?php if($ttid==$row['tid']){ echo 'selected';}?>><?php echo $row['name'];?></option>
@@ -131,7 +133,7 @@
                                         Please select a team.
                                     </div>
                                 </div>
-                                    <div class="mb-3">
+                                <div class="mb-3">
                                     <label class="form-label lb" for="ttname">Team name</label>
                                     <input type="text" class="form-control" placeholder="Enter Team name" name="ttname" id="ttname" value="<?php echo $name;?>" required>
                                     <div class="invalid-feedback">
@@ -140,25 +142,11 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label lb" for="ttlogo">logo</label>                                      
-                                    <input type="file" class="form-control" name="ttlogo" id="ttlogo"  required><?php echo $logo;?>
+                                    <input type="file" class="form-control" name="ttlogo" id="ttlogo" required><?php echo $logo;?>
                                     <div class="invalid-feedback">
                                         Please choose a Team logo
                                     </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label lb" for="tbudget">Total Budget</label>
-                                    <input type="text" class="form-control" placeholder="Enter Total Budget" name="tbudget" id="tbudget" value="<?php echo $totbudget;?>" required>
-                                    <div class="invalid-feedback">
-                                        Please provide Total Budget.
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label lb" for="rbudget">Remaining Budget</label>
-                                    <input type="text" class="form-control" placeholder="Remaining Budget" name="rbudget" id="rbudget" value="<?php echo $rembudget;?>" required>
-                                    <div class="invalid-feedback">
-                                        Please provide Remaining Budget.
-                                    </div>
-                                </div>
+                                </div>                                
                                 <button class="btn btn-primary lb w-25" name="btn" type="submit"><?php if(isset($_GET['id'])){ echo 'Update';}else { echo 'Insert';}?></button>
                             </form>
                             </div> <!-- end card-body-->
@@ -595,5 +583,22 @@
     <?php 
         include "scripts.php";
     ?>
+    <script>
+        <?php if(isset($_POST['btn'])):?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Team Added!',
+                text: "New team has been added successfully!",                
+                confirmButtonText: 'Ok',                
+                confirmButtonColor: '#0d6efd',
+                timer: 2500,
+                timerProgressBar: true                
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "manage_team.php";
+                }
+            });
+        <?php endif;?>
+    </script>
 </body>
 </html>

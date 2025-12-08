@@ -2,7 +2,7 @@
     session_start();   
     include "connection.php";
     $name=$tour_id=$sea_id=$venue=$sdate=$edate=$logo=$cr_type=$max=$min=$res=$camt=$bidamt=$bprice=$img="";
-    $fname=$lname=$num=$fname1=$lname1=$num1="";
+    $fname=$lname=$num=$fname1=$lname1=$num1="";    
     
     if(isset($_GET['id']))
     {
@@ -188,8 +188,7 @@ $amounts[] = 100000;
 
     <?php 
         include "links.php";
-    ?>
-    
+    ?>     
 </head>
 
 <body>
@@ -1104,28 +1103,42 @@ $amounts[] = 100000;
         // });
     </script>
 
-<script>
-$(document).ready(function() {
-    function updateOversVisibility() {
-        var selectedValue = $('#mtype').val() || '';
+    <script>
+        $(document).ready(function() {
+        function updateOversVisibility() {
+            var selectedValue = $('#mtype').val() || '';
 
-        // Show overs for 'Limited Overs' OR where the value contains digits (T10, T20, OneDay 50)
-        var showOvers = selectedValue === 'Limited Overs';
+            // Show overs for 'Limited Overs' OR where the value contains digits (T10, T20, OneDay 50)
+            var showOvers = selectedValue === 'Limited Overs';
 
-        if (showOvers) {
-            $('#overs-textbox-div').removeClass('d-none');
-            $('#overs').attr('required', true);
-        } else {
-            $('#overs-textbox-div').addClass('d-none');
-            $('#overs').removeAttr('required').val('');
+            if (showOvers) {
+                $('#overs-textbox-div').removeClass('d-none');
+                $('#overs').attr('required', true);
+            } else {
+                $('#overs-textbox-div').addClass('d-none');
+                $('#overs').removeAttr('required').val('');
+            }
         }
-    }
 
-    // run on change (and on load for preselected values)
-    $('#mtype').on('change', updateOversVisibility);
-    updateOversVisibility();
-});
-</script>
-
+        // run on change (and on load for preselected values)
+        $('#mtype').on('change', updateOversVisibility);
+        updateOversVisibility();
+        });
+    </script>
+    <script>
+        <?php if(isset($_POST['btn'])):?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Auction Added!',
+                text: "New auction has been added successfully!",                
+                confirmButtonText: 'Ok',                
+                confirmButtonColor: '#0d6efd',            
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "manage_auctions.php";
+                }
+            });
+        <?php endif;?>
+    </script>
 </body>
 </html>

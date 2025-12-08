@@ -21,15 +21,7 @@
             $img=$_FILES['tlogo']['name'];                
             
             $str="insert into tournaments(name,category,logo) values('".$_POST['tname']."','".$_POST['tcategory']."','".$img."')";
-            $res=mysqli_query($conn,$str);
-            if ($res) 
-            { 
-                $valid = "<div class='alert alert-success text-center'><strong>Tournament Added!</strong></div>";
-            } 
-            else 
-            {
-                $valid = "<div class='alert alert-danger text-center'><strong>Error:</strong> " . mysqli_error($conn) . "</div>";
-            }
+            $res=mysqli_query($conn,$str);            
         }
         else
         {
@@ -98,13 +90,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">                                                                
-                            <br>
-                            <?php 
-                                if(isset($valid))
-                                {
-                                    echo $valid;
-                                }
-                            ?>
+                            <br>                            
                             <div class="card-body">
                             <form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
                                 <div class="mb-3">
@@ -577,5 +563,21 @@
     <?php 
         include "scripts.php";
     ?>
+    <script>
+        <?php if(isset($_POST['btn'])):?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Tournament Added!',
+                text: "New tournament has been added successfully!",                
+                confirmButtonText: 'Ok',                
+                confirmButtonColor: '#0d6efd',            
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "manage_tournaments.php";
+                }
+            });
+        <?php endif;?>
+    </script>
+
 </body>
 </html>
