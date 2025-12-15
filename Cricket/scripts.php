@@ -1,0 +1,12 @@
+<script src="assets/script/jquery.js"></script>
+<script src="assets/script/popper.min.js"></script>
+<script src="assets/script/bootstrap.min.js"></script>
+<script src="assets/script/slick.slider.min.js"></script>
+<script src="assets/script/fancybox.min.js"></script>
+<script src="assets/script/isotope.min.js"></script>
+<script src="assets/script/smartmenus.min.js"></script>
+<script src="assets/script/progressbar.js"></script>
+<script src="assets/script/jquery.countdown.min.js"></script>
+<script src="assets/script/functions.js"></script>
+<script src="assets/script/jquery.min.js"></script>
+<script src="assets/script/sweetalert2.js"></script>
