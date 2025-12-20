@@ -15,8 +15,7 @@
         if($count>0)
         {                
             $_SESSION['user_email'] = $row['email'];
-            $_SESSION['user_name'] = $row['name'];
-            // $_SESSION['pass']  = $pass;
+            $_SESSION['user_name'] = $row['uname'];            
 
             header('location:index.php');                
             exit();

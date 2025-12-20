@@ -181,19 +181,18 @@
                                     <div class="col-6">
                                         <div class="mb-3">
                                             <label class="form-label lb" for="ts">Tshirt Size</label>
-                                                <select name="tsize"  id="ts"  class="form-select" data-choices required>
-                                                    <option value="" selected disabled>Select Size</option>
-                                                    <option value="XS" <?php if($tss == "XS") echo "selected";?>>XS</option>
-                                                    <option value="S" <?php if($tss == "S") echo "selected";?>>S</option>
-                                                    <option value="M" <?php if($tss == "M") echo "selected";?>>M</option>
-                                                    <option value="L" <?php if($tss == "L") echo "selected";?>>L</option>
-                                                    <option value="XL" <?php if($tss == "XL") echo "selected";?>>XL</option>
-                                                    <option value="XXL" <?php if($tss == "XXL") echo "selected";?>>XXL</option>
-                                                    <option value="XXXL" <?php if($tss == "XXXL") echo "selected";?>>XXXL</option>
-                                                </select>
-                                                <div class="invalid-feedback">
-                                                    select Tshirt Size
-                                                </div>
+                                            <select name="tsize"  id="ts"  class="form-select" data-choices required>
+                                                <option value="" selected disabled>Select Size</option>                                                    
+                                                <option value="S" <?php if($tss == "S") echo "selected";?>>S</option>
+                                                <option value="M" <?php if($tss == "M") echo "selected";?>>M</option>
+                                                <option value="L" <?php if($tss == "L") echo "selected";?>>L</option>
+                                                <option value="XL" <?php if($tss == "XL") echo "selected";?>>XL</option>
+                                                <option value="XXL" <?php if($tss == "XXL") echo "selected";?>>XXL</option>
+                                                <option value="XXXL" <?php if($tss == "XXXL") echo "selected";?>>XXXL</option>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                select Tshirt Size
+                                            </div>
                                         </div>
                                     </div> 
                                 </div>

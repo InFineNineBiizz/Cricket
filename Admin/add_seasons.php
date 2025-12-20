@@ -176,7 +176,7 @@
                                         <div class="mb-3">
                                             <label class="form-label lb" for="sdate">Season Start Date</label>                                                
                                             <div class="input-group has-validation">
-                                                <input type="text" class="form-control flatpickr-input" placeholder="Select Season Start Date" id="sdate" name="sdate" data-provider="flatpickr" data-date-format="Y-m-d" readonly="readonly" value="<?php echo $sdate;?>" required>
+                                                <input type="text" class="form-control flatpickr-input" placeholder="Select Season Start Date" id="sdate" name="sdate" data-provider="flatpickr" data-date-format="Y-m-d" data-min-date="today" readonly="readonly" value="<?php echo $sdate;?>" required>
                                                 <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                             </div>
                                             <div id="season_start_error" class="invalid-feedback d-none">
@@ -188,7 +188,7 @@
                                         <div class="mb-3">
                                             <label class="form-label lb" for="edate">Season End Date</label>
                                             <div class="input-group has-validation">
-                                                <input type="text" class="form-control flatpickr-input" placeholder="Select Season End Date" id="edate" name="edate" data-provider="flatpickr" data-date-format="Y-m-d" readonly="readonly" value="<?php echo $edate;?>" required>
+                                                <input type="text" class="form-control flatpickr-input" placeholder="Select Season End Date" id="edate" name="edate" data-provider="flatpickr" data-date-format="Y-m-d" data-min-date="today" readonly="readonly" value="<?php echo $edate;?>" required>
                                                 <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
                                             </div>
                                             <div id="season_end_error" class="invalid-feedback d-none">
@@ -716,27 +716,28 @@
     ?>
 
 <script>
-$(document).ready(function() {
-    function updateOversVisibility() {
-        var selectedValue = $('#mtype').val() || '';
+    $(document).ready(function() {
+        function updateOversVisibility() {
+            var selectedValue = $('#mtype').val() || '';
 
-        // Show overs for 'Limited Overs' OR where the value contains digits (T10, T20, OneDay 50)
-        var showOvers = selectedValue === 'Limited Overs';
+            // Show overs for 'Limited Overs' OR where the value contains digits (T10, T20, OneDay 50)
+            var showOvers = selectedValue === 'Limited Overs';
 
-        if (showOvers) {
-            $('#overs-textbox-div').removeClass('d-none');
-            $('#overs').attr('required', true);
-        } else {
-            $('#overs-textbox-div').addClass('d-none');
-            $('#overs').removeAttr('required').val('');
+            if (showOvers) {
+                $('#overs-textbox-div').removeClass('d-none');
+                $('#overs').attr('required', true);
+            } else {
+                $('#overs-textbox-div').addClass('d-none');
+                $('#overs').removeAttr('required').val('');
+            }
         }
-    }
 
-    // run on change (and on load for preselected values)
-    $('#mtype').on('change', updateOversVisibility);
-    updateOversVisibility();
-});
+        // run on change (and on load for preselected values)
+        $('#mtype').on('change', updateOversVisibility);
+        updateOversVisibility();
+    });
 </script>
+
 <script>
     <?php if(isset($_POST['btn'])):?>
         Swal.fire({

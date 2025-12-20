@@ -6,13 +6,13 @@
 ?>
 
 <?php
-      if(isset($_GET['id']))
-      {   
-         $id=$_GET['id'];
-         $sql="delete from seasons where id=".$id."";
-         mysqli_query($conn,$sql);
-         header("location:manage_seasons.php");
-      }
+    if(isset($_GET['id']))
+    {   
+        $id=$_GET['id'];
+        $sql="delete from seasons where id=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_seasons.php");
+    }
 ?>
 
 <!DOCTYPE html>

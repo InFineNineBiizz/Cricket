@@ -684,10 +684,23 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
         
         /* Scoreboard */
         .scoreboard-section {
-            background: linear-gradient(135deg, var(--primary-yellow), var(--secondary-yellow));
+            position: relative;
             padding: 30px 20px;
             color: white;
-            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .scoreboard-section::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: url('assets/images/cricket/crick8.jpg') center center / cover no-repeat;
+            filter: blur(3px) brightness(0.7);
+            z-index: -1;
         }
         
         .team-badge {
@@ -1288,6 +1301,79 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
                 margin-bottom: 15px;
             }
         }
+
+        /* Dismissal Type Card Styles */
+        .dismissal-card {
+            background: var(--light-grey);
+            border: 2px solid var(--medium-grey);
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .dismissal-card:hover {
+            border-color: var(--danger-red);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.05));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
+
+        .dismissal-card.selected {
+            border-color: var(--danger-red);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
+        }
+
+        .dismissal-icon {
+            font-size: 36px;
+            line-height: 1;
+        }
+
+        .dismissal-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Fielder Selection Styles */
+        #fielderSelectionSection .player-item {
+            border-left: 3px solid transparent;
+        }
+
+        #fielderSelectionSection .player-item.selected {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(255, 165, 0, 0.1));
+            border-left-color: var(--primary-yellow);
+        }
+
+        #fielderSelectionSection .player-item.selected .select-icon {
+            color: var(--success-green);
+        }
+
+        #fielderSelectionSection .player-item.selected .select-icon i::before {
+            content: "\f26b"; /* checkmark icon */
+        }
+
+        @media (max-width: 576px) {
+            .dismissal-card {
+                padding: 15px 10px;
+            }
+            
+            .dismissal-icon {
+                font-size: 28px;
+            }
+            
+            .dismissal-name {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1454,7 +1540,7 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
             </div>
         </div>
     </div>
-
+    
     <!-- Batsmen Section -->
     <div class="batsmen-section" id="batsmenSection">
         <div class="container" id="batsmenContainer">
@@ -1504,85 +1590,89 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
                 </div>
                 <?php endif; ?>
             </div>
-            
-            <!-- Current Bowler Card -->
-            <div id="bowlerCardSection">
-            <?php if ($current_bowler): ?>
-            <div class="row mb-3" id="bowlerCard" data-bowler-name="<?= htmlspecialchars($current_bowler['player_name']) ?>">
-                <div class="col-12 fade-in">
-                    <div class="batsman-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.08)); border-color: #3B82F6;">
-                        <div class="batsman-header">
-                            <div class="batsman-name">
-                                <i class="bi bi-person-badge" style="color: #3B82F6;"></i>
-                                <span class="batsman-name-text"><?= htmlspecialchars($current_bowler['player_name']) ?></span>
-                                <span class="striker-badge" style="background: #3B82F6;">Bowling</span>
-                            </div>
-                            <button class="replace-btn" style="border-color: #3B82F6; color: #3B82F6;" onclick="openReplaceBowlerModal()">
-                                <i class="bi bi-arrow-repeat"></i> Change
-                            </button>
-                        </div>
                         
-                        <div class="batsman-stats">
-                            <div class="stat-box">
-                                <div class="stat-box-label">Overs</div>
-                                <div class="stat-box-value bowler-overs" data-value="<?= number_format($current_bowler['overs'], 1) ?>"><?= number_format($current_bowler['overs'], 1) ?></div>
+            <!-- Players Cards Row: Bowler + 2 Batsmen in one row -->
+            <div class="row g-3" id="playersCardsRow">
+                <!-- Current Bowler Card -->
+                <div class="col-lg-4 col-md-6 col-12" id="bowlerCardSection">
+                    <?php if ($current_bowler): ?>
+                    <div class="fade-in" id="bowlerCard" data-bowler-name="<?= htmlspecialchars($current_bowler['player_name']) ?>">
+                        <div class="batsman-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.08)); border-color: #3B82F6; height: 100%;">
+                            <div class="batsman-header">
+                                <div class="batsman-name">
+                                    <i class="bi bi-person-badge" style="color: #3B82F6;"></i>
+                                    <span class="batsman-name-text"><?= htmlspecialchars($current_bowler['player_name']) ?></span>
+                                    <span class="striker-badge" style="background: #3B82F6;">Bowling</span>
+                                </div>
+                                <button class="replace-btn" style="border-color: #3B82F6; color: #3B82F6;" onclick="openReplaceBowlerModal()">
+                                    <i class="bi bi-arrow-repeat"></i> Change
+                                </button>
                             </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">Runs</div>
-                                <div class="stat-box-value bowler-runs" data-value="<?= $current_bowler['runs_conceded'] ?>"><?= $current_bowler['runs_conceded'] ?></div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">Wickets</div>
-                                <div class="stat-box-value bowler-wickets" data-value="<?= $current_bowler['wickets'] ?>"><?= $current_bowler['wickets'] ?></div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">Maidens</div>
-                                <div class="stat-box-value bowler-maidens" data-value="<?= $current_bowler['maidens'] ?>"><?= $current_bowler['maidens'] ?></div>
+                            
+                            <div class="batsman-stats">
+                                <div class="stat-box">
+                                    <div class="stat-box-label">Overs</div>
+                                    <div class="stat-box-value bowler-overs" data-value="<?= number_format($current_bowler['overs'], 1) ?>"><?= number_format($current_bowler['overs'], 1) ?></div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-box-label">Runs</div>
+                                    <div class="stat-box-value bowler-runs" data-value="<?= $current_bowler['runs_conceded'] ?>"><?= $current_bowler['runs_conceded'] ?></div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-box-label">Wickets</div>
+                                    <div class="stat-box-value bowler-wickets" data-value="<?= $current_bowler['wickets'] ?>"><?= $current_bowler['wickets'] ?></div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-box-label">Maidens</div>
+                                    <div class="stat-box-value bowler-maidens" data-value="<?= $current_bowler['maidens'] ?>"><?= $current_bowler['maidens'] ?></div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
-            </div>
-            <?php endif; ?>
-            </div>
 
-            <div class="row" id="batsmenCards">
-                <?php foreach ($current_batsmen as $index => $batsman): ?>
-                <div class="col-12 fade-in">
-                    <div class="batsman-card <?= $index === 0 ? 'striker' : '' ?>" data-batsman-id="<?= $batsman['id'] ?>">
-                        <div class="batsman-header">
-                            <div class="batsman-name">
-                                <span class="batsman-name-text"><?= htmlspecialchars($batsman['player_name']) ?></span>
-                                <?php if ($index === 0): ?>
-                                    <span class="striker-badge">Striker</span>
-                                <?php endif; ?>
+                <!-- Batsmen Cards -->
+                <div class="col-lg-8 col-12">
+                    <div class="row g-3" id="batsmenCards">
+                        <?php foreach ($current_batsmen as $index => $batsman): ?>
+                        <div class="col-lg-6 col-12 fade-in">
+                            <div class="batsman-card <?= $index === 0 ? 'striker' : '' ?>" data-batsman-id="<?= $batsman['id'] ?>" style="height: 100%;">
+                                <div class="batsman-header">
+                                    <div class="batsman-name">
+                                        <span class="batsman-name-text"><?= htmlspecialchars($batsman['player_name']) ?></span>
+                                        <?php if ($index === 0): ?>
+                                            <span class="striker-badge">Striker</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <button class="replace-btn" onclick="openReplaceModal(<?= $batsman['id'] ?>, <?= $batsman['player_id'] ?>, '<?= htmlspecialchars($batsman['player_name'], ENT_QUOTES) ?>', <?= $batsman['runs'] ?>, <?= $batsman['balls'] ?>)">
+                                        <i class="bi bi-arrow-repeat"></i> Replace
+                                    </button>
+                                </div>
+                                
+                                <div class="batsman-stats">
+                                    <div class="stat-box">
+                                        <div class="stat-box-label">Runs</div>
+                                        <div class="stat-box-value batsman-runs"><?= $batsman['runs'] ?></div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-box-label">Balls</div>
+                                        <div class="stat-box-value batsman-balls"><?= $batsman['balls'] ?></div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-box-label">4s</div>
+                                        <div class="stat-box-value batsman-fours"><?= $batsman['fours'] ?></div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-box-label">6s</div>
+                                        <div class="stat-box-value batsman-sixes"><?= $batsman['sixes'] ?></div>
+                                    </div>
+                                </div>
                             </div>
-                            <button class="replace-btn" onclick="openReplaceModal(<?= $batsman['id'] ?>, <?= $batsman['player_id'] ?>, '<?= htmlspecialchars($batsman['player_name'], ENT_QUOTES) ?>', <?= $batsman['runs'] ?>, <?= $batsman['balls'] ?>)">
-                                <i class="bi bi-arrow-repeat"></i> Replace
-                            </button>
                         </div>
-                        
-                        <div class="batsman-stats">
-                            <div class="stat-box">
-                                <div class="stat-box-label">Runs</div>
-                                <div class="stat-box-value batsman-runs"><?= $batsman['runs'] ?></div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">Balls</div>
-                                <div class="stat-box-value batsman-balls"><?= $batsman['balls'] ?></div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">4s</div>
-                                <div class="stat-box-value batsman-fours"><?= $batsman['fours'] ?></div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-label">6s</div>
-                                <div class="stat-box-value batsman-sixes"><?= $batsman['sixes'] ?></div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -1916,6 +2006,99 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
         </div>
     </div>
 
+    <!-- Wicket Details Modal -->
+    <div class="modal fade" id="wicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
+                    <h5 class="modal-title">
+                        <i class="bi bi-x-circle-fill"></i> Wicket Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Dismissal Type Selection -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-list-check"></i> Select Dismissal Type
+                        </h6>
+                        <div class="row g-3" id="dismissalTypeGrid">
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="bowled" onclick="selectDismissalType('bowled')">
+                                    <div class="dismissal-icon">🎯</div>
+                                    <div class="dismissal-name">Bowled</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="caught" onclick="selectDismissalType('caught')">
+                                    <div class="dismissal-icon">🤲</div>
+                                    <div class="dismissal-name">Caught</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="caught_behind" onclick="selectDismissalType('caught_behind')">
+                                    <div class="dismissal-icon">🧤</div>
+                                    <div class="dismissal-name">Caught Behind</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="lbw" onclick="selectDismissalType('lbw')">
+                                    <div class="dismissal-icon">🦵</div>
+                                    <div class="dismissal-name">LBW</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="run_out" onclick="selectDismissalType('run_out')">
+                                    <div class="dismissal-icon">🏃</div>
+                                    <div class="dismissal-name">Run Out</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="stumped" onclick="selectDismissalType('stumped')">
+                                    <div class="dismissal-icon">⚡</div>
+                                    <div class="dismissal-name">Stumped</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="hit_wicket" onclick="selectDismissalType('hit_wicket')">
+                                    <div class="dismissal-icon">💥</div>
+                                    <div class="dismissal-name">Hit Wicket</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="dismissal-card" data-type="retired" onclick="selectDismissalType('retired')">
+                                    <div class="dismissal-icon">🚶</div>
+                                    <div class="dismissal-name">Retired</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fielder Selection (shown only for certain dismissal types) -->
+                    <div id="fielderSelectionSection" style="display: none;">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-person-check"></i> Select Fielder
+                        </h6>
+                        <div class="player-list" style="max-height: 300px; overflow-y: auto;" id="fielderList">
+                            <!-- Will be populated dynamically with bowling team players -->
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="selectedDismissalType">
+                    <input type="hidden" id="selectedFielderId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmWicketBtn" onclick="confirmWicket()" disabled>
+                        <i class="bi bi-check-circle"></i> Confirm Wicket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/script/sweetalert2.js"></script>
@@ -1923,6 +2106,9 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
     <script>
         const matchId = <?= $match_id ?>;
         let isSubmitting = false;
+        let selectedDismissalType = null;
+        let selectedFielderId = null;
+        const dismissalTypesRequiringFielder = ['caught', 'caught_behind', 'stumped', 'run_out'];
 
         // AJAX function to submit score
         function submitScore(data) {
@@ -2055,7 +2241,7 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
                 input: 'number',
                 inputValue: 0,
                 inputAttributes: {
-                    min: 1,
+                    min: 0,
                     step: 1
                 },
                 showCancelButton: true,
@@ -3196,6 +3382,167 @@ $current_batsmen = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC)
                     hideLoading();
                 });
             }, 200); // Wait for modal to close
+        }
+
+        // Open wicket modal
+        function openWicketModal() {
+            // Reset selections
+            selectedDismissalType = null;
+            selectedFielderId = null;
+            document.getElementById('selectedDismissalType').value = '';
+            document.getElementById('selectedFielderId').value = '';
+            
+            // Reset UI
+            document.querySelectorAll('.dismissal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Hide fielder section
+            document.getElementById('fielderSelectionSection').style.display = 'none';
+            
+            // Disable confirm button
+            document.getElementById('confirmWicketBtn').disabled = true;
+            
+            // Load fielders list
+            loadFielders();
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('wicketModal'));
+            modal.show();
+        }
+
+        // Select dismissal type
+        function selectDismissalType(type) {
+            // Remove previous selection
+            document.querySelectorAll('.dismissal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select new type
+            const selectedCard = document.querySelector(`.dismissal-card[data-type="${type}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            selectedDismissalType = type;
+            document.getElementById('selectedDismissalType').value = type;
+            
+            // Reset fielder selection
+            selectedFielderId = null;
+            document.getElementById('selectedFielderId').value = '';
+            document.querySelectorAll('#fielderList .player-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Show/hide fielder selection based on dismissal type
+            if (dismissalTypesRequiringFielder.includes(type)) {
+                document.getElementById('fielderSelectionSection').style.display = 'block';
+                // Disable confirm button until fielder is selected
+                document.getElementById('confirmWicketBtn').disabled = true;
+            } else {
+                document.getElementById('fielderSelectionSection').style.display = 'none';
+                // Enable confirm button for dismissal types that don't need fielder
+                document.getElementById('confirmWicketBtn').disabled = false;
+            }
+        }
+
+        // Load fielders from bowling team
+        function loadFielders() {
+            const fielderList = document.getElementById('fielderList');
+            
+            // Get all bowling team players from the page
+            // You'll need to pass bowlers data from PHP or fetch via AJAX
+            const bowlers = <?= json_encode($bowlers) ?>;
+            
+            fielderList.innerHTML = '';
+            
+            bowlers.forEach(player => {
+                const playerItem = document.createElement('div');
+                playerItem.className = 'player-item';
+                playerItem.setAttribute('data-player-id', player.id);
+                playerItem.setAttribute('onclick', `selectFielder(${player.id}, '${player.player_name.replace(/'/g, "\\'")}')`);
+                
+                playerItem.innerHTML = `
+                    <span class="player-name">
+                        <i class="bi bi-person-circle"></i>
+                        ${player.player_name}
+                    </span>
+                    <span class="select-icon">
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
+                `;
+                
+                fielderList.appendChild(playerItem);
+            });
+        }
+
+        // Select fielder
+        function selectFielder(playerId, playerName) {
+            // Remove previous selection
+            document.querySelectorAll('#fielderList .player-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select new fielder
+            const selectedItem = document.querySelector(`#fielderList .player-item[data-player-id="${playerId}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+            }
+            
+            selectedFielderId = playerId;
+            document.getElementById('selectedFielderId').value = playerId;
+            
+            // Enable confirm button
+            document.getElementById('confirmWicketBtn').disabled = false;
+        }
+
+        // Confirm wicket
+        function confirmWicket() {
+            if (!selectedDismissalType) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Select Dismissal Type',
+                    text: 'Please select how the batsman was dismissed',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return;
+            }
+            
+            // Check if fielder is required but not selected
+            if (dismissalTypesRequiringFielder.includes(selectedDismissalType) && !selectedFielderId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Select Fielder',
+                    text: 'Please select the fielder who took the catch/made the dismissal',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return;
+            }
+            
+            // Close wicket modal
+            const wicketModal = bootstrap.Modal.getInstance(document.getElementById('wicketModal'));
+            if (wicketModal) {
+                wicketModal.hide();
+            }
+            
+            // Wait for modal to close
+            setTimeout(() => {
+                // Submit wicket with details
+                submitScore({
+                    runs: '0',
+                    is_wicket: '1',
+                    extras_type: '',
+                    extra_runs: '',
+                    dismissal_type: selectedDismissalType,
+                    fielder_id: selectedFielderId || ''
+                });
+            }, 200);
+        }
+
+        // Update the existing submitWicket function
+        function submitWicket() {
+            // Open wicket details modal instead of direct submission
+            openWicketModal();
         }
     </script>
 </body>

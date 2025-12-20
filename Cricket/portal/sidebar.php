@@ -44,18 +44,6 @@
                         <span>Auctions & Seasons</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="players.php" class="nav-link" data-page="players.php">
-                        <i class="fas fa-users nav-icon"></i>
-                        <span>Players</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="schedule.php" class="nav-link" data-page="schedule.php">
-                        <i class="fas fa-calendar nav-icon"></i>
-                        <span>Schedule</span>
-                    </a>
-                </li>
             </ul>
         </div>
 
@@ -69,13 +57,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="support.php" class="nav-link" data-page="support.php">
-                        <i class="fas fa-question-circle nav-icon"></i>
-                        <span>Help & Support</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link" data-page="logout.php">
+                    <a href="../logout.php" class="nav-link" data-page="logout.php">
                         <i class="fas fa-sign-out-alt nav-icon"></i>
                         <span>Logout</span>
                     </a>

@@ -996,9 +996,9 @@ if (count($all_innings) == 2 && $all_innings[1]['is_completed'] == 1) {
         <?php if ($match_result): ?>
             <!-- Match Complete - Show Both Innings Side by Side -->
             <?php
-            // Determine which innings won
-            $first_innings_won = $match_result['winner_id'] == $all_innings[0]['batting_team_id'];
-            $second_innings_won = $match_result['winner_id'] == $all_innings[1]['batting_team_id'];
+                // Determine which innings won
+                $first_innings_won = $match_result['winner_id'] == $all_innings[0]['batting_team_id'];
+                $second_innings_won = $match_result['winner_id'] == $all_innings[1]['batting_team_id'];
             ?>
             <div class="row g-4">
                 <!-- 1st Innings Performance -->
@@ -1402,14 +1402,14 @@ if (count($all_innings) == 2 && $all_innings[1]['is_completed'] == 1) {
             <?php endif; ?>
             
             <?php if ($match_result): ?>
-                <div class="col-12">
+                <div class="col-6">
                     <button class="action-btn" onclick="window.location.href='index.php'">
                         <i class="bi bi-house-fill"></i> Back to Home
                     </button>
                 </div>
             <?php endif; ?>
             
-            <div class="col-12">
+            <div class="col-6">
                 <button class="secondary-btn" onclick="window.print()">
                     <i class="bi bi-printer-fill"></i> Print Scorecard
                 </button>

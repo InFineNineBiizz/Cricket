@@ -1,0 +1,876 @@
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fef6e4;
+    min-height: 100vh;
+}
+
+/* Main Container */
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.content-wrapper {
+    flex: 1;
+    margin-left: 0;
+    width: 100%;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* Tournament Top Bar */
+.tournament-topbar {
+    background: white;
+    border-bottom: 2px solid #e0e0e0;
+    padding: 0;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.tournament-topbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    padding: 0 2rem;
+}
+
+.topbar-tab {
+    padding: 1.25rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #95a5a6;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+}
+
+.topbar-tab:hover {
+    color: #7f8c8d;
+    background: #fef6e4;
+}
+
+.topbar-tab.active {
+    color: #2c3e50;
+    border-bottom-color: #f5a623;
+}
+
+/* Tournament Header Card */
+.tournament-header-card {
+    background: linear-gradient(135deg, #5a6c7d 0%, #4a5568 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.tournament-badge-corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: linear-gradient(135deg, #6b9bd1 0%, #4a7ba7 100%);
+    color: white;
+    padding: 0.5rem 2rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%);
+    border-radius: 0 15px 0 0;
+}
+
+.tournament-logo-circle {
+    width: 140px;
+    height: 140px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.tournament-logo-circle img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.tournament-header-info {
+    flex: 1;
+}
+
+.tournament-header-info h1 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.tournament-details-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-item-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.detail-item-inline i {
+    width: 18px;
+    opacity: 0.9;
+}
+
+.tournament-info-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    color: white;
+}
+
+.info-right-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.info-label {
+    opacity: 0.9;
+}
+
+.info-value {
+    font-weight: 700;
+}
+
+.copy-icon {
+    cursor: pointer;
+    opacity: 0.8;
+    margin-left: 0.25rem;
+}
+
+.copy-icon:hover {
+    opacity: 1;
+}
+
+.tournament-header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-icon-action {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-view-tournament {
+    background: #5b6e8d;
+    color: white;
+}
+
+.btn-view-tournament:hover {
+    background: #4a5568;
+    transform: translateY(-2px);
+}
+
+.btn-edit-tournament {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-edit-tournament:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+/* Bottom Tabs */
+.bottom-tabs {
+    display: flex;
+    gap: 0;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.bottom-tab {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #5a6c7d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.bottom-tab:hover {
+    background: #fef6e4;
+    color: #4a5568;
+}
+
+.bottom-tab.active {
+    color: #4a7ba7;
+    border-bottom-color: #4a7ba7;
+    background: #f8f9fa;
+}
+
+/* Team Action Buttons - NEW */
+.team-action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: flex-start;
+}
+
+.btn-primary-action {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.75rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: #6b9bd1;
+    color: white;
+}
+
+.btn-primary-action:hover {
+    background: #5a8bc1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 155, 209, 0.3);
+}
+
+.btn-primary-action i {
+    font-size: 1.1rem;
+}
+
+/* Teams Section */
+.teams-section {
+    margin-top: 2rem;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.section-header h2 span {
+    color: #f5a623;
+}
+
+/* Teams Grid */
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Team Card */
+.team-card {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a1f2e 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.team-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+}
+
+.team-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.team-logo {
+    width: 70px;
+    height: 70px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 0.5rem;
+}
+
+.team-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.team-card-header h3 {
+    font-size: 1.5rem;
+    color: white;
+    font-weight: 700;
+}
+
+.team-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-team-action {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.btn-edit {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.btn-delete {
+    background: #f44336;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #da190b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+/* Modal Styles - NEW */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-container {
+    background: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    padding: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 1.75rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.btn-close-modal {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.btn-close-modal:hover {
+    background: #f8f9fa;
+    color: #2c3e50;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.form-label .required {
+    color: #f44336;
+}
+
+.form-input {
+    padding: 0.875rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #6b9bd1;
+    box-shadow: 0 0 0 3px rgba(107, 155, 209, 0.1);
+}
+
+.form-input::placeholder {
+    color: #bbb;
+}
+
+/* Upload Section - NEW */
+.upload-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.upload-area:hover {
+    border-color: #6b9bd1;
+    background: #f0f7ff;
+}
+
+.upload-area.has-file {
+    border-color: #4caf50;
+    background: #f1f8f4;
+}
+
+.upload-content h3 {
+    color: #bbb;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
+.upload-content p {
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.btn-browse {
+    background: transparent;
+    color: #6b9bd1;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-browse:hover {
+    text-decoration: underline;
+}
+
+.file-input {
+    display: none;
+}
+
+/* Color Picker Section - NEW */
+.color-picker-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.color-display {
+    width: 100%;
+    padding: 1rem;
+    background: #000000;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.color-wheel {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: relative;
+    background: conic-gradient(
+        red, yellow, lime, cyan, blue, magenta, red
+    );
+    cursor: crosshair;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.color-selector {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    background: radial-gradient(circle, white, transparent 60%, transparent),
+                radial-gradient(circle, transparent 40%, black);
+}
+
+.color-pointer {
+    width: 20px;
+    height: 20px;
+    border: 3px solid white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.btn-pick-color {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #ff8a65, #ff6f00);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 138, 101, 0.3);
+}
+
+.btn-pick-color:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 138, 101, 0.4);
+}
+
+/* Preview Section - NEW */
+.preview-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-card {
+    background: #000000;
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    min-height: 150px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.preview-logo {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    padding: 0.5rem;
+}
+
+.preview-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.preview-logo i {
+    font-size: 3rem;
+    color: #ddd;
+}
+
+.preview-name {
+    font-size: 2rem;
+    color: white;
+    font-weight: 700;
+}
+
+/* Modal Footer - NEW */
+.modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-modal {
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel {
+    background: linear-gradient(135deg, #ff8a65, #ff6f00);
+    color: white;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 138, 101, 0.3);
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #6b9bd1, #4a7ba7);
+    color: white;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 155, 209, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .tournament-header-card {
+        padding: 1.5rem;
+    }
+
+    .tournament-logo-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .tournament-logo-circle img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .tournament-header-info h1 {
+        font-size: 1.75rem;
+    }
+
+    .upload-section {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+        margin: 1rem auto;
+    }
+
+    .tournament-topbar-container {
+        padding: 0 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .topbar-tab {
+        padding: 1rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .tournament-header-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .tournament-info-right {
+        width: 100%;
+        align-items: center;
+    }
+
+    .tournament-header-actions {
+        justify-content: center;
+    }
+
+    .bottom-tabs {
+        flex-direction: column;
+    }
+
+    .bottom-tab {
+        border-bottom: 1px solid #e0e0e0;
+        border-left: 3px solid transparent;
+    }
+
+    .bottom-tab.active {
+        border-bottom-color: #e0e0e0;
+        border-left-color: #4a7ba7;
+    }
+
+    .team-action-buttons {
+        flex-direction: column;
+    }
+
+    .teams-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-card {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .team-card-header {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-container {
+        width: 95%;
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+}

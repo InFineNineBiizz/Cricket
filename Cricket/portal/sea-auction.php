@@ -1,3 +1,44 @@
+<?php
+    session_start();
+    include "connection.php";
+    
+    if(isset($_GET['id']))
+    {   
+        $id=$_GET['id'];
+        $sql="delete from seasons where id=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:sea-auction.php");
+    }
+
+    $sql="select * from tournaments";
+    $resq=mysqli_query($conn,$sql);
+
+    if(isset($_POST['btn']))
+    {
+        move_uploaded_file($_FILES['logo']['tmp_name'],"../assets/images/".$_FILES['logo']['name']);
+        $img=$_FILES['logo']['name']; 
+
+        $mt=$_POST['mtype'];
+        if($mt == "Limited Overs")
+        {
+            $ov=$_POST['overs'];          
+        }
+        else
+        {            
+            $ov="NULL";            
+        }
+
+        $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo) values('".$_POST['sname']."','".$_POST['tourname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."')";
+        $res=mysqli_query($conn,$str);
+        
+        header('location:organizers-list.php');
+    }
+    
+    // Fetch all seasons from database
+    $seasonSql = "SELECT s.*, t.name as tournament_name FROM seasons s LEFT JOIN tournaments t ON s.tid = t.tid ORDER BY s.sdate";
+    $seasonResult = mysqli_query($conn, $seasonSql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,25 +46,275 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auction & Seasons | CrickFolio Portal</title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
-    <link rel="stylesheet" href="../assets/css/auction-style.css">    
+    <link rel="stylesheet" href="../assets/css/auction-style.css">
+    <script src="../assets/script/jquery.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/sweetalert2.css">
+    <script src="../assets/script/sweetalert2.js"></script>
+
+    <style>
+        /* New Season Card Styles */
+        .season-card-new {
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .season-card-new:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .season-card-header {
+            position: relative;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .season-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
+        .season-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .season-logo i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .season-action-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-view-blue {
+            background: #2563eb;
+        }
+
+        .btn-view-blue:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-edit-green {
+            background: #16a34a;
+        }
+
+        .btn-edit-green:hover {
+            background: #15803d;
+        }
+
+        .btn-delete-red {
+            background: #dc2626;
+        }
+
+        .btn-delete-red:hover {
+            background: #b91c1c;
+        }
+
+        .season-card-body {
+            padding: 0 20px 20px;
+        }
+
+        .season-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .season-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .info-row i {
+            color: #9ca3af;
+            width: 18px;
+        }
+
+        .season-card-dates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .date-badge {
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .date-badge small {
+            display: block;
+            font-size: 10px;
+            color: #9ca3af;
+            margin-bottom: 2px;
+        }
+
+        .season-card-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .card-btn {
+            padding: 15px;
+            border: none;
+            background: white;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .card-btn:last-child {
+            border-right: none;
+        }
+
+        .card-btn i {
+            font-size: 14px;
+        }
+
+        .btn-organizers {
+            background: #2563eb;
+        }
+
+        .btn-organizers:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-sponsors {
+            background: #f59e0b;
+        }
+
+        .btn-sponsors:hover {
+            background: #d97706;
+        }
+
+        .btn-auction {
+            background: #dc2626;
+        }
+
+        .btn-auction:hover {
+            background: #b91c1c;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .season-card-dates {
+                grid-template-columns: 1fr;
+            }
+
+            .season-card-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .card-btn {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .card-btn:last-child {
+                border-bottom: none;
+            }
+        }
+
+        /* Success Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Top Navigation -->
-    <?php
-        include 'topbar.php';
-    ?>
+    <?php include 'topbar.php'; ?>
 
     <!-- Sidebar -->
-    <?php
-        include 'sidebar.php';
-    ?>
+    <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="main-wrapper">
         <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Seasons</h1>
-            <button class="add-season-btn" onclick="openModal()">
+            <button class="add-season-btn" onclick="window.location.href='add_season.php'">
                 <i class="fas fa-plus-circle"></i> ADD SEASON
             </button>
         </div>
@@ -66,275 +357,60 @@
         </div>
     </main>
 
-    <!-- Add Season Modal -->
-    <div id="addSeasonModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-gavel"></i> Add New Season</h2>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="seasonForm" onsubmit="addSeason(event)">
-                    <div class="form-row">
-                        <div class="form-group full-width">
-                            <label><i class="fas fa-heading"></i> Season Name *</label>
-                            <input type="text" id="seasonName" placeholder="Enter season name" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-trophy"></i> Tournament *</label>
-                            <select id="tournamentSelect" required>
-                                <option value="">Select Tournament</option>
-                                <option value="Dream Classes Premier League">Dream Classes Premier League</option>
-                                <option value="Champions Trophy 2025">Champions Trophy 2025</option>
-                                <option value="Super League Season 5">Super League Season 5</option>
-                                <option value="City Cricket Championship">City Cricket Championship</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-info-circle"></i> Status *</label>
-                            <select id="seasonStatus" required>
-                                <option value="">Select Status</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="upcoming">Upcoming</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-calendar-alt"></i> Start Date *</label>
-                            <input type="date" id="startDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-calendar-alt"></i> End Date *</label>
-                            <input type="date" id="endDate" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-users"></i> Total Teams *</label>
-                            <input type="number" id="totalTeams" placeholder="e.g. 8" min="2" max="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-baseball-ball"></i> Ball Type *</label>
-                            <select id="ballType" required>
-                                <option value="">Select</option>
-                                <option value="Tennis Ball">Tennis Ball</option>
-                                <option value="Leather Ball">Leather Ball</option>
-                                <option value="Rubber Ball">Rubber Ball</option>
-                                <option value="Season Ball">Season Ball</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-map-marker-alt"></i> Ground Type *</label>
-                            <select id="groundType" required>
-                                <option value="">Select</option>
-                                <option value="Turf">Turf</option>
-                                <option value="Grass">Grass</option>
-                                <option value="Concrete">Concrete</option>
-                                <option value="Matting">Matting</option>
-                                <option value="Indoor">Indoor</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fas fa-chess"></i> Match Type *</label>
-                            <select id="matchType" required>
-                                <option value="">Select</option>
-                                <option value="T20">T20</option>
-                                <option value="T10">T10</option>
-                                <option value="One Day">One Day</option>
-                                <option value="Box Cricket">Box Cricket</option>
-                                <option value="Test Match">Test Match</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group full-width">
-                            <label><i class="fas fa-image"></i> Upload Logo</label>
-                            <div class="upload-area" id="uploadArea" onclick="document.getElementById('logoInput').click()">
-                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                <p class="upload-text">Click to upload or drag and drop</p>
-                                <p class="upload-info">PNG, JPG or JPEG (Max 2MB)</p>
-                            </div>
-                            <input type="file" id="logoInput" accept="image/png,image/jpeg,image/jpg" onchange="handleLogoUpload(event)">
-                            <div class="logo-preview" id="logoPreview">
-                                <img id="previewImage" src="" alt="Logo Preview">
-                                <br>
-                                <button type="button" class="remove-logo" onclick="removeLogo()">
-                                    <i class="fas fa-times"></i> Remove Logo
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeModal()">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn-submit">
-                            <i class="fas fa-plus-circle"></i> Add Season
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <!-- Success Message Toast -->
     <div id="successToast" class="toast">
         <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">Season added successfully!</span>
+        <span id="toastMessage">Action completed successfully!</span>
     </div>
-    
+
     <script>
-        // Store uploaded logo
-        let uploadedLogo = null;
-
-        // Sample seasons data
-        let seasons = [
-            {
-                name: "IPL 2024 Season",
-                tournament: "Champions Trophy 2025",
-                status: "ongoing",
-                startDate: "2024-03-15",
-                endDate: "2024-05-30",
-                totalTeams: 10,
-                ballType: "Leather Ball",
-                groundType: "Turf",
-                matchType: "T20",
-                description: "The biggest cricket auction of the year"
-            },
-            {
-                name: "Summer League 2024",
-                tournament: "Super League Season 5",
-                status: "upcoming",
-                startDate: "2024-06-01",
-                endDate: "2024-08-15",
-                totalTeams: 8,
-                ballType: "Tennis Ball",
-                groundType: "Grass",
-                matchType: "T10",
-                description: "Exciting summer cricket tournament"
-            },
-            {
-                name: "Winter Championship 2023",
-                tournament: "Dream Classes Premier League",
-                status: "completed",
-                startDate: "2023-11-01",
-                endDate: "2024-01-15",
-                totalTeams: 12,
-                ballType: "Leather Ball",
-                groundType: "Turf",
-                matchType: "One Day",
-                description: "Successfully completed winter season"
-            },
-            {
-                name: "Pro League Season 3",
-                tournament: "City Cricket Championship",
-                status: "completed",
-                startDate: "2023-09-01",
-                endDate: "2023-11-30",
-                totalTeams: 6,
-                ballType: "Tennis Ball",
-                groundType: "Concrete",
-                matchType: "Box Cricket",
-                description: "Thrilling cricket season completed"
-            }
-        ];
-
-        // Current active tab
         let activeTab = 'ongoing';
 
-        // Render all seasons on page load
+        // Seasons array - populate from PHP
+        let seasons = [<?php 
+            mysqli_data_seek($seasonResult, 0);
+            if(mysqli_num_rows($seasonResult) > 0) {
+                while($seasonRow = mysqli_fetch_assoc($seasonResult)) {
+                    $startDate = new DateTime($seasonRow['sdate']);
+                    $endDate = new DateTime($seasonRow['edate']);
+                    $today = new DateTime();
+                    
+                    if($today < $startDate) {
+                        $status = 'upcoming';
+                    } else if($today > $endDate) {
+                        $status = 'completed';
+                    } else {
+                        $status = 'ongoing';
+                    }
+                    
+                    $logoPath = !empty($seasonRow['logo']) ? '../assets/images/' . $seasonRow['logo'] : '';
+                    
+                    echo "{
+                        id: '" . $seasonRow['id'] . "',
+                        tid: '" . $seasonRow['tid'] . "',
+                        name: '" . addslashes($seasonRow['name']) . "',
+                        tournament: '" . addslashes($seasonRow['tournament_name']) . "',
+                        status: '" . $status . "',
+                        startDate: '" . $seasonRow['sdate'] . "',
+                        endDate: '" . $seasonRow['edate'] . "',
+                        totalTeams: '" . addslashes($seasonRow['cname']) . "',
+                        groundName: '" . addslashes($seasonRow['gname']) . "',
+                        ballType: '" . addslashes($seasonRow['btype']) . "',
+                        groundType: '" . addslashes($seasonRow['gtype']) . "',
+                        matchType: '" . addslashes($seasonRow['mtype']) . "',
+                        overs: '" . addslashes($seasonRow['overs']) . "',
+                        logo: '" . $logoPath . "',
+                        logoName: '" . addslashes($seasonRow['logo']) . "'
+                    },";
+                }
+            }
+        ?>];
+
+        // Initialize
         window.onload = function() {
             renderAllSeasons();
             updateTabCounts();
-            setupDragAndDrop();
         };
-
-        // Setup drag and drop
-        function setupDragAndDrop() {
-            const uploadArea = document.getElementById('uploadArea');
-            
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => {
-                    uploadArea.classList.add('dragover');
-                }, false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => {
-                    uploadArea.classList.remove('dragover');
-                }, false);
-            });
-
-            uploadArea.addEventListener('drop', handleDrop, false);
-        }
-
-        // Handle drag and drop
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            if (files.length > 0) {
-                document.getElementById('logoInput').files = files;
-                handleLogoUpload({ target: { files: files } });
-            }
-        }
-
-        // Handle logo upload
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            
-            if (file) {
-                // Validate file size (2MB max)
-                if (file.size > 2 * 1024 * 1024) {
-                    showToast('File size must be less than 2MB', 'error');
-                    return;
-                }
-                
-                // Validate file type
-                if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
-                    showToast('Only PNG, JPG and JPEG files are allowed', 'error');
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedLogo = e.target.result;
-                    document.getElementById('previewImage').src = e.target.result;
-                    document.getElementById('logoPreview').style.display = 'block';
-                    document.getElementById('uploadArea').style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Remove logo
-        function removeLogo() {
-            uploadedLogo = null;
-            document.getElementById('logoInput').value = '';
-            document.getElementById('logoPreview').style.display = 'none';
-            document.getElementById('uploadArea').style.display = 'block';
-        }
 
         // Render all seasons
         function renderAllSeasons() {
@@ -357,100 +433,108 @@
                     </div>
                 `;
             } else {
-                grid.innerHTML = filteredSeasons.map((season, index) => 
-                    createSeasonCard(season, seasons.indexOf(season))
+                grid.innerHTML = filteredSeasons.map(season => 
+                    createSeasonCard(season)
                 ).join('');
             }
         }
 
         // Create season card HTML
-        function createSeasonCard(season, index) {
-            const statusColors = {
-                ongoing: 'status-ongoing',
-                upcoming: 'status-upcoming',
-                completed: 'status-completed'
-            };
+        function createSeasonCard(season) {
+            const seasonId = season.id;
+            const isCompleted = season.status === 'completed';
 
-            const statusIcons = {
-                ongoing: 'fa-play-circle',
-                upcoming: 'fa-clock',
-                completed: 'fa-check-circle'
-            };
+            // Logo section
+            const logoHtml = season.logo 
+                ? `<img src="${season.logo}" alt="${season.name}">`
+                : `<i class="fas fa-trophy"></i>`;
 
-            return `
-                <div class="season-card">
-                    <div class="season-header">
-                        <div class="season-info">
-                            <h3 class="season-name" title="${season.name}">${season.name}</h3>
-                            <span class="season-badge ${statusColors[season.status]}">
-                                <i class="fas ${statusIcons[season.status]}"></i> 
-                                ${season.status.charAt(0).toUpperCase() + season.status.slice(1)}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="season-details">
-                        <div class="detail-item">
-                            <i class="fas fa-trophy"></i>
-                            <div class="detail-content">
-                                <span class="detail-label">Tournament</span>
-                                <span class="detail-value">${season.tournament}</span>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-users"></i>
-                            <div class="detail-content">
-                                <span class="detail-label">Teams</span>
-                                <span class="detail-value">${season.totalTeams}</span>
-                            </div>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <div class="detail-content">
-                                <span class="detail-label">Duration</span>
-                                <span class="detail-value">${formatDate(season.startDate)} - ${formatDate(season.endDate)}</span>
-                            </div>
-                        </div>
-                        ${season.ballType ? `
-                        <div class="detail-item">
-                            <i class="fas fa-baseball-ball"></i>
-                            <div class="detail-content">
-                                <span class="detail-label">Ball Type</span>
-                                <span class="detail-value">${season.ballType}</span>
-                            </div>
-                        </div>
-                        ` : ''}
-                        ${season.matchType ? `
-                        <div class="detail-item">
-                            <i class="fas fa-chess"></i>
-                            <div class="detail-content">
-                                <span class="detail-label">Match Type</span>
-                                <span class="detail-value">${season.matchType}</span>
-                            </div>
-                        </div>
-                        ` : ''}
-                    </div>
-
-                    ${season.description ? `
-                        <div class="season-description">
-                            <i class="fas fa-info-circle"></i>
-                            <p>${season.description}</p>
-                        </div>
-                    ` : ''}
-
-                    <div class="season-actions">
-                        <button class="action-btn btn-view" onclick="viewSeason(${index})">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                        <button class="action-btn btn-edit" onclick="editSeason(${index})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="action-btn btn-delete" onclick="deleteSeason(${index})">
-                            <i class="fas fa-trash"></i> Delete
+            // Action icons - Hide edit and delete for completed seasons
+            const actionIcons = isCompleted 
+                ? `
+                    <div class="season-action-icons">
+                        <button class="icon-btn btn-view-blue" onclick="viewSeasonDetails('${seasonId}')">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </div>
+                `
+                : `
+                    <div class="season-action-icons">
+                        <button class="icon-btn btn-view-blue" onclick="viewSeasonDetails('${seasonId}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="icon-btn btn-edit-green" onclick="window.location.href='add_season.php?id=${seasonId}'">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <a class="icon-btn btn-delete-red" href="javascript:void(0);" onclick="confirmDelete('${seasonId}')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                `;
+
+            const actionButtons = `
+                <div class="season-card-buttons">
+                    <button class="card-btn btn-organizers" onclick="window.location.href='organizers.php?id=${seasonId}'">
+                        <i class="fas fa-user-tie"></i> Organizers
+                    </button>
+                    <button class="card-btn btn-sponsors" onclick="window.location.href='sponsors.php?id=${seasonId}'">
+                        <i class="fas fa-handshake"></i> Sponsors
+                    </button>
+                    <button class="card-btn btn-auction" onclick="window.location.href='tour-manage.php?id=${seasonId}'">
+                        <i class="fas fa-gavel"></i> Auction
+                    </button>
                 </div>
             `;
+
+            return `
+                <div class="season-card-new">
+                    <div class="season-card-header">
+                        <div class="season-logo">
+                            ${logoHtml}
+                        </div>
+                        ${actionIcons}
+                    </div>
+                    
+                    <div class="season-card-body">
+                        <h3 class="season-card-title">${season.name}</h3>
+                        
+                        <div class="season-card-info">
+                            <div class="info-row">
+                                <i class="fas fa-trophy"></i>
+                                <span>${season.tournament}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${season.totalTeams}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-baseball-ball"></i>
+                                <span>${season.ballType}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-chess"></i>
+                                <span>${season.matchType}${season.overs && season.overs !== 'NULL' ? ' - ' + season.overs : ''}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="season-card-dates">
+                            <div class="date-badge">
+                                <small>Start Date:</small> ${formatDate(season.startDate)}
+                            </div>
+                            <div class="date-badge">
+                                <small>End Date:</small> ${formatDate(season.endDate)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${actionButtons}
+                </div>
+            `;
+        }
+
+        // View season details
+        function viewSeasonDetails(seasonId) {
+            window.location.href = 'sea-detail.php?id=' + seasonId;
         }
 
         // Format date
@@ -462,16 +546,13 @@
 
         // Switch tabs
         function switchTab(tabName) {
-            // Update active tab
             activeTab = tabName;
 
-            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.closest('.tab-btn').classList.add('active');
 
-            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -486,45 +567,6 @@
                 seasons.filter(s => s.status === 'upcoming').length;
             document.getElementById('completedCount').textContent = 
                 seasons.filter(s => s.status === 'completed').length;
-        }
-
-        // Open modal
-        function openModal() {
-            document.getElementById('addSeasonModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('addSeasonModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-            document.getElementById('seasonForm').reset();
-            removeLogo();
-        }
-
-        // Add season
-        function addSeason(event) {
-            event.preventDefault();
-            
-            const newSeason = {
-                name: document.getElementById('seasonName').value.trim(),
-                tournament: document.getElementById('tournamentSelect').value,
-                status: document.getElementById('seasonStatus').value,
-                startDate: document.getElementById('startDate').value,
-                endDate: document.getElementById('endDate').value,
-                totalTeams: parseInt(document.getElementById('totalTeams').value),
-                ballType: document.getElementById('ballType').value,
-                groundType: document.getElementById('groundType').value,
-                matchType: document.getElementById('matchType').value,
-                logo: uploadedLogo,
-                description: ''
-            };
-
-            seasons.push(newSeason);
-            renderAllSeasons();
-            updateTabCounts();
-            closeModal();
-            showToast(`"${newSeason.name}" season added successfully!`, 'success');
         }
 
         // Show toast
@@ -546,44 +588,35 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+    </script>
 
-        // View season
-        function viewSeason(index) {
-            const season = seasons[index];
-            alert(`Season: ${season.name}\nTournament: ${season.tournament}\nStatus: ${season.status}\nTeams: ${season.totalTeams}\nBall Type: ${season.ballType}\nGround: ${season.groundType}\nMatch Type: ${season.matchType}`);
-        }
-
-        // Edit season
-        function editSeason(index) {
-            showToast('Edit functionality - Coming soon!', 'success');
-        }
-
-        // Delete season
-        function deleteSeason(index) {
-            const season = seasons[index];
-            
-            if (confirm(`Are you sure you want to delete "${season.name}"?\n\nThis action cannot be undone.`)) {
-                seasons.splice(index, 1);
-                renderAllSeasons();
-                updateTabCounts();
-                showToast(`"${season.name}" deleted successfully!`, 'success');
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#dc3545'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                icon:'success',
+                title: 'Delete Success...',
+                text: 'Record Deleted Successfully!',                
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                willClose: () => {                    
+                    window.location.href = "?id=" + id;
+                }
+                });            
             }
+            });
         }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('addSeasonModal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
     </script>
 </body>
 </html>

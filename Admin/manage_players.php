@@ -6,13 +6,13 @@
 ?>
 
 <?php
-      if(isset($_GET['id']))
-      {   
-         $id=$_GET['id'];
-         $sql="delete from players where id=".$id."";
-         mysqli_query($conn,$sql);
-         header("location:manage_players.php");
-      }
+    if(isset($_GET['id']))
+    {   
+        $id=$_GET['id'];
+        $sql="delete from players where id=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_players.php");
+    }
 ?>
 
 <!DOCTYPE html>

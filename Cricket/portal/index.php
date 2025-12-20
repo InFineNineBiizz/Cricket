@@ -1,3 +1,7 @@
+<?php
+    session_start();
+    include "connection.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,16 +27,8 @@
         <!-- Welcome Section -->
         <section class="welcome-section">
             <div class="welcome-content">
-                <h1 class="welcome-title">Welcome back, Jitu! 👋</h1>
-                <p class="welcome-subtitle">Here's what's happening with your auctions today</p>
-                <div class="quick-actions">
-                    <button class="action-btn action-btn-primary">
-                        <i class="fas fa-plus"></i> Create New Auction
-                    </button>
-                    <button class="action-btn action-btn-secondary">
-                        <i class="fas fa-chart-line"></i> View Analytics
-                    </button>
-                </div>
+                <h1 class="welcome-title">Welcome back, <?php echo ucfirst($_SESSION['user_name']);?>! 👋</h1>
+                <p class="welcome-subtitle">Here's what's happening with your auctions today</p>                
             </div>
         </section>
 
@@ -105,7 +101,7 @@
                 <h2>Your Active Auctions</h2>
                 <p>Manage and monitor your ongoing cricket auctions</p>
             </div>
-            <a href="#" class="view-all-btn">
+            <a href="upauction.php" class="view-all-btn">
                 View All <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -140,9 +136,9 @@
                         </div>
                     </div>
                     <div class="auction-footer">
-                        <button class="manage-btn">
+                        <a href="tour-manage.php" class="manage-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
                             <i class="fas fa-edit"></i> Manage
-                        </button>
+                        </a>
                         <button class="details-btn">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -179,9 +175,9 @@
                         </div>
                     </div>
                     <div class="auction-footer">
-                        <button class="manage-btn">
+                        <a href="tour-manage.php" class="manage-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
                             <i class="fas fa-edit"></i> Manage
-                        </button>
+                        </a>
                         <button class="details-btn">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -218,9 +214,9 @@
                         </div>
                     </div>
                     <div class="auction-footer">
-                        <button class="manage-btn">
+                        <a href="tour-manage.php" class="manage-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
                             <i class="fas fa-edit"></i> Manage
-                        </button>
+                        </a>
                         <button class="details-btn">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -257,9 +253,9 @@
                         </div>
                     </div>
                     <div class="auction-footer">
-                        <button class="manage-btn">
+                        <a href="tour-manage.php" class="manage-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
                             <i class="fas fa-edit"></i> Manage
-                        </button>
+                        </a>
                         <button class="details-btn">
                             <i class="fas fa-eye"></i>
                         </button>
