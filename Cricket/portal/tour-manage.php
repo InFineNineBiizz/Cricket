@@ -2,6 +2,18 @@
     session_start();
     include "connection.php";
     
+    // Check if auction exists for this season
+    $auction_exists = false;
+    if(isset($_GET['id'])) {
+        $season_id = $_GET['id'];
+        $auction_check = "SELECT COUNT(*) as count FROM auctions WHERE sea_id = '$season_id'";
+        $check_result = mysqli_query($conn, $auction_check);
+        if($check_result) {
+            $check_row = mysqli_fetch_assoc($check_result);
+            $auction_exists = $check_row['count'] > 0;
+        }
+    }
+    
     // Handle AJAX requests
     if(isset($_POST['ajax_action'])) {
         header('Content-Type: application/json');
@@ -190,34 +202,38 @@
     
     // Regular page load
     $name=$tour_id=$sea_id=$venue=$sdate=$edate=$logo=$ctype=$max=$min=$reserve=$camt=$bidamt=$bprice=$img="";
-    $tour_name=$s_date=$e_date=$sname="";
+    $tour_name=$s_date=$e_date=$sname=$tlogo=$t_id="";
 
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
-        $str="select a.*,t.name as tour_name,s.name as sname,s.sdate as start_date,s.edate as end_date 
+        $str="select a.*,t.tid as tourid,t.name as tour_name,t.logo as tlogo,s.name as sname,s.sdate as start_date,s.edate as end_date 
         from auctions a,tournaments t,seasons s where a.tour_id=t.tid and a.sea_id=s.id and sea_id='".$id."'";
         
         $res=mysqli_query($conn,$str);
-        $row=mysqli_fetch_assoc($res);
-        $name=$row['name'];
-        $logo = $row['logo'];
-        $tour_id=$row['tour_id'];
-        $sea_id=$row['sea_id'];
-        $venue=$row['venue'];        
-        $sdate=$row['sdate'];
-        $edate=$row['edate'];
-        $ctype=$row['credit_type'];
-        $min=$row['minplayer'];
-        $max=$row['maxplayer'];
-        $reserve=$row['resplayer'];
-        $camt=$row['camt'];
-        $bidamt=$row['bidamt'];
-        $bprice=$row['bprice'];
-        $tour_name=$row['tour_name'];
-        $s_date=$row['start_date'];
-        $e_date=$row['end_date'];
-        $sname=$row['sname'];
+        if($res && mysqli_num_rows($res) > 0) {
+            $row=mysqli_fetch_assoc($res);
+            $name=$row['name'];
+            $logo = $row['logo'];
+            $tour_id=$row['tour_id'];
+            $sea_id=$row['sea_id'];
+            $venue=$row['venue'];        
+            $sdate=$row['sdate'];
+            $edate=$row['edate'];
+            $ctype=$row['credit_type'];
+            $min=$row['minplayer'];
+            $max=$row['maxplayer'];
+            $reserve=$row['resplayer'];
+            $camt=$row['camt'];
+            $bidamt=$row['bidamt'];
+            $bprice=$row['bprice'];
+            $tour_name=$row['tour_name'];
+            $s_date=$row['start_date'];
+            $e_date=$row['end_date'];
+            $sname=$row['sname'];
+            $tlogo=$row['tlogo'];
+            $t_id=$row['tourid'];
+        }
     }
 ?>
 
@@ -226,12 +242,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $tour_name;?> - Manage</title>
+    <title><?php if($auction_exists){echo $tour_name . " - Manage | CrickFolio Portal";}else{echo 'CrickFolio Portal';}?> </title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">    
-    <!-- <link rel="stylesheet" href="../assets/css/auction-style.css">    
-    <link rel="stylesheet" href="../assets/css/home-style.css">
-    <link rel="stylesheet" href="../assets/css/tournament-style.css">
-    <link rel="stylesheet" href="../assets/css/tournament-manage.css"> -->
     <link rel="stylesheet" href="../assets/css/sweetalert2.css">
     <script src="../assets/script/sweetalert2.js"></script>
 
@@ -344,9 +356,9 @@
         }
 
         .tournament-logo-circle img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .tournament-header-info {
@@ -503,6 +515,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             background: #6b9bd1;
             color: white;
+            text-decoration: none;
         }
 
         .btn-primary-action:hover {
@@ -550,6 +563,8 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            color: inherit;
         }
 
         .team-card::before {
@@ -660,6 +675,122 @@
 
         .empty-state p {
             font-size: 1rem;
+        }
+
+        /* Empty Auction State Styles */
+        .empty-auction-container {
+            background: white;
+            border-radius: 15px;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin: 2rem 0;
+        }
+
+        .empty-auction-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #6b9bd1 0%, #4a7ba7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 8px 20px rgba(107, 155, 209, 0.3);
+        }
+
+        .empty-auction-icon i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .empty-auction-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .empty-auction-description {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .btn-create-auction {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #6b9bd1, #4a7ba7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 155, 209, 0.3);
+            text-decoration: none;
+        }
+
+        .btn-create-auction:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(107, 155, 209, 0.4);
+        }
+
+        .btn-create-auction i {
+            font-size: 1.2rem;
+        }
+
+        .empty-auction-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: left;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6b9bd1, #4a7ba7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            line-height: 1.5;
         }
 
         .modal-overlay {
@@ -1063,6 +1194,36 @@
                 left: 1rem;
                 max-width: none;
             }
+
+            .empty-auction-container {
+                padding: 3rem 1.5rem;
+            }
+
+            .empty-auction-icon {
+                width: 100px;
+                height: 100px;
+            }
+
+            .empty-auction-icon i {
+                font-size: 2.5rem;
+            }
+
+            .empty-auction-title {
+                font-size: 1.5rem;
+            }
+
+            .empty-auction-description {
+                font-size: 1rem;
+            }
+
+            .btn-create-auction {
+                padding: 0.875rem 2rem;
+                font-size: 1rem;
+            }
+
+            .empty-auction-features {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -1079,6 +1240,7 @@
 
             <div class="container">
 
+                <?php if($auction_exists){ ?>
                 <?php include "auc_header.php";?>
 
                 <div class="bottom-tabs">
@@ -1086,27 +1248,74 @@
                     <a href="player.php?id=<?php echo $id;?>" class="bottom-tab">Players</a>
                     <a href="information.php?id=<?php echo $id;?>" class="bottom-tab">Information</a>
                 </div>
+                <?php }?>
                 
-                <div class="team-action-buttons">                    
-                    <button class="btn-primary-action btn-add-team" onclick="openModal()">
-                        <i class="fas fa-plus-circle"></i>
-                        ADD TEAM
-                    </button>
-                </div>
+                <?php if(!$auction_exists): ?>
+                    <!-- Empty Auction State -->
+                    <div class="empty-auction-container">
+                        <div class="empty-auction-icon">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <h1 class="empty-auction-title">No Auction Created Yet</h1>
+                        <p class="empty-auction-description">
+                            Create an auction to start managing teams, players, and conduct exciting bidding sessions for this season.
+                        </p>
+                        <a href="add-auction?id=<?php echo $id;?>" class="btn-create-auction">
+                            <i class="fas fa-plus-circle"></i>
+                            Create Auction
+                        </a>
 
-                <div class="teams-section">
-                    <div class="section-header">
-                        <h2>Total Teams: <span id="team-count">0</span></h2>
+                        <div class="empty-auction-features">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h3 class="feature-title">Manage Teams</h3>
+                                <p class="feature-description">Create and organize teams with custom logos and budgets for the auction.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-user-friends"></i>
+                                </div>
+                                <h3 class="feature-title">Add Players</h3>
+                                <p class="feature-description">Build your player pool with detailed profiles and base prices for bidding.</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-hammer"></i>
+                                </div>
+                                <h3 class="feature-title">Live Bidding</h3>
+                                <p class="feature-description">Conduct live auction sessions with real-time bidding and team budget tracking.</p>
+                            </div>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <!-- Existing Teams Management Section -->
+                    <div class="team-action-buttons">                    
+                        <button class="btn-primary-action btn-add-team" onclick="openModal()">
+                            <i class="fas fa-plus-circle"></i>
+                            ADD TEAM
+                        </button>
                     </div>
 
-                    <div class="teams-grid" id="teams-grid">
-                        <!-- Teams loaded here -->
+                    <div class="teams-section">
+                        <div class="section-header">
+                            <h2>Total Teams: <span id="team-count">0</span></h2>
+                        </div>
+
+                        <div class="teams-grid" id="teams-grid">
+                            <!-- Teams loaded here -->
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
+    <?php if($auction_exists): ?>
+    <!-- Team Modal -->
     <div class="modal-overlay" id="teamModal">
         <div class="modal-container">
             <div class="modal-header">
@@ -1179,7 +1388,7 @@
             .catch(error => console.error('Error:', error));
         }
 
-        // Render teams
+        // Render teams - UPDATED TO MAKE CARDS CLICKABLE
         function renderTeams(teams) {
             const grid = document.getElementById('teams-grid');
             grid.innerHTML = '';
@@ -1197,7 +1406,8 @@
             }
 
             teams.forEach(team => {
-                const teamCard = document.createElement('div');
+                const teamCard = document.createElement('a');
+                teamCard.href = 'team-management.php?team_id=' + team.id;
                 teamCard.className = 'team-card';
                 teamCard.innerHTML = `
                     <div class="team-card-header">
@@ -1206,11 +1416,11 @@
                         </div>
                         <h3>${team.name}</h3>
                     </div>
-                    <div class="team-actions">
+                    <div class="team-actions" onclick="event.preventDefault(); event.stopPropagation();">
                         <button class="btn-team-action btn-edit" onclick="editTeam(${team.id})">
                             <i class="fas fa-pen"></i>
                         </button>
-                        <button class="btn-team-action btn-delete" onclick="deleteTeam(${team.id}, '${team.name}')">
+                        <button class="btn-team-action btn-delete" onclick="deleteTeam(${team.id}, '${team.name.replace(/'/g, "\\'")}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -1291,7 +1501,6 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Show loading
                     Swal.fire({
                         title: 'Deleting...',
                         text: 'Please wait',
@@ -1317,7 +1526,8 @@
                                 title: 'Deleted!',
                                 text: 'Team has been deleted successfully.',
                                 showConfirmButton: false,
-                                timer: 1500
+                                timer: 1500,
+                                timerProgressBar:true,
                             });
                             loadTeams();
                         } else {
@@ -1451,5 +1661,6 @@
             submitTeam();
         });
     </script>
+    <?php endif; ?>
 </body>
 </html>

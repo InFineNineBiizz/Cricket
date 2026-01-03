@@ -177,12 +177,12 @@
     }
 
     $name=$tour_id=$sea_id=$venue=$sdate=$edate=$logo=$ctype=$max=$min=$reserve=$camt=$bidamt=$bprice=$img="";
-    $tour_name=$s_date=$e_date=$sname="";
+    $tour_name=$s_date=$e_date=$sname=$tlogo="";
 
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
-        $str="select a.*,t.name as tour_name,s.name as sname,s.sdate as start_date,s.edate as end_date 
+        $str="select a.*,t.name as tour_name,t.logo as tlogo,s.name as sname,s.sdate as start_date,s.edate as end_date 
         from auctions a,tournaments t,seasons s where a.tour_id=t.tid and a.sea_id=s.id and sea_id='".$id."'";
         
         $res=mysqli_query($conn,$str);
@@ -205,6 +205,7 @@
         $s_date=$row['start_date'];
         $e_date=$row['end_date'];
         $sname=$row['sname'];
+        $tlogo=$row['tlogo'];
     }
 ?>
 
@@ -213,7 +214,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $tour_name;?> - Manage</title>
+    <title><?php echo $tour_name;?> - Manage | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">    
     <link rel="stylesheet" href="../assets/css/player-style.css">
     <link rel="stylesheet" href="../assets/css/sweetalert2.css">
@@ -240,7 +241,7 @@
             <?php include "auc_topbar.php";?>
             
             <div class="container">
-
+    
                 <?php include "auc_header.php";?>
 
                 <!-- Bottom Tabs -->
@@ -573,6 +574,105 @@
             jQuery("#modal-wk").on("change", function() {
                 if (!this.checked) {
                     jQuery(".child-wk").prop("checked", false);
+                }
+            });
+            
+            // NEW: ALL ROUNDER vs WICKET KEEPER MUTUAL EXCLUSION
+            jQuery("#modal-allrounder").on("change", function() {
+                if (this.checked) {
+                    // If All Rounder is selected, uncheck Wicket Keeper and WK types
+                    jQuery("#modal-wk").prop("checked", false);
+                    jQuery(".child-wk").prop("checked", false);
+                    
+                    // Show notification
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Note',
+                        text: 'All Rounder and Wicket Keeper cannot be selected together',
+                        timer: 2000,
+                        timerProgressBar:true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            });
+            
+            // NEW: WICKET KEEPER vs ALL ROUNDER & BOWLER MUTUAL EXCLUSION
+            jQuery("#modal-wk").on("change", function() {
+                if (this.checked) {
+                    // If Wicket Keeper is selected, uncheck All Rounder, Bowler and all bowling types
+                    jQuery("#modal-allrounder").prop("checked", false);
+                    jQuery("#modal-bowler").prop("checked", false);
+                    jQuery(".child-bowl").prop("checked", false);
+                    
+                    // Show notification
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Note',
+                        text: 'Wicket Keeper cannot be combined with All Rounder or Bowler',
+                        timer: 3000,
+                        timerProgressBar:true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            });
+            
+            jQuery("#modal-bowler").on("change", function() {
+                if (this.checked) {
+                    // If Bowler is selected, uncheck Wicket Keeper and WK-Batsman
+                    jQuery("#modal-wk").prop("checked", false);
+                    jQuery(".child-wk").prop("checked", false);
+                    
+                    // Show notification
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Note',
+                        text: 'Bowler and Wicket Keeper cannot be selected together',
+                        timer: 3000,
+                        timerProgressBar:true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            });
+            
+            // NEW: Prevent selecting bowling types if Wicket Keeper is selected
+            jQuery(".child-bowl").on("change", function () {
+                if(this.checked && jQuery("#modal-wk").is(":checked")) {
+                    jQuery(this).prop("checked", false);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Not Allowed',
+                        text: 'Cannot select bowling type when Wicket Keeper is selected',
+                        timer: 3000,
+                        timerProgressBar:true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                    return false;
+                }
+            });
+            
+            // NEW: Prevent selecting WK types if Bowler or All Rounder is selected
+            jQuery(".child-wk").on("change", function () {
+                if(this.checked && (jQuery("#modal-bowler").is(":checked") || jQuery("#modal-allrounder").is(":checked"))) {
+                    jQuery(this).prop("checked", false);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Not Allowed',
+                        text: 'Cannot select Wicket Keeper type when Bowler or All Rounder is selected',
+                        timer: 3000,
+                        timerProgressBar:true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                    return false;
                 }
             });
             

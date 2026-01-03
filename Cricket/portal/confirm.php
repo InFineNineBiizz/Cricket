@@ -44,9 +44,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Confirm Season | CrickFolio</title>
+    <title>Confirm Season | <?php echo $title_name;?></title>
+
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">        
-    <link rel="stylesheet" href="../assets/css/home-style.css">
+    <!-- <link rel="stylesheet" href="../assets/css/home-style.css"> -->
     <script src="../assets/script/jquery.min.js"></script>
     <link rel="stylesheet" href="../assets/css/sweetalert2.css">    
     <script src="../assets/script/sweetalert2.js"></script>

@@ -201,7 +201,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sponsors | CrickFolio</title>
+    <title>Sponsors | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>    
     <link rel="stylesheet" href="../assets/css/sweetalert2.css">    

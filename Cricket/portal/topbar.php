@@ -19,29 +19,149 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="../assets/css/home-style.css">
+    <style>
+         /* USER DROPDOWN */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .user-menu:hover {
+            background: #f3f4f6;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #f59e0b;
+            color: #fff;
+            font-weight: 700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-info h4 {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .user-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* DROPDOWN BOX */
+        .user-dropdown-menu {
+            position: absolute;
+            top: 110%;
+            right: 0;
+            width: 180px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 999;
+        }
+
+        .user-dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #374151;
+            transition: background 0.2s;
+        }
+
+        .user-dropdown-menu a:hover {
+            background: #f9fafb;
+        }
+
+        .user-dropdown-menu .logout {
+            color: #dc2626;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 5px 0;
+        }
+
+        /* SHOW DROPDOWN */
+        .user-dropdown-menu.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <nav class="top-nav">
        <a href="../index.php" class="brand">
             <div class="brand-logo">
-                <i class="fas fa-cricket"></i>
+                <i class="fas fa-trophy"></i>
             </div>
             <div class="brand-text">
                 <h1>CRICKFOLIO</h1>
                 <p>Cricket Portal</p>
             </div>
         </a>
-        <div class="top-nav-right">            
-            <div class="user-menu">
+
+        <div class="user-dropdown">
+            <div class="user-menu" id="userMenu">
                 <div class="user-avatar"><?php echo $user_initials; ?></div>
                 <div class="user-info">
-                    <h4><?php if(isset($_SESSION['user_name'])){ echo ucfirst($_SESSION['user_name']);}?></h4>
-                    <p>Administrator</p>
+                    <h4>
+                        <?php 
+                            if(isset($_SESSION['user_name'])){
+                                echo ucfirst($_SESSION['user_name']);
+                            }
+                        ?>
+                    </h4>
+                    <p><?php if($_SESSION['user_role'] == "Admin"){ echo 'Admin';}else{ echo 'User';}?></p>
                 </div>
                 <i class="fas fa-chevron-down"></i>
             </div>
+
+            <!-- Dropdown -->
+            <div class="user-dropdown-menu" id="userDropdown">
+                <a href="profile.php">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="../logout.php" class="logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
         </div>
     </nav>
+    
+    <script>
+        const userMenu = document.getElementById('userMenu');
+        const dropdown = document.getElementById('userDropdown');
+
+        userMenu.addEventListener('click', () => {
+            dropdown.classList.toggle('show');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenu.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

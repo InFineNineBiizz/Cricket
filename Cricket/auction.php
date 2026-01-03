@@ -10,40 +10,38 @@
     $group_sql = "SELECT * FROM group_auction WHERE status = 1 ORDER BY created_at DESC";
     $group_res = mysqli_query($conn, $group_sql);
 
-    // Defaults from active auction (if present)
-    $defaultBasePrice       = $activeAuctionRow ? (int)$activeAuctionRow['bprice']   : 0;
-    $defaultBidStepSmall    = $activeAuctionRow ? (int)$activeAuctionRow['bidamt']   : 100;
-    $maxPlayersToPurchase   = $activeAuctionRow ? (int)$activeAuctionRow['maxplayer'] : 0;
-    $defaultActiveTourTid   = $activeAuctionRow ? (int)$activeAuctionRow['tour_id']   : 0;
+    // Build auction settings by season
+    $auctionSettings = [];
+    $auction_res_all = mysqli_query($conn, $auction_sql_base);
+    while ($auc = mysqli_fetch_assoc($auction_res_all)) {
+        $auctionSettings[(int)$auc['sea_id']] = [
+            'basePrice' => (int)$auc['bprice'] ?: 500,
+            'bidStep' => (int)$auc['bidamt'] ?: 500,
+            'maxPlayers' => (int)$auc['maxplayer'] ?: 0,
+            'budget' => (int)$auc['camt'] ?: 0
+        ];
+    }
 
-    // ================== TOURNAMENTS ==================
-    $tournamentRows = [];
-    $tournaments_res = mysqli_query($conn, "SELECT * FROM tournaments WHERE status = 1 ORDER BY name");
-    if ($tournaments_res && mysqli_num_rows($tournaments_res) > 0) {
-        while ($t = mysqli_fetch_assoc($tournaments_res)) {
-            $tournamentRows[] = [
-                'tid'      => (int)$t['tid'],
-                'name'     => $t['name'],                
-                'category' => $t['category'],
-                'logo'     => $t['logo'],
+    // Defaults from active auction (if present)
+    $defaultBasePrice       = $activeAuctionRow ? ((int)$activeAuctionRow['bprice'] ?: 500) : 500;
+    $defaultBidStepSmall    = $activeAuctionRow ? ((int)$activeAuctionRow['bidamt'] ?: 500) : 500;
+    $maxPlayersToPurchase   = $activeAuctionRow ? (int)$activeAuctionRow['maxplayer'] : 0;
+    $defaultActiveSeasonId  = $activeAuctionRow ? (int)$activeAuctionRow['sea_id']   : 0;
+
+    // ================== SEASONS ==================
+    $seasonRows = [];
+    $seasons_res = mysqli_query($conn, "SELECT s.*, t.name as tournament_name FROM seasons s LEFT JOIN tournaments t ON s.tid = t.tid WHERE s.status = 1 ORDER BY s.sdate DESC");
+    if ($seasons_res && mysqli_num_rows($seasons_res) > 0) {
+        while ($s = mysqli_fetch_assoc($seasons_res)) {
+            $seasonRows[] = [
+                'id'              => (int)$s['id'],
+                'tid'             => (int)$s['tid'],
+                'name'            => $s['name'],
+                'tournament_name' => $s['tournament_name'],
+                'logo'            => $s['logo'],
             ];
         }
     }
-
-    // // ================== SEASONS ==================
-    // // $tid=$_POST['tname'];
-    // $seasonsRows = [];
-    // $seasons_res = mysqli_query($conn, "SELECT * FROM seasons WHERE status = 1 ORDER BY name");
-    // if ($seasons_res && mysqli_num_rows($seasons_res) > 0) {
-    //     while ($s = mysqli_fetch_assoc($seasons_res)) {
-    //         $seasonsRows[] = [
-    //             'id'     => $s['id'],                                
-    //             'tid'      => (int)$s['tid'],
-    //             'name'     => $s['name'],                
-    //             'logo'     => $s['logo'],
-    //         ];
-    //     }
-    // }
 
     // ================== TEAMS ==================
     $colorPalette = [
@@ -53,19 +51,19 @@
     ];
     $colorIndex = 0;
 
-    // Build a lookup of auction budgets by tournament (tour_id -> camt)
+    // Build a lookup of auction budgets by season (sea_id -> camt)
     $auctionBudgets = [];
-    $resAuction = mysqli_query($conn, "SELECT tour_id, camt FROM auctions WHERE status = 1");
+    $resAuction = mysqli_query($conn, "SELECT sea_id, camt FROM auctions WHERE status = 1");
     while ($a = mysqli_fetch_assoc($resAuction)) {
-        $auctionBudgets[(int)$a['tour_id']] = (int)$a['camt'];
+        $auctionBudgets[(int)$a['sea_id']] = (int)$a['camt'];
     }
 
     $teams_res = mysqli_query($conn, "SELECT * FROM teams WHERE status = 1 ORDER BY name");
-    $teamsByTournament = [];
+    $teamsBySeason = [];
 
     while ($row = mysqli_fetch_assoc($teams_res)) {
-        $tid = (int)$row['tid'];
-        $budget = $auctionBudgets[$tid] ?? 0;
+        $seasonId = (int)$row['season_id'];
+        $budget = $auctionBudgets[$seasonId] ?? 0;
         $color = $colorPalette[$colorIndex % count($colorPalette)];
         $colorIndex++;
 
@@ -77,24 +75,30 @@
             $remaining = $budget;
         }
 
-        $teamsByTournament[$tid][] = [
+        $teamsBySeason[$seasonId][] = [
             'id'        => (int)$row['id'],
-            'tid'       => $tid,
+            'season_id' => $seasonId,
             'name'      => $row['name'],
             'logo'      => $row['logo'],
             'budget'    => $budget,
-            'remaining' => $remaining,  // Use the actual remaining from database
-            'spent'     => $budget - $remaining,  // Calculate spent
+            'remaining' => $remaining,
+            'spent'     => $budget - $remaining,
             'color'     => $color,
             'players'   => []
         ];
     }
 
-    // ================== PLAYERS (from DB) ==================
-    $players_sql = "SELECT * FROM players WHERE status = 1 ORDER BY id ASC";
+    // ================== PLAYERS (from DB) - Filter by Season ==================
+    $playersForJs = [];
+    
+    // Get all players that belong to seasons
+    $players_sql = "SELECT p.*, sp.season_id 
+                    FROM players p
+                    INNER JOIN season_players sp ON p.id = sp.player_id
+                    WHERE p.status = 1 
+                    ORDER BY p.id ASC";
     $players_res = mysqli_query($conn, $players_sql);
 
-    $playersForJs = [];
     if ($players_res && mysqli_num_rows($players_res) > 0) {
         while ($row = mysqli_fetch_assoc($players_res)) {
             $roleStr = strtolower($row['role']);
@@ -109,11 +113,12 @@
             }
 
             $playersForJs[] = [
-                'id'       => (int)$row['id'],
-                'name'     => trim($row['fname'] . ' ' . $row['lname']),
-                'category' => $category,
-                'team'     => $row['tname'],
-                'logo'     => $row['logo'],
+                'id'        => (int)$row['id'],
+                'season_id' => (int)$row['season_id'],
+                'name'      => trim($row['fname'] . ' ' . $row['lname']),
+                'category'  => $category,
+                'team'      => $row['tname'],
+                'logo'      => $row['logo'],
             ];
         }
     }
@@ -121,7 +126,7 @@
     // ================== LOAD ALREADY SOLD PLAYERS ==================
     $soldPlayersFromDB = [];
     $sold_query = "SELECT tp.*, p.fname, p.lname, p.role, p.tname as player_team, p.logo, 
-                t.name as team_name, t.tid as tournament_id, t.id as team_id
+                t.name as team_name, t.season_id, t.id as team_id
                 FROM team_player tp
                 LEFT JOIN players p ON tp.pid = p.id
                 LEFT JOIN teams t ON tp.tid = t.id
@@ -144,7 +149,7 @@
             $soldPlayersFromDB[] = [
                 'player_id' => (int)$row['pid'],
                 'team_id' => (int)$row['team_id'],
-                'tournament_id' => (int)$row['tournament_id'],
+                'season_id' => (int)$row['season_id'],
                 'sold_price' => (int)$row['sold_price'],
                 'player_name' => trim($row['fname'] . ' ' . $row['lname']),
                 'team_name' => $row['team_name'],
@@ -160,7 +165,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auction | CrickFolio</title>
+    <title>Season Auction | CrickFolio</title>
     
     <!-- Bootstrap Css -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">        
@@ -307,30 +312,28 @@
 
         <!-- Right Panel -->
         <div class="right-panel">
-            <!-- Tournament Selection Header -->
-            <!-- <form method="POST"> -->
+            <!-- Season Selection Header -->
             <div class="tournament-header">
                 <div class="tournament-select-container">
-                    <label for="tournamentSelect">
-                        <span>🏆</span> Select Tournament
+                    <label for="seasonSelect">
+                        <span>🏆</span> Select Season
                     </label>
-                    <select id="tournamentSelect" name="tname" class="tournament-select">
-                        <option value="" selected disabled>-- Select Tournament --</option>
-                        <?php foreach ($tournamentRows as $t): ?>
-                            <option value="<?php echo $t['tid']; ?>">
-                                <?php echo htmlspecialchars($t['name']); ?>
+                    <select id="seasonSelect" name="season" class="tournament-select">
+                        <option value="" selected disabled>-- Select Season --</option>
+                        <?php foreach ($seasonRows as $s): ?>
+                            <option value="<?php echo $s['id']; ?>">
+                                <?php echo htmlspecialchars($s['tournament_name'] . ' - ' . $s['name']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>                                         
                 </div>
-                <!-- </form> -->
                 
                 <div class="teams-bidding-container" id="teamsBiddingContainer">
                     <div class="teams-header">
                         <h5>Teams Bidding</h5>
                     </div>
                     <div class="teams-list" style="width: 100%;" id="teamsList">
-                        <div class="no-teams-message">Select a tournament to view teams</div>
+                        <div class="no-teams-message">Select a season to view teams</div>
                     </div>
                 </div>
             </div>
@@ -392,7 +395,7 @@
     <div id="teamListModal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h3>📊 Team List - <span id="teamListTournament"></span></h3>
+                <h3>📊 Team List - <span id="teamListSeason"></span></h3>
                 <button class="modal-close" id="closeTeamListModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -405,7 +408,7 @@
     <div id="teamOwnerModal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h3>👤 Team Owner List - <span id="teamOwnerTournament"></span></h3>
+                <h3>👤 Team Owner List - <span id="teamOwnerSeason"></span></h3>
                 <button class="modal-close" id="closeTeamOwnerModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -418,7 +421,7 @@
     <div id="teamBalanceModal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h3>⚖️ Team Balance Info - <span id="teamBalanceTournament"></span></h3>
+                <h3>⚖️ Team Balance Info - <span id="teamBalanceSeason"></span></h3>
                 <button class="modal-close" id="closeTeamBalanceModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -431,7 +434,7 @@
     <div id="teamPlayerInfoModal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h3>ℹ️ Team Player Info - <span id="teamPlayerTournament"></span></h3>
+                <h3>ℹ️ Team Player Info - <span id="teamPlayerSeason"></span></h3>
                 <button class="modal-close" id="closeTeamPlayerModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -444,7 +447,7 @@
     <div id="mostExpensiveModal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-medium">
             <div class="modal-header">
-                <h3>💰 Most Expensive Player - <span id="expensiveTournament"></span></h3>
+                <h3>💰 Most Expensive Player - <span id="expensiveSeason"></span></h3>
                 <button class="modal-close" id="closeMostExpensiveModal">&times;</button>
             </div>
             <div class="modal-body">
@@ -457,7 +460,7 @@
     <div id="top5Modal" class="modal-overlay" style="display:none;">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h3>⭐ Top 5 Sold Players - <span id="top5Tournament"></span></h3>
+                <h3>⭐ Top 5 Sold Players - <span id="top5Season"></span></h3>
                 <button class="modal-close" id="closeTop5Modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -513,18 +516,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         /* ========= PHP → JS DATA ========= */
-        const defaultBasePrice        = <?php echo (int)$defaultBasePrice; ?>;
-        const defaultBidStepSmall     = <?php echo (int)$defaultBidStepSmall; ?> || 500;
-        const maxPlayersToPurchase    = <?php echo (int)$maxPlayersToPurchase; ?> || 0;
-        const defaultActiveTourTid    = <?php echo (int)$defaultActiveTourTid; ?> || 0;
+        const defaultBasePrice        = 500; // This will be updated per season
+        const defaultBidStepSmall     = 500; // This will be updated per season
+        let maxPlayersToPurchase      = 0;   // This will be updated per season
+        const defaultActiveSeasonId   = <?php echo (int)$defaultActiveSeasonId; ?> || 0;
 
-        const playersDatabase = <?php echo json_encode($playersForJs ?: []); ?>.map(p => ({
-            ...p,
-            basePrice: defaultBasePrice > 0 ? defaultBasePrice : 0
-        }));
+        // Store auction settings by season
+        const auctionSettings = <?php echo json_encode($auctionSettings); ?>;
 
-        const tournaments = <?php echo json_encode($tournamentRows); ?>;
-        const tournamentTeams = <?php echo json_encode($teamsByTournament); ?>;
+        // Don't set basePrice here - it will be set dynamically
+        const playersDatabase = <?php echo json_encode($playersForJs ?: []); ?>;
+
+        const seasons = <?php echo json_encode($seasonRows); ?>;
+        const seasonTeams = <?php echo json_encode($teamsBySeason); ?>;
         const soldPlayersFromDB = <?php echo json_encode($soldPlayersFromDB ?: []); ?>;
         
         /* ========= GLOBAL STATE ========= */
@@ -539,21 +543,20 @@
         let autoNextSeconds      = 1;
         let currentCategoryFilter= 'All';
         let filteredPlayers      = [];
-        let currentTournament    = '';
+        let currentSeason        = '';
         let selectedTeamId       = null;
         let bidClickCountForCurrentPlayer = 0;
 
         /* ========= UTILS ========= */
         function showNotification(msg) {
             console.log(msg);
-            // You can add toast notification here
         }
 
-        function getCurrentTournamentName() {
-            if (!currentTournament) return '';
-            const tidNum = parseInt(currentTournament, 10);
-            const t = tournaments.find(x => x.tid === tidNum);
-            return t ? t.name : '';
+        function getCurrentSeasonName() {
+            if (!currentSeason) return '';
+            const sidNum = parseInt(currentSeason, 10);
+            const s = seasons.find(x => x.id === sidNum);
+            return s ? (s.tournament_name + ' - ' + s.name) : '';
         }
 
         function generateColorDots() {
@@ -576,12 +579,35 @@
         }
 
         function updateStats() {
-            const available = playersDatabase.length - processedPlayerIds.size;
+            // Get players for current season only
+            const seasonPlayers = currentSeason ? 
+                playersDatabase.filter(p => p.season_id == currentSeason) : 
+                playersDatabase;
+            
+            const available = seasonPlayers.length - processedPlayerIds.size;
             document.getElementById('soldCount').textContent      = soldPlayers.length;
             document.getElementById('unsoldCount').textContent    = unsoldPlayers.length;
             document.getElementById('availableCount').textContent = available;
-            document.getElementById('totalCount').textContent     = playersDatabase.length;
+            document.getElementById('totalCount').textContent     = seasonPlayers.length;
             document.getElementById('purchaseCount').textContent  = maxPlayersToPurchase;
+        }
+
+        /* ========= SEASON AUCTION SETTINGS ========= */
+        function updateAuctionSettings(seasonId) {
+            const settings = auctionSettings[seasonId];
+            if (settings) {
+                maxPlayersToPurchase = settings.maxPlayers;
+                
+                // Update all players' base price for this season
+                playersDatabase.forEach(player => {
+                    if (player.season_id == seasonId) {
+                        player.basePrice = settings.basePrice;
+                    }
+                });
+                
+                return settings;
+            }
+            return null;
         }
 
         function displayPlayerCard(player, status, team = null) {
@@ -625,40 +651,88 @@
         /* ========= PLAYER FLOW ========= */
         function applyFilter(category) {
             currentCategoryFilter = category;
+
+            // Check if no season is selected
+            if (!currentSeason) {
+                document.getElementById('playerName').textContent = 'No Season Selected';
+                document.getElementById('playerBasePrice').textContent = '⚠️ Please select a season first';
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
+                updateStats();
+                return;
+            }
+            
+            // Get players for current season only
+            const seasonPlayers = currentSeason ? 
+                playersDatabase.filter(p => p.season_id == currentSeason) : 
+                playersDatabase;
+            
+            // Check if season has no players at all
+            if (seasonPlayers.length === 0) {
+                document.getElementById('playerName').textContent = 'No Players Found';
+                document.getElementById('playerBasePrice').textContent = currentSeason ? 
+                    '⚠️ No players assigned to this season' : 
+                    '⚠️ Please select a season first';
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
+                updateStats();
+                return;
+            }
             
             if (category === 'All') {
-                filteredPlayers = [...playersDatabase];
+                filteredPlayers = [...seasonPlayers];
             } else {
-                filteredPlayers = playersDatabase.filter(p => p.category === category);
+                filteredPlayers = seasonPlayers.filter(p => p.category === category);
             }
 
-            const allProcessed = playersDatabase.every(p => processedPlayerIds.has(p.id));
+            // Check if category filter resulted in no players
+            if (filteredPlayers.length === 0) {
+                document.getElementById('playerName').textContent = `No ${category} Players`;
+                document.getElementById('playerBasePrice').textContent = `⚠️ No ${category} players in this season`;
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
+                updateStats();
+                return;
+            }
+
+            const allProcessed = filteredPlayers.every(p => processedPlayerIds.has(p.id));
             if (allProcessed) {
-                document.getElementById('playerName').textContent      = '🎉 All Players Processed!';
+                document.getElementById('playerName').textContent = '🎉 All Players Processed!';
                 document.getElementById('playerBasePrice').textContent = '✅ Auction Completed';
-                document.getElementById('colorDots').innerHTML         = '';
-                document.getElementById('soldBtn').disabled            = true;
-                document.getElementById('unsoldBtn').disabled          = true;
-                showNotification(`Auction Complete! All ${playersDatabase.length} players processed.`);
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
+                showNotification(`Auction Complete! All ${filteredPlayers.length} players processed.`);
+                updateStats();
                 return;
             }
 
             const idx = filteredPlayers.findIndex(p => !processedPlayerIds.has(p.id));
             if (idx === -1) {
-                const remaining = playersDatabase.filter(p => !processedPlayerIds.has(p.id));
+                const remaining = seasonPlayers.filter(p => !processedPlayerIds.has(p.id));
                 if (remaining.length > 0) {
                     showNotification(`All ${category} players processed! ${remaining.length} remaining in other categories.`);
                 }
-                document.getElementById('playerName').textContent      = `All ${category} Processed!`;
+                document.getElementById('playerName').textContent = `All ${category} Processed!`;
                 document.getElementById('playerBasePrice').textContent = remaining.length > 0 ? '⚠️ Select another category' : '✅ Auction Complete';
-                document.getElementById('colorDots').innerHTML         = '';
-                document.getElementById('soldBtn').disabled            = true;
-                document.getElementById('unsoldBtn').disabled          = true;
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
             } else {
-                const toLoad    = filteredPlayers[idx];
+                const toLoad = filteredPlayers[idx];
                 const realIndex = playersDatabase.findIndex(p => p.id === toLoad.id);
                 loadPlayer(realIndex);
             }
+            
+            updateStats();
         }
 
         function formatPlayerName(fullName) {
@@ -671,35 +745,59 @@
         }
 
         function loadPlayer(index) {
-            document.getElementById('soldBtn').disabled   = false;
+            document.getElementById('soldBtn').disabled = false;
             document.getElementById('unsoldBtn').disabled = false;
 
-            const allProcessed = playersDatabase.every(p => processedPlayerIds.has(p.id));
-            if (allProcessed) {
-                document.getElementById('playerName').textContent      = '🎉 All Players Processed!';
-                document.getElementById('playerBasePrice').textContent = '✅ Auction Completed';
-                document.getElementById('colorDots').innerHTML         = '';
-                document.getElementById('soldBtn').disabled            = true;
-                document.getElementById('unsoldBtn').disabled          = true;
+            // Get players for current season
+            const seasonPlayers = currentSeason ? 
+                playersDatabase.filter(p => p.season_id == currentSeason) : 
+                playersDatabase;
+
+            // Check if season has no players
+            if (seasonPlayers.length === 0) {
+                document.getElementById('playerName').textContent = 'No Players Found';
+                document.getElementById('playerBasePrice').textContent = currentSeason ? 
+                    '⚠️ No players assigned to this season' : 
+                    '⚠️ Please select a season first';
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
                 return;
             }
 
-            let attempts = 0
-            ;
+            const allProcessed = seasonPlayers.every(p => processedPlayerIds.has(p.id));
+            if (allProcessed) {
+                document.getElementById('playerName').textContent = '🎉 All Players Processed!';
+                document.getElementById('playerBasePrice').textContent = '✅ Auction Completed';
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
+                return;
+            }
+
+            let attempts = 0;
             const maxAttempts = playersDatabase.length;
 
             while (attempts < maxAttempts) {
                 if (index >= playersDatabase.length) index = 0;
                 const player = playersDatabase[index];
                 const matchesFilter = currentCategoryFilter === 'All' || player.category === currentCategoryFilter;
+                const matchesSeason = !currentSeason || player.season_id == currentSeason;
 
-                if (!processedPlayerIds.has(player.id) && matchesFilter) {
+                if (!processedPlayerIds.has(player.id) && matchesFilter && matchesSeason) {
                     currentPlayerIndex = index;
                     const formattedName = formatPlayerName(player.name);
                     document.getElementById('playerName').textContent = `(${index + 1}) ${formattedName}`;
-                    document.getElementById('playerBasePrice').textContent = `Base Price: ₹${player.basePrice.toLocaleString()}`;
+                    
+                    // Get the base price for this player's season
+                    const settings = auctionSettings[player.season_id];
+                    const basePrice = settings ? settings.basePrice : (player.basePrice || 500);
+                    
+                    document.getElementById('playerBasePrice').textContent = `Base Price: ₹${basePrice.toLocaleString()}`;
                     generateColorDots();
-                    currentBidPrice = player.basePrice;
+                    currentBidPrice = basePrice;
                     updateBidDisplay();
                     bidClickCountForCurrentPlayer = 0;
                     return;
@@ -711,6 +809,7 @@
             const catText = currentCategoryFilter === 'All' ? 'All Players' : `All ${currentCategoryFilter}`;
             document.getElementById('playerName').textContent = `${catText} Processed!`;
             document.getElementById('playerBasePrice').textContent = currentCategoryFilter === 'All' ? '🎉 Auction Complete!' : '⚠️ Select another category or "All"';
+            document.getElementById('playerCurrentPrice').textContent = '';
             document.getElementById('colorDots').innerHTML = '';
             document.getElementById('soldBtn').disabled = true;
             document.getElementById('unsoldBtn').disabled = true;
@@ -723,12 +822,12 @@
             soldPlayersFromDB.forEach(soldPlayer => {
                 const playerId = soldPlayer.player_id;
                 const teamId = soldPlayer.team_id;
-                const tournamentId = soldPlayer.tournament_id;
+                const seasonId = soldPlayer.season_id;
                 const soldPrice = soldPlayer.sold_price || 0;
                 
                 processedPlayerIds.add(playerId);
                 
-                const teams = tournamentTeams[tournamentId] || [];
+                const teams = seasonTeams[seasonId] || [];
                 const team = teams.find(t => t.id === teamId);
                 
                 if (team) {
@@ -754,7 +853,6 @@
                                 teamColor: team.color
                             });
                             
-                            // Display player card on page load
                             currentBidPrice = soldPrice;
                             displayPlayerCard(player, 'sold', team);
                         }
@@ -768,13 +866,13 @@
         }
 
         /* ========= SAVE SOLD PLAYER TO DATABASE ========= */
-        function saveSoldPlayerToDB(playerId, teamId, soldPrice, callback) {
+        function saveSoldPlayerToDB(playerId, teamId, soldPrice, seasonId, callback) {
             fetch('save_sold_player.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `player_id=${playerId}&team_id=${teamId}&sold_price=${soldPrice}`
+                body: `player_id=${playerId}&team_id=${teamId}&sold_price=${soldPrice}&season_id=${seasonId}`
             })
             .then(response => response.json())
             .then(data => {
@@ -791,17 +889,17 @@
             });
         }
 
-        /* ========= TOURNAMENT & TEAMS VIEW ========= */
-        function loadTournamentTeams() {
+        /* ========= SEASON & TEAMS VIEW ========= */
+        function loadSeasonTeams() {
             const teamsList = document.getElementById('teamsList');
-            if (!currentTournament) {
-                teamsList.innerHTML = '<div class="no-teams-message">Select a tournament to view teams</div>';
+            if (!currentSeason) {
+                teamsList.innerHTML = '<div class="no-teams-message">Select a season to view teams</div>';
                 return;
             }
 
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             if (!teams.length) {
-                teamsList.innerHTML = '<div class="no-teams-message">No teams found for this tournament.</div>';
+                teamsList.innerHTML = '<div class="no-teams-message">No teams found for this season.</div>';
                 return;
             }
 
@@ -841,7 +939,6 @@
                         <div class="budget-bar-fill" style="width:${usedPercent}%; background:${team.color}"></div>
                     </div>
                     
-                    <!-- Players List with Delete Button -->
                     ${(team.players || []).length > 0 ? `
                         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
                             ${team.players.map(player => `
@@ -862,9 +959,9 @@
         }
 
         function selectTeam(teamId) {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -885,9 +982,9 @@
             }
 
             selectedTeamId = teamId;
-            loadTournamentTeams();
+            loadSeasonTeams();
 
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const team = teams.find(t => t.id === teamId);
 
             if (team) {
@@ -901,11 +998,18 @@
             const playerList = document.getElementById('playerList');
             playerList.innerHTML = '';
 
-            playersDatabase.forEach((player, idx) => {
+            // Filter by current season
+            const seasonPlayers = currentSeason ? 
+                playersDatabase.filter(p => p.season_id == currentSeason) : 
+                playersDatabase;
+
+            seasonPlayers.forEach((player, idx) => {
                 const processed = processedPlayerIds.has(player.id);
                 const item = document.createElement('div');
                 item.className = 'player-list-item';
                 item.style.opacity = processed ? '0.5' : '1';
+
+                const realIndex = playersDatabase.findIndex(p => p.id === player.id);
 
                 item.innerHTML = `
                     <div class="player-item-info">
@@ -922,7 +1026,7 @@
 
                 if (!processed) {
                     item.addEventListener('click', () => {
-                        selectPlayerByIndex(idx);
+                        selectPlayerByIndex(realIndex);
                         closePlayerSelectionModal();
                     });
                 }
@@ -952,9 +1056,9 @@
 
         /* ========= POPUP SCREENS ========= */
         function showTeamListScreen() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -962,14 +1066,14 @@
                 });
                 return;
             }
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const modal = document.getElementById('teamListModal');
             const content = document.getElementById('teamListContent');
-            const titleSpan = document.getElementById('teamListTournament');
-            titleSpan.textContent = getCurrentTournamentName();
+            const titleSpan = document.getElementById('teamListSeason');
+            titleSpan.textContent = getCurrentSeasonName();
 
             if (!teams.length) {
-                content.innerHTML = '<div class="no-data-message">No teams found in this tournament.</div>';
+                content.innerHTML = '<div class="no-data-message">No teams found in this season.</div>';
             } else {
                 let html = '';
                 teams.forEach(team => {
@@ -1006,9 +1110,9 @@
         }
 
         function showTeamOwnerList() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1016,14 +1120,14 @@
                 });
                 return;
             }
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const modal = document.getElementById('teamOwnerModal');
             const content = document.getElementById('teamOwnerContent');
-            const titleSpan = document.getElementById('teamOwnerTournament');
-            titleSpan.textContent = getCurrentTournamentName();
+            const titleSpan = document.getElementById('teamOwnerSeason');
+            titleSpan.textContent = getCurrentSeasonName();
 
             if (!teams.length) {
-                content.innerHTML = '<div class="no-data-message">No teams found in this tournament.</div>';
+                content.innerHTML = '<div class="no-data-message">No teams found in this season.</div>';
             } else {
                 let html = '<div class="owner-list">';
                 teams.forEach((team, index) => {
@@ -1045,9 +1149,9 @@
         }
 
         function showTeamBalanceInfo() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1055,14 +1159,14 @@
                 });
                 return;
             }
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const modal = document.getElementById('teamBalanceModal');
             const content = document.getElementById('teamBalanceContent');
-            const titleSpan = document.getElementById('teamBalanceTournament');
-            titleSpan.textContent = getCurrentTournamentName();
+            const titleSpan = document.getElementById('teamBalanceSeason');
+            titleSpan.textContent = getCurrentSeasonName();
 
             if (!teams.length) {
-                content.innerHTML = '<div class="no-data-message">No teams found in this tournament.</div>';
+                content.innerHTML = '<div class="no-data-message">No teams found in this season.</div>';
             } else {
                 let html = '';
                 teams.forEach(team => {
@@ -1105,9 +1209,9 @@
         }
 
         function showTeamPlayerInfo() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1115,14 +1219,14 @@
                 });
                 return;
             }
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const modal = document.getElementById('teamPlayerInfoModal');
             const content = document.getElementById('teamPlayerContent');
-            const titleSpan = document.getElementById('teamPlayerTournament');
-            titleSpan.textContent = getCurrentTournamentName();
+            const titleSpan = document.getElementById('teamPlayerSeason');
+            titleSpan.textContent = getCurrentSeasonName();
 
             if (!teams.length) {
-                content.innerHTML = '<div class="no-data-message">No teams found in this tournament.</div>';
+                content.innerHTML = '<div class="no-data-message">No teams found in this season.</div>';
             } else {
                 let html = '';
                 teams.forEach(team => {
@@ -1182,7 +1286,6 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Show loading
                     Swal.fire({
                         title: 'Removing...',
                         text: 'Please wait',
@@ -1195,7 +1298,6 @@
                         }
                     });
 
-                    // Find tpid from team_player table
                     fetch('get_tpid.php', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -1204,7 +1306,6 @@
                     .then(r => r.json())
                     .then(data => {
                         if (data.success) {
-                            // Delete the player
                             return fetch('delete_sold_player.php', {
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -1216,8 +1317,7 @@
                     .then(r => r.json())
                     .then(data => {
                         if (data.success) {
-                            // Update local data
-                            const teams = tournamentTeams[currentTournament] || [];
+                            const teams = seasonTeams[currentSeason] || [];
                             const team = teams.find(t => t.id === teamId);
                             if (team) {
                                 team.players = team.players.filter(p => p.id !== playerId);
@@ -1232,16 +1332,13 @@
                                 const playerNameEl = card.querySelector('.player-display-name');
                                 const playerPriceEl = card.querySelector('.player-display-price');
                                 
-                                // Find card by checking player details
                                 if (playerNameEl && playerPriceEl) {
                                     const cardPrice = playerPriceEl.textContent.replace(/[₹,]/g, '').trim();
                                     if (parseInt(cardPrice) === soldPrice) {
-                                        // Add fade out animation
                                         card.style.transition = 'opacity 0.4s, transform 0.4s';
                                         card.style.opacity = '0';
                                         card.style.transform = 'scale(0.8)';
                                         
-                                        // Remove after animation
                                         setTimeout(() => {
                                             card.remove();
                                         }, 400);
@@ -1250,9 +1347,8 @@
                             });
                             
                             updateStats();
-                            loadTournamentTeams();                            
+                            loadSeasonTeams();                            
 
-                            // Success message
                             Swal.fire({
                                 title: 'Removed!',
                                 html: `<p>Player has been removed successfully!</p>
@@ -1291,9 +1387,9 @@
         }
 
         function showMostExpensivePlayer() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1301,11 +1397,11 @@
                 });
                 return;
             }
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const modal = document.getElementById('mostExpensiveModal');
             const content = document.getElementById('mostExpensiveContent');
-            const titleSpan = document.getElementById('expensiveTournament');
-            titleSpan.textContent = getCurrentTournamentName();
+            const titleSpan = document.getElementById('expensiveSeason');
+            titleSpan.textContent = getCurrentSeasonName();
 
             let allPlayers = [];
             teams.forEach(team => {
@@ -1336,9 +1432,9 @@
         }
 
         function showTop5Players() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1346,11 +1442,11 @@
                 });
                 return;
             }
-            const teams = tournamentTeams[currentTournament] || [];
+            const teams = seasonTeams[currentSeason] || [];
             const modal = document.getElementById('top5Modal');
             const content = document.getElementById('top5Content');
-            const titleSpan = document.getElementById('top5Tournament');
-            titleSpan.textContent = getCurrentTournamentName();
+            const titleSpan = document.getElementById('top5Season');
+            titleSpan.textContent = getCurrentSeasonName();
 
             let allPlayers = [];
             teams.forEach(team => {
@@ -1389,9 +1485,9 @@
 
         /* ========= UNSOLD & RE-AUCTION ========= */
         function showUnsoldPlayers() {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1442,9 +1538,9 @@
         }
 
         function reAuctionSingleUnsold(playerId) {
-            if (!currentTournament) {
+            if (!currentSeason) {
                 Swal.fire({
-                    title: 'Please Select A Tournament First!',                    
+                    title: 'Please Select A Season First!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1455,7 +1551,7 @@
             const idx = unsoldPlayers.findIndex(p => p.id === playerId);
             if (idx === -1) {
                 Swal.fire({
-                    title: 'Please Not Found in Auction List!',                    
+                    title: 'Player Not Found in Unsold List!',                    
                     icon: 'warning',
                     confirmButtonColor: '#27ae60',
                     background: '#16213e',
@@ -1508,10 +1604,14 @@
 
         /* ========= REMAINING PLAYERS ========= */
         function showRemainingPlayers() {
+            const seasonPlayers = currentSeason ? 
+                playersDatabase.filter(p => p.season_id == currentSeason) : 
+                playersDatabase;
+            
             const modal = document.getElementById('remainingPlayersModal');
             const content = document.getElementById('remainingPlayersContent');
 
-            const notAuctionedYet = playersDatabase.filter(p => !processedPlayerIds.has(p.id));
+            const notAuctionedYet = seasonPlayers.filter(p => !processedPlayerIds.has(p.id));
             const totalRemaining = unsoldPlayers.length + skippedPlayers.length + notAuctionedYet.length;
 
             document.getElementById('remainingUnsoldCount').textContent = unsoldPlayers.length;
@@ -1572,6 +1672,17 @@
         /* ========= BUTTON HANDLERS ========= */
         function initEvents() {
             document.getElementById('categoryFilter').addEventListener('change', e => {
+                if (!currentSeason) {
+                    Swal.fire({
+                        title: 'Please Select A Season First!',
+                        icon: 'warning',
+                        confirmButtonColor: '#27ae60',
+                        background: '#16213e',
+                        color: '#fff'
+                    });
+                    e.target.value = 'All'; // Reset to All
+                    return;
+                }
                 applyFilter(e.target.value);
             });
 
@@ -1579,10 +1690,31 @@
                 autoNextSeconds = parseInt(e.target.value, 10) || 1;
             });
 
-            document.getElementById('tournamentSelect').addEventListener('change', function () {
-                currentTournament = this.value;
+            document.getElementById('seasonSelect').addEventListener('change', function () {
+                currentSeason = this.value;
                 selectedTeamId = null;
-                loadTournamentTeams();
+                
+                // Update auction settings for this season
+                const settings = updateAuctionSettings(currentSeason);
+                if (settings) {
+                    console.log(`Season changed: Base Price = ₹${settings.basePrice}, Bid Step = ₹${settings.bidStep}`);
+                }
+                
+                loadSeasonTeams();
+                
+                // Reset and reload players for the selected season
+                processedPlayerIds.clear();
+                soldPlayers = [];
+                unsoldPlayers = [];
+                skippedPlayers = [];
+                displayOrder = 1;
+                document.getElementById('playersDisplay').innerHTML = '';
+                
+                // Load sold players for this season
+                loadSoldPlayersFromDB();
+                
+                // Load first player
+                applyFilter(currentCategoryFilter);
             });            
 
             document.getElementById('nextPlayerBtn').addEventListener('click', () => {
@@ -1606,7 +1738,7 @@
                 loadPlayer(currentPlayerIndex);
             });
 
-            // SOLD BUTTON - WITH DATABASE SAVING
+            // SOLD BUTTON
             document.getElementById('soldBtn').addEventListener('click', function () {
                 const player = playersDatabase[currentPlayerIndex];
 
@@ -1614,9 +1746,9 @@
                     showNotification(`${player.name} already processed.`);
                     return;
                 }
-                if (!currentTournament) {
+                if (!currentSeason) {
                     Swal.fire({
-                        title: 'Please select a tournament first!',
+                        title: 'Please select a season first!',
                         icon: 'warning',
                         confirmButtonColor: '#27ae60',
                         background: '#16213e',
@@ -1635,7 +1767,7 @@
                     return;
                 }
 
-                const teams = tournamentTeams[currentTournament] || [];
+                const teams = seasonTeams[currentSeason] || [];
                 const team = teams.find(t => t.id === selectedTeamId);
                 if (!team) {
                     alert('Selected team not found!');
@@ -1649,7 +1781,7 @@
                 }
 
                 // Save to database first
-                saveSoldPlayerToDB(player.id, team.id, currentBidPrice, () => {
+                saveSoldPlayerToDB(player.id, team.id, currentBidPrice, currentSeason, () => {
                     processedPlayerIds.add(player.id);
 
                     team.spent = (team.spent || 0) + currentBidPrice;
@@ -1673,7 +1805,7 @@
 
                     displayPlayerCard(player, 'sold', team);
                     updateStats();
-                    loadTournamentTeams();
+                    loadSeasonTeams();
 
                     showNotification(`✅ ${player.name} sold to ${team.name} for ₹${currentBidPrice.toLocaleString()}`);
 
@@ -1692,9 +1824,9 @@
                     showNotification(`${player.name} already processed.`);
                     return;
                 }
-                if (!currentTournament) {
+                if (!currentSeason) {
                     Swal.fire({
-                        title: 'Please Select A Tournament First!',                    
+                        title: 'Please Select A Season First!',                    
                         icon: 'warning',
                         confirmButtonColor: '#27ae60',
                         background: '#16213e',
@@ -1804,7 +1936,7 @@
         function init() {
             if (!playersDatabase || !playersDatabase.length) {
                 document.getElementById('playerName').textContent = 'No players found in database';
-                document.getElementById('playerBasePrice').textContent = '-';
+                document.getElementById('playerBasePrice').textContent = 'Please add players to seasons first';
                 document.getElementById('soldBtn').disabled = true;
                 document.getElementById('unsoldBtn').disabled = true;
                 return;
@@ -1812,36 +1944,42 @@
             
             initEvents();
 
-            // Auto-select tournament if players have been sold
-            if (!currentTournament && soldPlayersFromDB.length > 0) {
-                // Get the tournament ID from the first sold player
+            // Auto-select season if players have been sold
+            if (!currentSeason && soldPlayersFromDB.length > 0) {
                 const firstSoldPlayer = soldPlayersFromDB[0];
-                currentTournament = firstSoldPlayer.tournament_id;
+                currentSeason = firstSoldPlayer.season_id;
                 
-                // Set the dropdown value
-                const sel = document.getElementById('tournamentSelect');
+                const sel = document.getElementById('seasonSelect');
                 if (sel) {
-                    sel.value = currentTournament;
+                    sel.value = currentSeason;
                 }
-            } else if (currentTournament) {
-                const sel = document.getElementById('tournamentSelect');
-                if (sel) sel.value = currentTournament;
+            } else if (currentSeason) {
+                const sel = document.getElementById('seasonSelect');
+                if (sel) sel.value = currentSeason;
             }
 
-            // Load sold players from database AFTER tournament is set
+            // Load sold players from database
             loadSoldPlayersFromDB();
             
-            // Load tournament teams after sold players are loaded
-            if (currentTournament) {
-                loadTournamentTeams();
+            // Load season teams
+            if (currentSeason) {
+                loadSeasonTeams();
+                applyFilter('All');
+                loadPlayer(0);
+            } else {
+                // No season selected - show message
+                document.getElementById('playerName').textContent = 'No Season Selected';
+                document.getElementById('playerBasePrice').textContent = '⚠️ Please select a season first';
+                document.getElementById('playerCurrentPrice').textContent = '';
+                document.getElementById('colorDots').innerHTML = '';
+                document.getElementById('soldBtn').disabled = true;
+                document.getElementById('unsoldBtn').disabled = true;
             }
-
-            applyFilter('All');
-            loadPlayer(0);
+            
             updateStats();
         }
 
         window.addEventListener('DOMContentLoaded', init);
-</script>
+    </script>
 </body>
 </html>

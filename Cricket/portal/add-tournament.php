@@ -42,7 +42,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Tournament | CrickFolio Portal</title>
+    <title>Add Tournament | <?php echo $title_name;?></title>
+
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
     <link rel="stylesheet" href="../assets/css/sweetalert2.css">    
     <script src="../assets/script/sweetalert2.js"></script>
@@ -535,8 +536,7 @@
                                 <option value="College" <?php if($cat == "College") echo "selected";?>>College</option>
                                 <option value="District" <?php if($cat == "District") echo "selected";?>>District</option>
                                 <option value="National" <?php if($cat == "National") echo "selected";?>>National</option>
-                                <option value="Open" <?php if($cat == "Open") echo "selected";?>>Open</option>
-                                <option value="Other" <?php if($cat == "Other") echo "selected";?>>Other</option>
+                                <option value="Open" <?php if($cat == "Open") echo "selected";?>>Open</option>                                
                             </select>
                             <small id="category_error" class="error-text"></small>
                         </div>

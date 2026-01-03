@@ -44,7 +44,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auction & Seasons | CrickFolio Portal</title>
+    <title>Auction & Seasons | <?php echo $title_name;?></title>
+    
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
     <link rel="stylesheet" href="../assets/css/auction-style.css">
     <script src="../assets/script/jquery.min.js"></script>

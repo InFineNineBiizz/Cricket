@@ -33,7 +33,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Tournament | CrickFolio Portal</title>
+    <title>View Tournament | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
     <link rel="stylesheet" href="../assets/css/sweetalert2.css">    
     <script src="../assets/script/sweetalert2.js"></script>

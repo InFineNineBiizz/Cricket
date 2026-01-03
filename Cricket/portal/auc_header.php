@@ -7,7 +7,7 @@
 <!-- Tournament Header with Logo -->
 <div class="tournament-header-card">
     <div class="tournament-logo-circle">
-        <img src="../assets/images/tournament-logo.png" alt="Tournament Logo" />
+        <img src="../assets/images/<?php echo $tlogo;?>" alt="Tournament Logo" />
     </div>
     <div class="tournament-header-info">
         <h1><?php echo $tour_name;?></h1>
@@ -44,12 +44,26 @@
         </div>                        
     </div>
     <div class="tournament-header-actions">
-        <button class="btn-icon-action btn-view-tournament">
+        <a href="view-auction.php?id=<?php echo $id;?>" class="btn-icon-action btn-view-tournament" title="View Auction" style="text-decoration: none;">
             <i class="fas fa-eye"></i>
-        </button>
-        <button class="btn-icon-action btn-edit-tournament">
+        </a>
+        <a href="add-auction.php?id=<?php echo $id;?>" class="btn-icon-action btn-edit-tournament" title="Edit Auction" style="text-decoration: none;">
             <i class="fas fa-pen"></i>
-        </button>
+        </a>
     </div>
     <div class="tournament-badge-corner"><?php echo $sname; ?></div>
 </div>
+
+<style>
+.btn-icon-action {
+    text-decoration: none !important;
+}
+
+.btn-icon-action:hover {
+    text-decoration: none !important;
+}
+
+.btn-icon-action i {
+    text-decoration: none !important;
+}
+</style>

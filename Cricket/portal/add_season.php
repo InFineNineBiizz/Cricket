@@ -2,6 +2,7 @@
     session_start();
     include "connection.php";
     $tid=$sname=$logo=$cname=$gname=$sdate=$edate=$btype=$gtype=$mtype=$over=$img=$tour_id="";
+    $maxDate = date('Y-m-d', strtotime('+1 year'));
 
     if(isset($_GET['tid']))
     {   
@@ -93,7 +94,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Season | CrickFolio</title>
+    <title>Add Season | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">        
     <link rel="stylesheet" href="../assets/css/home-style.css">
     <script src="../assets/script/jquery.min.js"></script>
@@ -492,13 +493,13 @@
 
                     <div class="form-group">
                         <label>Start Date <span class="required">*</span></label>
-                        <input type="date" name="sdate" id="sdate" min="<?php echo date('Y-m-d'); ?>" value="<?php echo $sdate;?>">
+                        <input type="date" name="sdate" id="sdate" min="<?php echo date('Y-m-d'); ?>" max="<?php echo $maxDate;?>" value="<?php echo $sdate;?>">
                         <span class="error-msg" id="sdate-error"></span>
                     </div>
 
                     <div class="form-group">
                         <label>End Date <span class="required">*</span></label>
-                        <input type="date" name="edate" id="edate" min="<?php echo date('Y-m-d'); ?>" value="<?php echo $edate;?>">
+                        <input type="date" name="edate" id="edate" min="<?php echo date('Y-m-d'); ?>" max="<?php echo $maxDate;?>" value="<?php echo $edate;?>">
                         <span class="error-msg" id="edate-error"></span>
                     </div>
 
@@ -534,15 +535,14 @@
                             <option value="T10" <?php if($mtype=="T10"){echo 'selected';}?>>T10</option>
                             <option value="T20" <?php if($mtype=="T20"){echo 'selected';}?>>T20</option>
                             <option value="OneDay 50" <?php if($mtype=="OneDay 50"){echo 'selected';}?>>OneDay 50</option>
-                            <option value="Limited Overs" <?php if($mtype=="Limited Overs"){echo 'selected';}?>>Limited Overs</option>
-                            <option value="Test Match" <?php if($mtype=="Test Match"){echo 'selected';}?>>Test Match</option>
+                            <option value="Limited Overs" <?php if($mtype=="Limited Overs"){echo 'selected';}?>>Limited Overs</option>                            
                         </select>
                         <span class="error-msg" id="mtype-error"></span>
                     </div>
 
                     <div class="form-group <?php if($mtype!='Limited Overs'){ echo 'd-none'; }?>" id="over">
                         <label>Overs <span class="required">*</span></label>
-                        <input type="text" name="overs" id="overs" placeholder="E.g.,25" value="<?php echo $over;?>">
+                        <input type="text" name="overs" id="overs" placeholder="E.g.,25" value="<?php echo $over;?>" step="1">
                         <span class="error-msg" id="overs-error"></span>
                     </div>
 
@@ -669,22 +669,35 @@
             });
 
             // LIVE VALIDATION - Overs
-            $('#overs').on('input', function() {
-                var val = $(this).val().trim();
-                if (val.length == 0) {
+            $('#overs').on('input', function () {
+                let val = $(this).val().trim();
+
+                // Check empty
+                if (val === '') {
                     $(this).removeClass('valid').addClass('invalid');
                     $('#overs-error').text('Overs is required').addClass('show');
-                } else if (isNaN(val)) {
-                    $(this).removeClass('valid').addClass('invalid');
-                    $('#overs-error').text('Only numbers allowed').addClass('show');
-                } else if (val < 1 || val > 100) {
-                    $(this).removeClass('valid').addClass('invalid');
-                    $('#overs-error').text('Overs must be between 1-100').addClass('show');
-                } else {
-                    $(this).removeClass('invalid').addClass('valid');
-                    $('#overs-error').removeClass('show');
+                    return;
                 }
+
+                // Check integer only (no decimals)
+                if (!Number.isInteger(Number(val))) {
+                    $(this).removeClass('valid').addClass('invalid');
+                    $('#overs-error').text('Only whole numbers are allowed').addClass('show');
+                    return;
+                }
+
+                // Range check
+                if (val < 1 || val > 50) {
+                    $(this).removeClass('valid').addClass('invalid');
+                    $('#overs-error').text('Overs must be between 1 and 50').addClass('show');
+                    return;
+                }
+
+                // Valid
+                $(this).removeClass('invalid').addClass('valid');
+                $('#overs-error').removeClass('show');
             });
+
 
             // LIVE VALIDATION - Start Date
             $('#sdate').on('change', function() {
@@ -810,18 +823,21 @@
 
                 // Validate Overs if visible
                 if (!$('#over').hasClass('d-none')) {
-                    var oversVal = $('#overs').val().trim();
-                    if (oversVal == '') {
+                    let oversVal = $('#overs').val().trim();
+
+                    if (oversVal === '') {
                         $('#overs').addClass('invalid');
                         $('#overs-error').text('Overs is required for Limited Overs match').addClass('show');
                         isValid = false;
-                    } else if (isNaN(oversVal)) {
+                    }
+                    else if (!Number.isInteger(Number(oversVal))) {
                         $('#overs').addClass('invalid');
-                        $('#overs-error').text('Only numbers are allowed').addClass('show');
+                        $('#overs-error').text('Only whole numbers are allowed').addClass('show');
                         isValid = false;
-                    } else if (oversVal < 1 || oversVal > 100) {
+                    }
+                    else if (oversVal < 1 || oversVal > 50) {
                         $('#overs').addClass('invalid');
-                        $('#overs-error').text('Overs must be between 1 and 100').addClass('show');
+                        $('#overs-error').text('Overs must be between 1 and 50').addClass('show');
                         isValid = false;
                     }
                 }

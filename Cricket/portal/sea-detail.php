@@ -3,26 +3,70 @@
     include "connection.php";
     $tid=$name=$logo=$cname=$gname=$sdate=$edate=$btype=$gtype=$mtype=$over=$img="";
 
+    // Handle delete request
+    if(isset($_GET['delete_id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
+        $delete_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+        
+        // Get season logo before deletion
+        $get_logo = "SELECT logo FROM seasons WHERE id = '".$delete_id."'";
+        $logo_result = mysqli_query($conn, $get_logo);
+        if($logo_row = mysqli_fetch_assoc($logo_result)) {
+            if(!empty($logo_row['logo'])) {
+                $logo_path = "../assets/images/" . $logo_row['logo'];
+                if(file_exists($logo_path)) {
+                    unlink($logo_path);
+                }
+            }
+        }
+        
+        // Delete related data from junction tables
+        $delete_season_organizer = "DELETE FROM season_organizer WHERE season_id = '".$delete_id."'";
+        mysqli_query($conn, $delete_season_organizer);
+        
+        $delete_season_sponsors = "DELETE FROM season_sponsors WHERE season_id = '".$delete_id."'";
+        mysqli_query($conn, $delete_season_sponsors);
+        
+        // Delete from seasons table
+        $delete_season = "DELETE FROM seasons WHERE id = '".$delete_id."'";
+        $delete_result = mysqli_query($conn, $delete_season);
+        
+        if($delete_result) {
+            $_SESSION['delete_success'] = true;
+            header("Location: sea-detail.php?id=$delete_id");
+            exit();
+        } else {
+            $_SESSION['delete_error'] = mysqli_error($conn);
+            header("Location: sea-detail.php?id=".$delete_id);
+            exit();
+        }
+    }
+
     $str="select * from tournaments";
     $resq=mysqli_query($conn,$str);
 
+    $season_exists = false;
+    
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
         $sql="select * from seasons where id='".$id."'";
         $res=mysqli_query($conn,$sql);
-        $row=mysqli_fetch_array($res);
-        $tid=$row['tid'];
-        $sname=$row['name'];
-        $logo=$row['logo'];
-        $cname=$row['cname'];
-        $gname=$row['gname'];
-        $sdate=$row['sdate'];
-        $edate=$row['edate'];
-        $btype=$row['btype'];
-        $gtype=$row['gtype'];
-        $mtype=$row['mtype'];
-        $over=$row['overs'];     
+        
+        if($res && mysqli_num_rows($res) > 0) {
+            $row=mysqli_fetch_array($res);
+            $tid=$row['tid'];
+            $sname=$row['name'];
+            $logo=$row['logo'];
+            $cname=$row['cname'];
+            $gname=$row['gname'];
+            $sdate=$row['sdate'];
+            $edate=$row['edate'];
+            $btype=$row['btype'];
+            $gtype=$row['gtype'];
+            $mtype=$row['mtype'];
+            $over=$row['overs'];
+            $season_exists = true;
+        }
     }
 ?>
 
@@ -31,8 +75,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Season Details | CrickFolio</title>
-    <link rel="stylesheet" href="../assets/css/fontawesome-all.css">    
+    <title>Season Details | <?php echo $title_name;?></title>
+    <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
+    <link rel="stylesheet" href="../assets/css/sweetalert2.css">
+    <script src="../assets/script/jquery.min.js"></script>
+    <script src="../assets/script/sweetalert2.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -447,6 +495,16 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
+        .btn-card-action a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
         .btn-card-edit {
             background: #22c55e;
             color: white;
@@ -602,6 +660,100 @@
             background: #dc2626;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state-container {
+            background: white;
+            border-radius: 15px;
+            padding: 4rem 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .empty-state-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .empty-state-icon i {
+            font-size: 3.5rem;
+            color: #f59e0b;
+        }
+
+        .empty-state-title {
+            font-size: 1.75rem;
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .btn-back-seasons {
+            background: #3b82f6;
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back-seasons:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* SweetAlert2 Custom Styling */
+        .swal2-popup {
+            border-radius: 16px;
+            font-family: inherit;
+        }
+
+        .swal2-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .swal2-html-container {
+            font-size: 15px;
+            color: #6b7280;
+        }
+
+        .swal2-confirm {
+            background: #dc2626 !important;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .swal2-cancel {
+            background: #fff !important;
+            border: 1px solid #e5e7eb !important;
+            color: #374151 !important;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 15px;
         }
 
         /* Responsive Design */
@@ -762,6 +914,7 @@
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
+            <?php if($season_exists): ?>
             <!-- Tournament Top Bar -->
             <div class="tournament-topbar">
                 <div class="tournament-topbar-container">
@@ -779,16 +932,20 @@
                     </a>
                 </div>
             </div>
+            <?php endif; ?>
             
             <div class="container">
+                <?php if($season_exists): ?>
                 <!-- Season Card -->
                 <div class="season-card">
                     <!-- Edit and Delete buttons in top right corner -->
                     <div class="season-card-actions">
-                        <button class="btn-card-action btn-card-edit"><a href="add_season.php?id=<?php echo $id;?>">
-                            <i class="fas fa-pen"></i></a>
+                        <button class="btn-card-action btn-card-edit">
+                            <a href="add_season.php?id=<?php echo $id;?>">
+                                <i class="fas fa-pen"></i>
+                            </a>
                         </button>
-                        <button class="btn-card-action btn-card-delete">
+                        <button class="btn-card-action btn-card-delete" data-id="<?php echo $id;?>" data-name="<?php echo htmlspecialchars($sname);?>">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -808,8 +965,15 @@
                                     <div class="season-detail-icon">
                                         <i class="fas fa-trophy"></i>
                                     </div>
-                                    <span class="season-detail-text"><?php while($rows=mysqli_fetch_assoc($resq)){ 
-                                    if($tid==$rows['tid']){echo $rows['name'];}}?></span>
+                                    <span class="season-detail-text"><?php 
+                                        mysqli_data_seek($resq, 0);
+                                        while($rows=mysqli_fetch_assoc($resq)){ 
+                                            if($tid==$rows['tid']){
+                                                echo $rows['name'];
+                                                break;
+                                            }
+                                        }
+                                    ?></span>
                                 </div>
 
                                 <div class="season-detail-item">
@@ -857,8 +1021,90 @@
                         </div>
                     </div>
                 </div>
+                <?php else: ?>
+                <!-- Empty State - No Season Found -->
+                <div class="empty-state-container">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h2 class="empty-state-title">No Season Found</h2>
+                    <p class="empty-state-text">The season you're looking for doesn't exist or has been deleted.</p>
+                    <a href="sea-auction.php" class="btn-back-seasons">
+                        <i class="fas fa-arrow-left"></i> Back to Seasons
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            
+            // Show success message if deleted (for redirect from another page)
+            <?php if(isset($_SESSION['delete_success'])): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'Season has been deleted successfully.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+                <?php unset($_SESSION['delete_success']); ?>
+            <?php endif; ?>
+
+            // Show error message if delete failed
+            <?php if(isset($_SESSION['delete_error'])): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to delete season. <?php echo addslashes($_SESSION['delete_error']); ?>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc2626'
+                });
+                <?php unset($_SESSION['delete_error']); ?>
+            <?php endif; ?>
+
+            // Delete button click handler
+            $(document).on('click', '.btn-card-delete', function() {
+                var seasonId = $(this).data('id');
+                var seasonName = $(this).data('name');
+                
+                console.log('Delete clicked - ID:', seasonId, 'Name:', seasonName);
+                
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: `Do you want to delete season <strong>${seasonName}</strong>?<br><small style="color:#dc2626;">This will delete all related organizers, sponsors, and auction data!</small>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                    focusCancel: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading
+                        Swal.fire({
+                            title: 'Deleting...',
+                            text: 'Please wait',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
+                        // Redirect to delete
+                        var deleteUrl = 'sea-detail.php?delete_id=' + seasonId + '&confirm=yes';
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

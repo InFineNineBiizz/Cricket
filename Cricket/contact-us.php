@@ -1,3 +1,6 @@
+<?php 
+    session_start();
+?>
 <html>
 <head>
     <title>Contact Us | CrickFolio</title>

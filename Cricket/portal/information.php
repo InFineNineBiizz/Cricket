@@ -2,12 +2,12 @@
     session_start();
     include "connection.php";
     $name=$tour_id=$sea_id=$venue=$sdate=$edate=$logo=$ctype=$max=$min=$reserve=$camt=$bidamt=$bprice=$img="";
-    $tour_name=$s_date=$e_date=$sname="";
+    $tour_name=$s_date=$e_date=$sname=$tlogo="";
 
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
-        $str="select a.*,t.name as tour_name,s.name as sname,s.sdate as start_date,s.edate as end_date 
+        $str="select a.*,t.name as tour_name,t.logo as tlogo,s.name as sname,s.sdate as start_date,s.edate as end_date 
         from auctions a,tournaments t,seasons s where a.tour_id=t.tid and a.sea_id=s.id and sea_id='".$id."'";
         
         $res=mysqli_query($conn,$str);
@@ -30,6 +30,7 @@
         $s_date=$row['start_date'];
         $e_date=$row['end_date'];
         $sname=$row['sname'];
+        $tlogo=$row['tlogo'];
     }
 ?>
 
@@ -38,7 +39,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $tour_name;?> - Manage</title>
+    <title><?php echo $tour_name;?> - Manage | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">    
     <style>
         * {
@@ -152,9 +153,9 @@ body {
 }
 
 .tournament-logo-circle img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .tournament-header-info {

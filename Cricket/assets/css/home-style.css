@@ -486,7 +486,7 @@ body {
 /* ===== AUCTION CARDS ===== */
 .auction-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 28px;
 }
 
@@ -668,7 +668,7 @@ body {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1200px) {
     .auction-grid {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -692,7 +692,7 @@ body {
     }
 
     .auction-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -750,6 +750,10 @@ body {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
+    }
+
+    .auction-grid {
+        grid-template-columns: 1fr;
     }
 }
 

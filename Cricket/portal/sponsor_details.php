@@ -2,7 +2,118 @@
     session_start();
     include "connection.php";
     
-    // Handle form submission FIRST
+    // Handle update request
+    if(isset($_POST['update_sponsor'])) {
+        $sponsor_id = mysqli_real_escape_string($conn, $_POST['sponsor_id']);
+        $stype = mysqli_real_escape_string($conn, $_POST['stype']);
+        $sname = mysqli_real_escape_string($conn, $_POST['sname']);
+        $stitle = mysqli_real_escape_string($conn, $_POST['stitle']);
+        $snumber = mysqli_real_escape_string($conn, $_POST['snumber']);
+        $semail = mysqli_real_escape_string($conn, $_POST['semail']);
+        
+        // Handle file upload for update
+        $logo = '';
+        $logo_update = '';
+        
+        if(isset($_FILES['slogo']) && $_FILES['slogo']['error'] == 0) {
+            // Delete old logo
+            $get_old_logo = "SELECT logo FROM sponsors WHERE id = '".$sponsor_id."'";
+            $old_logo_result = mysqli_query($conn, $get_old_logo);
+            if($old_logo_row = mysqli_fetch_assoc($old_logo_result)) {
+                if(!empty($old_logo_row['logo'])) {
+                    $old_logo_path = "../uploads/sponsors/" . $old_logo_row['logo'];
+                    if(file_exists($old_logo_path)) {
+                        unlink($old_logo_path);
+                    }
+                }
+            }
+            
+            // Upload new logo
+            $target_dir = "../uploads/sponsors/";
+            if (!file_exists($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
+            $logo = time() . '_' . basename($_FILES["slogo"]["name"]);
+            $target_file = $target_dir . $logo;
+            move_uploaded_file($_FILES["slogo"]["tmp_name"], $target_file);
+            $logo_update = ", logo = '".$logo."'";
+        }
+        
+        $update = "UPDATE sponsors SET 
+                   type = '$stype', 
+                   name = '$sname', 
+                   title = '$stitle', 
+                   email = '$semail', 
+                   number = '$snumber' 
+                   $logo_update
+                   WHERE id = '".$sponsor_id."'";
+        
+        $res = mysqli_query($conn, $update);
+        
+        if($res) {
+            $_SESSION['update_success'] = true;
+            
+            // Determine redirect URL
+            if(isset($_GET['id'])) {
+                header("Location: sponsor_details.php?id=".$_GET['id']);
+            } else if(isset($_SESSION['add_season'])) {
+                header("Location: sponsor_details.php");
+            } else {
+                header("Location: sponsor_details.php");
+            }
+            exit();
+        } else {
+            $_SESSION['update_error'] = mysqli_error($conn);
+        }
+    }
+    
+    // Handle delete request
+    if(isset($_GET['delete_id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
+        $delete_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+        
+        // First, get the season_id if it exists in the URL
+        $season_param = isset($_GET['season_id']) ? $_GET['season_id'] : '';
+        
+        // Delete from season_sponsors first (foreign key constraint)
+        $delete_season_sponsor = "DELETE FROM season_sponsors WHERE sponsor_id = '".$delete_id."'";
+        mysqli_query($conn, $delete_season_sponsor);
+        
+        // Delete sponsor logo if exists
+        $get_logo = "SELECT logo FROM sponsors WHERE id = '".$delete_id."'";
+        $logo_result = mysqli_query($conn, $get_logo);
+        if($logo_row = mysqli_fetch_assoc($logo_result)) {
+            if(!empty($logo_row['logo'])) {
+                $logo_path = "../uploads/sponsors/" . $logo_row['logo'];
+                if(file_exists($logo_path)) {
+                    unlink($logo_path);
+                }
+            }
+        }
+        
+        // Delete from sponsors table
+        $delete_sponsor = "DELETE FROM sponsors WHERE id = '".$delete_id."'";
+        $delete_result = mysqli_query($conn, $delete_sponsor);
+        
+        if($delete_result) {
+            $_SESSION['delete_success'] = true;
+            if(!empty($season_param)) {
+                header("Location: sponsor_details.php?id=".$season_param);
+            } else {
+                header("Location: sponsor_details.php");
+            }
+            exit();
+        } else {
+            $_SESSION['delete_error'] = mysqli_error($conn);
+            if(!empty($season_param)) {
+                header("Location: sponsor_details.php?id=".$season_param);
+            } else {
+                header("Location: sponsor_details.php");
+            }
+            exit();
+        }
+    }
+    
+    // Handle form submission
     if(isset($_POST['save_sponsor'])) {
         $stype = mysqli_real_escape_string($conn, $_POST['stype']);
         $sname = mysqli_real_escape_string($conn, $_POST['sname']);
@@ -60,20 +171,22 @@
     // Try to get season_id from GET or SESSION
     if(isset($_GET['id'])) {
         $season_id = $_GET['id'];
-        $sql = "SELECT s.*, ss.* FROM sponsors s 
+        $sql = "SELECT s.id as sponsor_id, s.type, s.name, s.title, s.email, s.number, s.logo, ss.* 
+                FROM sponsors s 
                 INNER JOIN season_sponsors ss ON ss.sponsor_id = s.id 
                 WHERE ss.season_id = '".$season_id."' 
-                ORDER BY ss.sponsor_id";
+                ORDER BY s.id";
         $result = mysqli_query($conn, $sql);
         $query_executed = true;
             
     }
     else if(isset($_SESSION['add_season'])) {
         $season_id = $_SESSION['add_season'];
-        $sql = "SELECT s.*, ss.* FROM sponsors s 
+        $sql = "SELECT s.id as sponsor_id, s.type, s.name, s.title, s.email, s.number, s.logo, ss.* 
+                FROM sponsors s 
                 INNER JOIN season_sponsors ss ON ss.sponsor_id = s.id 
                 WHERE ss.season_id = '".$season_id."' 
-                ORDER BY ss.sponsor_id";
+                ORDER BY s.id";
         $result = mysqli_query($conn, $sql);
         $query_executed = true;
                 
@@ -96,10 +209,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sponsor Details | CrickFolio</title>
+    <title>Sponsor Details | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">        
     <link rel="stylesheet" href="../assets/css/home-style.css">
     <script src="../assets/script/jquery.min.js"></script>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root{
@@ -248,12 +365,13 @@
             margin: 0 auto 20px;
             position: relative;
             z-index: 10;
+            border: none;
         }
 
         .add-btn-circle:hover{
             transform: scale(1.05);
             box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-            background: #f59e0b;
+            background: #d97706;
         }
 
         .add-btn-circle:active{
@@ -401,7 +519,7 @@
         }
 
         .btn-browse:hover{
-            background: #f59e0b;
+            background: #d97706;
         }
 
         .file-preview{
@@ -475,7 +593,7 @@
         }
 
         .btn-save:hover{
-            background: #f59e0b;
+            background: #d97706;
         }
 
         /* Footer Buttons */
@@ -515,7 +633,7 @@
         }
 
         .btn-primary:hover{
-            background: #f59e0b;
+            background: #d97706;
         }
 
         /* Sponsor List */
@@ -623,6 +741,41 @@
             width: 20px;
         }
 
+        /* SweetAlert2 Custom Styling */
+        .swal2-popup {
+            border-radius: 16px;
+            font-family: inherit;
+        }
+
+        .swal2-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .swal2-html-container {
+            font-size: 15px;
+            color: #6b7280;
+        }
+
+        .swal2-confirm {
+            background: #dc2626 !important;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .swal2-cancel {
+            background: #fff !important;
+            border: 1px solid #e5e7eb !important;
+            color: #374151 !important;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
         @media(max-width:900px){
             .form-grid{
                 grid-template-columns:1fr;
@@ -680,9 +833,9 @@
             
             <!-- Empty State - Shows when no sponsor -->
             <div class="empty-state" id="emptyState" style="<?php echo ($count == 0) ? 'display:block;' : 'display:none;'; ?>">
-                <div class="add-btn-circle" id="addSponsorBtn">
+                <button type="button" class="add-btn-circle" id="addSponsorBtn">
                     <i class="fas fa-plus"></i>
-                </div>
+                </button>
                 <h3>Add New Sponsor</h3>
                 <p>You have no Sponsor at the moment!</p>
             </div>
@@ -708,10 +861,17 @@
                     ?>
                     <div class="sponsor-item">
                         <div class="action-buttons">
-                            <button class="btn-edit" onclick="editSponsor(<?php echo $row['id']; ?>)">
+                            <button class="btn-edit" 
+                                    data-id="<?php echo $row['sponsor_id']; ?>"
+                                    data-type="<?php echo htmlspecialchars($row['type']); ?>"
+                                    data-name="<?php echo htmlspecialchars($row['name']); ?>"
+                                    data-title="<?php echo htmlspecialchars($row['title']); ?>"
+                                    data-email="<?php echo htmlspecialchars($row['email']); ?>"
+                                    data-number="<?php echo htmlspecialchars($row['number']); ?>"
+                                    data-logo="<?php echo htmlspecialchars($row['logo']); ?>">
                                 <i class="fas fa-pen"></i>
                             </button>
-                            <button class="btn-delete-icon" onclick="deleteSponsor(<?php echo $row['id']; ?>)">
+                            <button class="btn-delete-icon" data-id="<?php echo $row['sponsor_id']; ?>" data-name="<?php echo htmlspecialchars($row['name']); ?>">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -741,11 +901,13 @@
                 </div>
             </div>
 
-            <!-- Form Section - Shows when adding sponsor -->
+            <!-- Form Section - Shows when adding/editing sponsor -->
             <div class="form-section" id="formSection">
-                <h3>Add Sponsor</h3>
+                <h3 id="formTitle">Add Sponsor</h3>
                 
                 <form method="POST" id="sponsorForm" enctype="multipart/form-data">
+                    <input type="hidden" name="sponsor_id" id="sponsor_id" value="">
+                    
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Sponsor Type <span class="required">*</span></label>
@@ -806,14 +968,14 @@
 
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
-                        <button type="submit" name="save_sponsor" class="btn-save">Save</button>
+                        <button type="submit" name="save_sponsor" id="submitBtn" class="btn-save">Save</button>
                     </div>
                 </form>
             </div>
 
             <!-- Footer Navigation - Shows when NOT in form -->
             <div class="footer-actions" id="footerActions">
-                <button type="button" class="btn-outline" onclick="window.location.href='<?php if(isset($season_id)){ echo 'organizers-list?id='.$season_id;}else{ echo 'organizers-list.php';}?>'">Previous</button>
+                <button type="button" class="btn-outline" onclick="window.location.href='<?php if(isset($season_id)){ echo 'organizers-list.php?id='.$season_id;}else{ echo 'organizers-list.php';}?>'">Previous</button>
                 <button type="button" class="btn-primary" onclick="window.location.href='<?php if(isset($season_id)){ echo 'confirm.php?id='.$season_id;}else{ echo 'confirm.php';}?>'">SKIP</button>
             </div>
 
@@ -821,7 +983,142 @@
     </div>
 
     <script>
-        // Simple click handler - no jQuery needed
+        var seasonId = '<?php echo isset($season_id) ? $season_id : ""; ?>';
+        
+        // Show success message if deleted
+        <?php if(isset($_SESSION['delete_success'])): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Sponsor has been deleted successfully.',
+                showConfirmButton:false,                
+                timer: 2000,
+                timerProgressBar: true,
+            });
+            <?php unset($_SESSION['delete_success']); ?>
+        <?php endif; ?>
+
+        // Show success message if updated
+        <?php if(isset($_SESSION['update_success'])): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: 'Sponsor has been updated successfully.',
+                showConfirmButton:false,
+                timer: 2000,
+                timerProgressBar: true,
+            });
+            <?php unset($_SESSION['update_success']); ?>
+        <?php endif; ?>
+
+        // Show error message if delete failed
+        <?php if(isset($_SESSION['delete_error'])): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to delete sponsor. <?php echo addslashes($_SESSION['delete_error']); ?>',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc2626'
+            });
+            <?php unset($_SESSION['delete_error']); ?>
+        <?php endif; ?>
+
+        // Show error message if update failed
+        <?php if(isset($_SESSION['update_error'])): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to update sponsor. <?php echo addslashes($_SESSION['update_error']); ?>',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc2626'
+            });
+            <?php unset($_SESSION['update_error']); ?>
+        <?php endif; ?>
+
+        // Edit button handler
+        $(document).on('click', '.btn-edit', function() {
+            var sponsorId = $(this).data('id');
+            var sponsorType = $(this).data('type');
+            var sponsorName = $(this).data('name');
+            var sponsorTitle = $(this).data('title');
+            var sponsorEmail = $(this).data('email');
+            var sponsorNumber = $(this).data('number');
+            var sponsorLogo = $(this).data('logo');
+            
+            console.log('Edit clicked - ID:', sponsorId);
+            
+            // Change form title
+            $('#formTitle').text('Edit Sponsor');
+            
+            // Fill form fields
+            $('#sponsor_id').val(sponsorId);
+            $('#stype').val(sponsorType);
+            $('#sname').val(sponsorName);
+            $('#stitle').val(sponsorTitle);
+            $('#semail').val(sponsorEmail);
+            $('#snumber').val(sponsorNumber);
+            
+            // Show existing logo if available
+            if(sponsorLogo && sponsorLogo !== '') {
+                $('#logoPreview').attr('src', '../uploads/sponsors/' + sponsorLogo);
+                $('#fileUploadArea').hide();
+                $('#filePreview').show();
+            }
+            
+            // Change submit button
+            $('#submitBtn').attr('name', 'update_sponsor').text('Update');
+            
+            // Show form
+            showAddForm();
+        });
+
+        // Delete button handler with SweetAlert
+        $(document).on('click', '.btn-delete-icon', function() {
+            var sponsorId = $(this).data('id');
+            var sponsorName = $(this).data('name');
+            
+            console.log('Delete clicked - ID:', sponsorId, 'Name:', sponsorName);
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                html: `Do you want to delete <strong>${sponsorName}</strong>?<br><small style="color:#dc2626;">This action cannot be undone!</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Build delete URL
+                    var deleteUrl = 'sponsor_details.php?delete_id=' + sponsorId + '&confirm=yes';
+                    if(seasonId) {
+                        deleteUrl += '&season_id=' + seasonId;
+                    }
+                    
+                    console.log('Redirecting to:', deleteUrl);
+                    
+                    // Show loading
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Redirect to delete
+                    window.location.href = deleteUrl;
+                }
+            });
+        });
+    
+        // Simple click handler - no jQuery needed for these
         window.onload = function() {
             
             // Add Sponsor Button Click
@@ -874,15 +1171,23 @@
             var sponsorList = document.getElementById('sponsorList');
             var emptyState = document.getElementById('emptyState');
             
+            // Reset form
             document.getElementById('formSection').style.display = 'none';
             document.getElementById('formSection').classList.remove('show');
             document.getElementById('sponsorForm').reset();
+            document.getElementById('sponsor_id').value = '';
             removeFile();
+            
+            // Reset form title and button for add mode
+            document.getElementById('formTitle').textContent = 'Add Sponsor';
+            document.getElementById('submitBtn').setAttribute('name', 'save_sponsor');
+            document.getElementById('submitBtn').textContent = 'Save';
             
             // Clear validation
             var invalids = document.querySelectorAll('.invalid');
             invalids.forEach(function(el) {
                 el.classList.remove('invalid');
+                el.classList.remove('valid');
             });
             var errors = document.querySelectorAll('.error-msg');
             errors.forEach(function(el) {

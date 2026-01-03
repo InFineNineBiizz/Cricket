@@ -1,5 +1,4 @@
-<?php 
-    session_start();
+<?php     
     include "links.php";
 ?>
 <!DOCTYPE html>
@@ -20,7 +19,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="index.php" class="ritekhela-logo"><img src="assets/images/Crickfolio1.png" alt="Logo" height="100px" width="250px"></a>
+                        <a href="index.php" class="ritekhela-logo"><img src="assets/images/Crickfolio.png" alt="Logo" height="100px" width="200px"></a>
                         <div class="ritekhela-right-section">
                             <div class="ritekhela-navigation">
                                 <span class="ritekhela-menu-link">
@@ -32,6 +31,7 @@
                                     <ul id="main-menu" class="sm sm-blue">
                                         <li><a href="portal/index.php">Portal</a></li>
                                         <li><a href="index.php">Home</a></li>
+                                        <li><a href="aboutus.php">About Us</a></li>
                                         <li><a href="leaderboard.php">LeaderBoard</a></li>
                                         <li><a href="upauction.php">Auction</a>
                                             <ul>

@@ -7,20 +7,83 @@
     $added = null;
     $result = null;
     
+    // Handle update request
+    if(isset($_POST['update_organizer'])) {
+        $organizer_id = mysqli_real_escape_string($conn, $_POST['organizer_id']);
+        $oname = mysqli_real_escape_string($conn, $_POST['oname']);
+        $onumber = mysqli_real_escape_string($conn, $_POST['onumber']);
+        $oemail = mysqli_real_escape_string($conn, $_POST['oemail']);
+        
+        $update = "UPDATE organizers SET 
+                   name = '$oname', 
+                   number = '$onumber', 
+                   email = '$oemail'
+                   WHERE id = '".$organizer_id."'";
+        
+        $res = mysqli_query($conn, $update);
+        
+        if($res) {
+            $_SESSION['update_success'] = true;
+            
+            // Determine redirect URL
+            if(isset($_GET['id'])) {
+                header("Location: organizers-list.php?id=".$_GET['id']);
+            } else if(isset($_SESSION['add_season'])) {
+                header("Location: organizers-list.php");
+            } else {
+                header("Location: organizers-list.php");
+            }
+            exit();
+        } else {
+            $_SESSION['update_error'] = mysqli_error($conn);
+        }
+    }
+    
+    // Handle delete request
+    if(isset($_GET['delete_id']) && isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
+        $delete_id = $_GET['delete_id'];
+        
+        // Delete from season_organizer first (foreign key constraint)
+        $delete_season_org = "DELETE FROM season_organizer WHERE organizer_id = '".$delete_id."'";
+        mysqli_query($conn, $delete_season_org);
+        
+        // Delete from organizers table
+        $delete_organizer = "DELETE FROM organizers WHERE id = '".$delete_id."'";
+        $delete_result = mysqli_query($conn, $delete_organizer);
+        
+        if($delete_result) {
+            $_SESSION['delete_success'] = true;
+            if(isset($_GET['season_id'])) {
+                header("Location: organizers-list.php?id=".$_GET['season_id']);
+            } else {
+                header("Location: organizers-list.php");
+            }
+            exit();
+        }
+    }
+    
     if(isset($_GET['id']))
     {
         $season_id=$_GET['id'];
 
-        // Fetch organizers from database
-        $sql = "SELECT o.*,os.* FROM organizers o,season_organizer os where os.organizer_id=o.id and os.season_id='".$season_id."' order by os.organizer_id";
+        // Fetch organizers from database - Modified query to get organizer ID properly
+        $sql = "SELECT o.id as organizer_id, o.name, o.number, o.email, os.* 
+                FROM organizers o 
+                INNER JOIN season_organizer os ON os.organizer_id = o.id 
+                WHERE os.season_id='".$season_id."' 
+                ORDER BY o.id";
         $result = mysqli_query($conn, $sql);
     }
     else if(isset($_SESSION['add_season']))
     {
         $added=$_SESSION['add_season'];
     
-        // Fetch organizers from database
-        $sql = "SELECT o.*,os.* FROM organizers o,season_organizer os where os.organizer_id=o.id and os.season_id='".$added."' order by os.organizer_id";        
+        // Fetch organizers from database - Modified query to get organizer ID properly
+        $sql = "SELECT o.id as organizer_id, o.name, o.number, o.email, os.* 
+                FROM organizers o 
+                INNER JOIN season_organizer os ON os.organizer_id = o.id 
+                WHERE os.season_id='".$added."' 
+                ORDER BY o.id";        
         $result = mysqli_query($conn, $sql);        
     }
     
@@ -59,9 +122,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Organizer Details | CrickFolio Portal</title>
+    <title>Organizer Details | <?php echo $title_name;?></title>
+
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">    
     <script src="../assets/script/jquery.min.js"></script>
+    <script src="../assets/script/sweetalert2.js"></script>
+    <link rel="stylesheet" href="../assets/css/sweetalert2.css">
 
     <style>
         :root{
@@ -509,6 +575,41 @@
             width: 20px;
         }
 
+        /* SweetAlert2 Custom Styling */
+        .swal2-popup {
+            border-radius: 16px;
+            font-family: inherit;
+        }
+
+        .swal2-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .swal2-html-container {
+            font-size: 15px;
+            color: #6b7280;
+        }
+
+        .swal2-confirm {
+            background: #dc2626 !important;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .swal2-cancel {
+            background: #fff !important;
+            border: 1px solid #e5e7eb !important;
+            color: #374151 !important;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
     </style>
 </head>
 <body>
@@ -578,10 +679,14 @@
                     ?>
                     <div class="organizer-item">
                         <div class="action-buttons">
-                            <button class="btn-edit" onclick="editOrganizer(<?php echo $row['id']; ?>)">
+                            <button class="btn-edit"
+                                    data-id="<?php echo $row['organizer_id']; ?>"
+                                    data-name="<?php echo htmlspecialchars($row['name']); ?>"
+                                    data-email="<?php echo htmlspecialchars($row['email']); ?>"
+                                    data-number="<?php echo htmlspecialchars($row['number']); ?>">
                                 <i class="fas fa-pen"></i>
                             </button>
-                            <button class="btn-delete-icon" onclick="deleteOrganizer(<?php echo $row['id']; ?>)">
+                            <button class="btn-delete-icon" data-id="<?php echo $row['organizer_id']; ?>" data-name="<?php echo htmlspecialchars($row['name']); ?>">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -605,11 +710,13 @@
                 </div>
             </div>
 
-            <!-- Form Section - Shows when adding organizer -->
+            <!-- Form Section - Shows when adding/editing organizer -->
             <div class="form-section" id="formSection">
-                <h3>Add Organizer</h3>
+                <h3 id="formTitle">Add Organizer</h3>
                 
                 <form method="POST" id="organizerForm">
+                    <input type="hidden" name="organizer_id" id="organizer_id" value="">
+                    
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Organizer Name <span class="required">*</span></label>
@@ -629,10 +736,10 @@
                             <span class="error-msg" id="oemail-error"></span>
                         </div>
                     </div>
-
+                    
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" id="cancelBtn" onclick="window.location.href='<?php if(isset($season_id)){ echo 'organizers-list.php?id='.$season_id;}else{ echo 'organizers-list.php';}?>'">Cancel</button>
-                        <button type="submit" name="save_organizer" class="btn-save">Save</button>
+                        <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+                        <button type="submit" name="save_organizer" id="submitBtn" class="btn-save">Save</button>
                     </div>
                 </form>
             </div>
@@ -653,6 +760,101 @@
             
             console.log('Has organizers:', hasOrganizers);
 
+            // Show success message if deleted
+            <?php if(isset($_SESSION['delete_success'])): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'Organizer has been deleted successfully.',                    
+                    timer: 2000,
+                    timerProgressBar:true,
+                    showConfirmButton:false
+                });
+                <?php unset($_SESSION['delete_success']); ?>
+            <?php endif; ?>
+
+            // Show success message if updated
+            <?php if(isset($_SESSION['update_success'])): ?>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: 'Organizer has been updated successfully.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+                <?php unset($_SESSION['update_success']); ?>
+            <?php endif; ?>
+
+            // Show error message if update failed
+            <?php if(isset($_SESSION['update_error'])): ?>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to update organizer. <?php echo addslashes($_SESSION['update_error']); ?>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc2626'
+                });
+                <?php unset($_SESSION['update_error']); ?>
+            <?php endif; ?>
+
+            // Edit button handler
+            $(document).on('click', '.btn-edit', function() {
+                var organizerId = $(this).data('id');
+                var organizerName = $(this).data('name');
+                var organizerEmail = $(this).data('email');
+                var organizerNumber = $(this).data('number');
+                
+                console.log('Edit clicked - ID:', organizerId);
+                
+                // Change form title
+                $('#formTitle').text('Edit Organizer');
+                
+                // Fill form fields
+                $('#organizer_id').val(organizerId);
+                $('#oname').val(organizerName);
+                $('#oemail').val(organizerEmail);
+                $('#onumber').val(organizerNumber);
+                
+                // Change submit button
+                $('#submitBtn').attr('name', 'update_organizer').text('Update');
+                
+                // Show form
+                $('#emptyState').hide();
+                $('#organizerList').hide();
+                $('#formSection').addClass('show');
+                $('#footerActions').hide();
+            });
+
+            // Delete button click handler
+            $(document).on('click', '.btn-delete-icon', function() {
+                var organizerId = $(this).data('id');
+                var organizerName = $(this).data('name');
+                var seasonId = '<?php echo isset($season_id) ? $season_id : ""; ?>';
+                
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: `Do you want to delete <strong>${organizerName}</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                    focusCancel: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to delete
+                        var deleteUrl = 'organizers-list.php?delete_id=' + organizerId + '&confirm=yes';
+                        if(seasonId) {
+                            deleteUrl += '&season_id=' + seasonId;
+                        }
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+
             // Show form when clicking add button
             $('#addOrganizerBtn, #addMoreBtn').on('click', function() {
                 $('#emptyState').hide();
@@ -665,8 +867,14 @@
             $('#cancelBtn').on('click', function() {
                 $('#formSection').removeClass('show');
                 $('#organizerForm')[0].reset();
+                $('#organizer_id').val('');
                 $('.invalid').removeClass('invalid');
+                $('.valid').removeClass('valid');
                 $('.error-msg').removeClass('show');
+                
+                // Reset form title and button for add mode
+                $('#formTitle').text('Add Organizer');
+                $('#submitBtn').attr('name', 'save_organizer').text('Save');
                 
                 if(hasOrganizers) {
                     $('#organizerList').addClass('show');

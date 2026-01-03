@@ -26,7 +26,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournaments | CrickFolio Portal</title>
+    <title>Tournaments | <?php echo $title_name;?></title>
 
     <link rel="stylesheet" href="../assets/css/fontawesome-all.css">
     <link rel="stylesheet" href="../assets/css/tournament-style.css">
