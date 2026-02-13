@@ -165,7 +165,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Season Auction | CrickFolio</title>
+    <title>Season Auction | <?php echo $title_name;?></title>
     
     <!-- Bootstrap Css -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">        

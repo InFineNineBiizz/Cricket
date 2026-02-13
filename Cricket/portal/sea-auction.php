@@ -5,12 +5,12 @@
     if(isset($_GET['id']))
     {   
         $id=$_GET['id'];
-        $sql="delete from seasons where id=".$id."";
+        $sql="delete from seasons where id=".$id." AND created_by='".$user_id."'";
         mysqli_query($conn,$sql);
         header("location:sea-auction.php");
     }
 
-    $sql="select * from tournaments";
+    $sql="select * from tournaments where created_by='".$user_id."'";
     $resq=mysqli_query($conn,$sql);
 
     if(isset($_POST['btn']))
@@ -28,14 +28,15 @@
             $ov="NULL";            
         }
 
-        $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo) values('".$_POST['sname']."','".$_POST['tourname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."')";
+        $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo,created_by) 
+        values('".$_POST['sname']."','".$_POST['tourname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."','".$user_id."')";
         $res=mysqli_query($conn,$str);
         
         header('location:organizers-list.php');
     }
     
     // Fetch all seasons from database
-    $seasonSql = "SELECT s.*, t.name as tournament_name FROM seasons s LEFT JOIN tournaments t ON s.tid = t.tid ORDER BY s.sdate";
+    $seasonSql = "SELECT s.*, t.name as tournament_name FROM seasons s,tournaments t where s.tid = t.tid and s.created_by='".$_SESSION['user_id']."' ORDER BY s.sdate";
     $seasonResult = mysqli_query($conn, $seasonSql);
 ?>
 
@@ -316,7 +317,7 @@
         <div class="page-header">
             <h1 class="page-title">Seasons</h1>
             <button class="add-season-btn" onclick="window.location.href='add_season.php'">
-                <i class="fas fa-plus-circle"></i> ADD SEASON
+                <i class="fas fa-plus-circle"></i> CREATE SEASON
             </button>
         </div>
 
@@ -401,7 +402,8 @@
                         matchType: '" . addslashes($seasonRow['mtype']) . "',
                         overs: '" . addslashes($seasonRow['overs']) . "',
                         logo: '" . $logoPath . "',
-                        logoName: '" . addslashes($seasonRow['logo']) . "'
+                        logoName: '" . addslashes($seasonRow['logo']) . "',
+                        created_by:'".$seasonRow['created_by']."'
                     },";
                 }
             }

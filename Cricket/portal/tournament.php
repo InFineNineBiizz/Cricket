@@ -6,7 +6,7 @@
     {
         $id = (int)$_GET['delete'];
 
-        $q = mysqli_query($conn, "SELECT logo FROM tournaments WHERE tid=$id");
+        $q = mysqli_query($conn, "SELECT logo FROM tournaments WHERE tid=$id and created_by='".$user_id."'");
         $r = mysqli_fetch_assoc($q);
 
         if (!empty($r['logo'])) {
@@ -14,11 +14,11 @@
             if (file_exists($path)) unlink($path);
         }
 
-        mysqli_query($conn, "DELETE FROM tournaments WHERE tid=$id");
+        mysqli_query($conn, "DELETE FROM tournaments WHERE tid=$id and created_by='".$user_id."'");
         header("Location: tournament.php");
         exit;
     }
-    $res = mysqli_query($conn, "SELECT * FROM tournaments ORDER BY tid ");
+    $res = mysqli_query($conn, "SELECT * FROM tournaments where created_by='".$user_id."'");
 ?>
 
 <!DOCTYPE html>
@@ -150,6 +150,52 @@
         .btn.view{ background:#2563eb; }
         .btn.edit{ background:#16a34a; }
         .btn.delete{ background:#dc2626; }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,.05);
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .empty-icon i {
+            font-size: 48px;
+            color: #f59e0b;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 12px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: #6b7280;
+            margin: 0 0 24px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .empty-state .add-tournament-btn {
+            margin: 0;
+        }
+
     </style>
 </head>
 
@@ -163,48 +209,64 @@
         <div class="page-header">
             <h1 class="page-title">Tournaments</h1>
             <button class="add-tournament-btn" onclick="location.href='add-tournament.php'">
-                <i class="fas fa-plus-circle"></i> ADD TOURNAMENT
+                <i class="fas fa-plus-circle"></i> CREATE TOURNAMENT
             </button>
         </div>
 
         <div class="tournament-grid">
-        <?php while ($row = mysqli_fetch_assoc($res)) { ?>
-            
-            <div class="tournament-card">
+        <?php 
+            $tournament_count = mysqli_num_rows($res);
 
-                <div class="tournament-left">
-                    <div class="tournament-icon">
-                        <?php if (!empty($row['logo'])) { ?>
-                            <img src="../assets/images/<?php echo $row['logo']; ?>" alt="Tournament Logo">
-                        <?php } else { ?>
-                            <i class="fas fa-trophy"></i>
-                        <?php } ?>
+            if ($tournament_count > 0) {
+                while ($row = mysqli_fetch_assoc($res)) { ?>
+                    
+                    <div class="tournament-card">
+
+                        <div class="tournament-left">
+                            <div class="tournament-icon">
+                                <?php if (!empty($row['logo'])) { ?>
+                                    <img src="../assets/images/<?php echo $row['logo']; ?>" alt="Tournament Logo">
+                                <?php } else { ?>
+                                    <i class="fas fa-trophy"></i>
+                                <?php } ?>
+                            </div>
+
+                            <div class="tournament-text">
+                                <h3><?php echo $row['name']; ?></h3>
+                                <span>
+                                    <i class="fas fa-award"></i>
+                                    <?php echo $row['category']; ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="tournament-actions">
+                            <a href="view-tournament.php?tid=<?php echo $row['tid']; ?>" class="btn view">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a href="add-tournament.php?tid=<?php echo $row['tid']; ?>" class="btn edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <a href="javascript:void(0);" class="btn delete" onclick="deleteTournament(<?php echo $row['tid']; ?>, '<?php echo addslashes($row['name']); ?>')"><i class="fas fa-trash"></i></a>
+                        </div>
+
                     </div>
 
-                    <div class="tournament-text">
-                        <h3><?php echo $row['name']; ?></h3>
-                        <span>
-                            <i class="fas fa-award"></i>
-                            <?php echo $row['category']; ?>
-                        </span>
+            <?php } 
+            } else { ?>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-trophy"></i>
                     </div>
+                    <h2>No Tournaments Yet</h2>
+                    <p>You haven't created any tournaments yet. Get started by creating your first tournament!</p>
+                    <button class="add-tournament-btn" onclick="location.href='add-tournament.php'">
+                        <i class="fas fa-plus-circle"></i> Create Tournament
+                    </button>
                 </div>
-
-                <div class="tournament-actions">
-                    <a href="view-tournament.php?tid=<?php echo $row['tid']; ?>" class="btn view">
-                        <i class="fas fa-eye"></i>
-                    </a>
-
-                    <a href="add-tournament.php?tid=<?php echo $row['tid']; ?>" class="btn edit">
-                        <i class="fas fa-pen"></i>
-                    </a>
-
-                    <a href="javascript:void(0);" class="btn delete" onclick="deleteTournament(<?php echo $row['tid']; ?>, '<?php echo addslashes($row['name']); ?>')"><i class="fas fa-trash"></i></a>
-                </div>
-
-            </div>
-
-        <?php } ?>
+            <?php } ?>
         </div>
 
     </main>

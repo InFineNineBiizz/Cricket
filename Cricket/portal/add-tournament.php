@@ -21,7 +21,7 @@
             move_uploaded_file($_FILES['tlogo']['tmp_name'],"../assets/images/".$_FILES['tlogo']['name']);
             $img=$_FILES['tlogo']['name'];                
             
-            $str="insert into tournaments(name,category,logo) values('".$_POST['tname']."','".$_POST['tcategory']."','".$img."')";
+            $str="insert into tournaments(name,category,logo,created_by) values('".$_POST['tname']."','".$_POST['tcategory']."','".$img."','".$_SESSION['user_id']."')";
             $res=mysqli_query($conn,$str);            
             $log=true;
         }
@@ -50,7 +50,7 @@
 
     <style>
 
-          /* ===== jQuery Validation ===== */
+        /* ===== jQuery Validation ===== */
         .error-text{
             color:#ef4444;
             font-size:12px;
@@ -65,11 +65,7 @@
         .valid-border{
             border:1.5px solid #10b981 !important;
         }
-
-        /* ================================================
-        ADD TOURNAMENT PAGE STYLES
-        ================================================ */
-
+        
         /* Page Header */
         .page-header {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -515,7 +511,7 @@
                 <div class="form-section">
                     <div class="section-header">
                         <i class="fas fa-info-circle"></i>
-                        <h2>ADD NEW TOURNAMENT </h2>
+                        <h2>CREATE NEW TOURNAMENT </h2>
                     </div>
                     
                     <div class="form-grid">
@@ -594,7 +590,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         $(document).ready(function () {
-
             const name     = $("#name");
             const category = $("#category");
             const logo     = $("#logo");
@@ -609,21 +604,21 @@
             let isCategoryValid = false;
             let isLogoValid = false;
 
-            // Check if editing existing tournament
-            <?php if(!empty($name)) { ?>
+            // Check if editing existing tournament (but don't add green border yet)
+            <?php if(!empty($tname)) { ?>
                 isNameValid = true;
-                name.addClass("valid-border");
+                // Don't add valid-border class on page load
             <?php } ?>
 
             <?php if(!empty($cat)) { ?>
                 isCategoryValid = true;
-                category.addClass("valid-border");
+                // Don't add valid-border class on page load
             <?php } ?>
 
             <?php if(!empty($logo)) { ?>
                 isLogoValid = true;
                 // Show existing logo preview
-                const existingLogoPath = "../images/<?php echo $logo; ?>";
+                const existingLogoPath = "../assets/images/<?php echo $logo; ?>";
                 $("#imagePreview").attr("src", existingLogoPath);
                 $("#uploadContent").hide();
                 $("#imagePreviewWrapper").show();
@@ -719,7 +714,6 @@
             });
 
         });
-
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('logo');
         const uploadContent = document.getElementById('uploadContent');

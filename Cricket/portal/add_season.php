@@ -7,19 +7,19 @@
     if(isset($_GET['tid']))
     {   
         $tour_id=$_GET['tid'];
-        $sql="select * from tournaments where tid='".$tour_id."'";
+        $sql="select * from tournaments where tid='".$tour_id."' and created_by='".$_SESSION['user_id']."'";
         $resq=mysqli_query($conn,$sql);
     }
     else
     {
-        $sql="select * from tournaments";
+        $sql="select * from tournaments where created_by='".$_SESSION['user_id']."'";
         $resq=mysqli_query($conn,$sql);
     }
 
     if(isset($_GET['id']))
     {
         $id=$_GET['id'];
-        $str="select * from seasons where id=".$id."";
+        $str="select * from seasons where id=".$id." and created_by='".$_SESSION['user_id']."'";
         $res=mysqli_query($conn,$str);
         $row=mysqli_fetch_array($res);
         $tid=$row['tid'];
@@ -63,16 +63,16 @@
         {
             if(isset($_GET['tid']))
             {                
-                $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo) 
-                values('".$_POST['sname']."','".$_POST['tname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."')";            
+                $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo,created_by) 
+                values('".$_POST['sname']."','".$_POST['tname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."','".$_SESSION['user_id']."')";
                 $res=mysqli_query($conn,$str);
                 $_SESSION['add_season']=mysqli_insert_id($conn);
                 header("location:organizers-list.php");
             }
             else
             {
-                $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo) 
-                values('".$_POST['sname']."','".$_POST['tname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."')";            
+                $str="insert into seasons(name,tid,cname,gname,sdate,edate,btype,gtype,mtype,overs,logo,created_by) 
+                values('".$_POST['sname']."','".$_POST['tname']."','".$_POST['cname']."','".$_POST['gname']."','".$_POST['sdate']."','".$_POST['edate']."','".$_POST['btype']."','".$_POST['gtype']."','".$_POST['mtype']."','".$ov."','".$img."','".$_SESSION['user_id']."')";
                 $res=mysqli_query($conn,$str);
                 $_SESSION['add_season']=mysqli_insert_id($conn);
                 header("location:organizers-list.php");
@@ -82,7 +82,7 @@
         {
             $str="update seasons set name='".$_POST['sname']."',tid='".$_POST['tname']."',cname='".$_POST['cname']."',
             gname='".$_POST['gname']."',sdate='".$_POST['sdate']."',edate='".$_POST['edate']."',
-            btype='".$_POST['btype']."',gtype='".$_POST['gtype']."',mtype='".$_POST['mtype']."',overs='".$ov."',logo='".$img."' where id='".$id."'";
+            btype='".$_POST['btype']."',gtype='".$_POST['gtype']."',mtype='".$_POST['mtype']."',overs='".$ov."',logo='".$img."' where id='".$id."' and created_by='".$_SESSION['user_id']."'";
             
             $res=mysqli_query($conn,$str);
             header("location:organizers-list.php?id=$id");

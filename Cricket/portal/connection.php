@@ -5,4 +5,5 @@
         die('DB Connection failed: ' . mysqli_connect_error());
     }
     $title_name="CrickFolio Portal";
+    $user_id=$_SESSION['user_id'];
 ?>

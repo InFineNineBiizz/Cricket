@@ -1,6 +1,11 @@
 <?php 
     session_start();
     include 'connection.php';
+    if(!isset($_SESSION['reset_email']))
+    {
+        header('location:forgot_password.php');
+        exit;
+    }
 
     $logMsg = "";
 
@@ -209,17 +214,17 @@
 
     <?php if(isset($log) && $log == true): ?>
     <script>
-    Swal.fire({
-        title: "Password Changed!",
-        text: "Your account password has been changed! You can now login.",
-        icon: "success",
-        timer: 3000,        
-        timerProgressBar: true,
-        showConfirmButton: false,
-        willClose: () => {                    
-            window.location.href = "login.php";
-        }
-    });        
+        Swal.fire({
+            title: "Password Changed!",
+            text: "Your account password has been changed! You can now login to your account.",
+            icon: "success",
+            timer: 3000,        
+            timerProgressBar: true,
+            showConfirmButton: false,
+            willClose: () => {                    
+                window.location.href = "login.php";
+            }
+        });        
     </script>
     <?php endif; ?>
 </body>

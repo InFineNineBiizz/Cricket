@@ -36,13 +36,13 @@
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port       = 587;
 
-                $mail->setFrom('yourgmail@gmail.com', 'OTP For Password Reset');
+                $mail->setFrom('crickfolio31@gmail.com', 'CrickFolio');                
                 $mail->addAddress($email);
 
                 $mail->isHTML(true);
                 $mail->Subject = 'OTP For Reset Your Password';
-                $mail->Body    = 'Your OTP for password reset is: <b>' . $otp . '</b>. It expires in 1 minutes.';
-                $mail->AltBody = 'Your OTP for password reset is: ' . $otp;
+                $mail->Body    = 'Your OTP for reset your password is: <b>' . $otp . '</b>. It expires in 1 minutes.';
+                $mail->AltBody = 'Your OTP for reset your password is: ' . $otp;
 
                 $mail->send();
                 $otpSent = true;
@@ -59,7 +59,7 @@
 ?>
 <html>
 <head>
-    <title>Forgot Password | <?php echo $title;?> </title>
+    <title>Forgot Password | <?php echo $title_name;?> </title>
     <link rel="stylesheet" href="assets/css/login.css">
     <link rel="stylesheet" href="assets/css/fontawesome-all.css">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -170,19 +170,19 @@
 
     <?php if(isset($otpSent) && $otpSent == true): ?>
     <script>
-    Swal.fire({
-        title: "OTP Sent!",
-        text: "An OTP has been sent to your email address.",
-        icon: "success",        
-        timer: 3000,        
-        timerProgressBar: true,
-        showConfirmButton: false,
-        willClose: () => {                    
-            window.location.href = "verification.php";
-        }
-    });        
+        Swal.fire({
+            title: "OTP Sent!",
+            text: "An OTP has been sent to your email address.",
+            icon: "success",        
+            timer: 3000,        
+            timerProgressBar: true,
+            showConfirmButton: false,
+            willClose: () => {                    
+                window.location.href = "verification.php";
+            }
+        });        
     </script>
     <?php endif; ?>
-
+    
 </body>
 </html>

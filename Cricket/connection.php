@@ -4,5 +4,5 @@
     if (!$conn) {
         die('DB Connection failed: ' . mysqli_connect_error());
     }
-    $title="CrickFolio";
+    $title_name="CrickFolio";
 ?>

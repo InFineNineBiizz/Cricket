@@ -36,7 +36,7 @@
                     
                     <!--// Full Section //-->
                     <div class="ritekhela-contact-map">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13606.8196963411!2d74.3235584!3d31.504793599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m3!3e6!4m0!4m0!5e0!3m2!1sen!2s!4v1564568940172!5m2!1sen!2s" height="450"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119065.02905823676!2d72.73989544621746!3d21.159464837393114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be04e59411d1563%3A0xfe4558290938b042!2sSurat%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                     <!--// Full Section //-->
 
@@ -48,8 +48,7 @@
         <!--// Main Section //-->
         <div class="ritekhela-main-section ritekhela-fixture-list-full">
             <div class="container">
-                <div class="row">
-                    
+                <div class="row">                    
                     <!--// Full Section //-->
                     <div class="col-md-12">
                         <div class="ritekhela-fancy-title-two">
@@ -57,42 +56,39 @@
                         </div>
                         <div class="ritekhela-contact-list">
                             <ul class="row">
-                                <li class="col-md-3">
+                                <li class="col-md-4">
                                     <i class="fa fa-phone"></i>
-                                    <span></span>
-                                    <span></span>
+                                    <span style="font-weight: bold; font-size: x-large;">Call Us</span>
+                                    <a href="tel:+917862855031">+91 78628 55031</a>
+                                    <a href="tel:+917862855031">+91 78628 55031</a>
                                 </li>
-                                <li class="col-md-3">
+                                <li class="col-md-4">
                                     <i class="fas fa-envelope"></i>
-                                    <a href="#"></a>
-                                    <a href="#"></a>
+                                    <span style="font-weight: bold; font-size: x-large;">Email</span>
+                                    <a href="mailto:crickfolio31@gmail.com">crickfolio31@gmail.com</a>                                    
                                 </li>
-                                <li class="col-md-3">
+                                <li class="col-md-4">
                                     <i class="fa fa-map-marker-alt"></i>
+                                    <span style="font-weight: bold; font-size: x-large;">Location</span>
                                     <span></span>
-                                </li>
-                                <li class="col-md-3">
-                                    <i class="fa fa-fax"></i>
-                                    <a href="#"></a>
-                                    <a href="#"></a>
-                                </li>
+                                </li>                                
                             </ul>
                         </div>
                         <!--// Fancy Title //-->
                         <div class="ritekhela-fancy-title-two">
-                            <h2>Contact Here</h2>
+                            <h2>Contact Us</h2>
                         </div>
                         <!--// Fancy Title //-->
                         <div class="ritekhela-form">
                             <form>
                                 <p>
-                                    <input type="text" value="Your Name" onblur="if(this.value == '') { this.value ='Your Name'; }" onfocus="if(this.value =='Your Name') { this.value = ''; }" name="usrname" required=""> </p>
+                                    <input type="text" placeholder="Your Name *" onblur="if(this.value == '') { this.value ='Your Name'; }" onfocus="if(this.value =='Your Name') { this.value = ''; }" name="usrname" required=""> </p>
                                 <p>
-                                    <input type="text" value="Email" onblur="if(this.value == '') { this.value ='Email'; }" onfocus="if(this.value =='Email') { this.value = ''; }" name="usrname" required=""> </p>
+                                    <input type="text" placeholder="Your Email *" onblur="if(this.value == '') { this.value ='Email'; }" onfocus="if(this.value =='Email') { this.value = ''; }" name="usrname" required=""> </p>
                                 <p>
-                                    <input type="text" value="Website" onblur="if(this.value == '') { this.value ='Website'; }" onfocus="if(this.value =='Website') { this.value = ''; }" name="usrname" required=""> </p>
+                                    <input type="text" placeholder="Your Phone Number *" onblur="if(this.value == '') { this.value ='Website'; }" onfocus="if(this.value =='Website') { this.value = ''; }" name="usrname" required=""> </p>
                                 <p class="ritekhela-comment">
-                                    <textarea placeholder="Comment"></textarea>
+                                    <textarea placeholder="Enquiry *"></textarea>
                                 </p>
                                 <p class="ritekhela-submit">
                                     <input type="submit" value="Send Now" class="ritekhela-bgcolor"> </p>
@@ -100,39 +96,43 @@
                         </div>
                         <!--// Fancy Title //-->
                         <!--// Full Section //-->
-
                 </div>
             </div>
         </div>
         <!--// Main Section //-->
-
     </div>
     <!--// Content //-->
 
     <?php
         include 'footer.php';
-    ?>
-
-    <!--// Search ModalBox //-->
-    <div class="loginmodalbox modal fade" id="ritekhelamodalsearch" tabindex="-1">
-       <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-             <div class="modal-body ritekhela-bgcolor-two">
-                <h5 class="modal-title">Search Here</h5>
-                <a href="#" class="close ritekhela-bgcolor-two" data-dismiss="modal" aria-label="Close">
-                    <i class="fa fa-times"></i>
-                </a>
-                <form>
-                    <input type="text" value="Search Here Now" onblur="if(this.value == '') { this.value ='Search Here Now'; }" onfocus="if(this.value =='Search Here Now') { this.value = ''; }">
-                    <input type="submit" value="Search Now" class="ritekhela-bgcolor">
-                </form>
-             </div>
-          </div>
-       </div>
-    </div>
+    ?>    
 
     <?php 
         include "scripts.php";
     ?>
+
+    <script>
+        // Email link functionality - Open Gmail compose in new tab
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all email links
+            const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+            
+            emailLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default mailto behavior
+                    
+                    // Extract email from href
+                    const email = this.getAttribute('href').replace('mailto:', '');
+                    
+                    // Open Gmail compose in new tab
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
+                    window.open(gmailUrl, '_blank');
+                    
+                    // Also show a fallback message
+                    console.log('Opening Gmail for: ' + email);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

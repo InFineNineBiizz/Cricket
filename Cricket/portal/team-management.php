@@ -1,49 +1,97 @@
 <?php
-session_start();
-include("connection.php"); // Your database connection file
+    session_start();
+    include("connection.php"); // Your database connection file
 
-// Get team ID from URL
-$team_id = isset($_GET['team_id']) ? intval($_GET['team_id']) : 0;
+    // Get team ID from URL
+    $team_id = isset($_GET['team_id']) ? intval($_GET['team_id']) : 0;
 
-if ($team_id == 0) {
-    header("Location: tour-manage.php");
-    exit();
-}
+    if ($team_id == 0) {
+        header("Location: tour-manage.php");
+        exit();
+    }
 
-// Fetch team details with season and tournament info
-$team_query = "SELECT t.*, s.name as season_name, s.cname as city_name, 
-                      tour.name as tournament_name, tour.category as tournament_category
-               FROM teams t
-               LEFT JOIN seasons s ON t.season_id = s.id
-               LEFT JOIN tournaments tour ON s.tid = tour.tid
-               WHERE t.id = ?";
+    // Handle player deletion
+    if (isset($_GET['delete_tpid']) && isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
+        $delete_tpid = intval($_GET['delete_tpid']);
+        
+        // Get player details before deletion for updating team remaining credits
+        $player_query = "SELECT sold_price FROM team_player WHERE tpid = ? AND tid = ?";
+        $stmt = $conn->prepare($player_query);
+        $stmt->bind_param("ii", $delete_tpid, $team_id);
+        $stmt->execute();
+        $player_result = $stmt->get_result();
+        
+        if ($player_result->num_rows > 0) {
+            $player_data = $player_result->fetch_assoc();
+            $sold_price = $player_data['sold_price'];
+            
+            // Delete the player from team_player table
+            $delete_query = "DELETE FROM team_player WHERE tpid = ? AND tid = ?";
+            $stmt = $conn->prepare($delete_query);
+            $stmt->bind_param("ii", $delete_tpid, $team_id);
+            
+            if ($stmt->execute()) {
+                // Update team's remaining credits
+                $update_team = "UPDATE teams SET remaining = remaining + ? WHERE id = ?";
+                $stmt = $conn->prepare($update_team);
+                $stmt->bind_param("ii", $sold_price, $team_id);
+                $stmt->execute();
+                
+                // Set success message
+                $_SESSION['delete_success'] = true;
+                $_SESSION['deleted_player_price'] = $sold_price;
+                
+                // Redirect to refresh the page
+                header("Location: team-management.php?team_id=" . $team_id);
+                exit();
+            } else {
+                // Set error message
+                $_SESSION['delete_error'] = true;
+                header("Location: team-management.php?team_id=" . $team_id);
+                exit();
+            }
+        } else {
+            // Player not found
+            $_SESSION['delete_error'] = true;
+            header("Location: team-management.php?team_id=" . $team_id);
+            exit();
+        }
+    }
 
-$stmt = $conn->prepare($team_query);
-$stmt->bind_param("i", $team_id);
-$stmt->execute();
-$team_result = $stmt->get_result();
+    // Fetch team details with season and tournament info
+    $team_query = "SELECT t.*, s.name as season_name, s.cname as city_name, 
+                        tour.name as tournament_name, tour.category as tournament_category
+                FROM teams t
+                LEFT JOIN seasons s ON t.season_id = s.id
+                LEFT JOIN tournaments tour ON s.tid = tour.tid
+                WHERE t.id = ?";
 
-if ($team_result->num_rows == 0) {
-    header("Location: teams.php");
-    exit();
-}
+    $stmt = $conn->prepare($team_query);
+    $stmt->bind_param("i", $team_id);
+    $stmt->execute();
+    $team_result = $stmt->get_result();
 
-$team = $team_result->fetch_assoc();
+    if ($team_result->num_rows == 0) {
+        header("Location: tour-manage.php");
+        exit();
+    }
 
-// Fetch all players sold to this team
-$players_query = "SELECT p.*, tp.sold_price, tp.tpid
-                  FROM team_player tp
-                  INNER JOIN players p ON tp.pid = p.id
-                  WHERE tp.tid = ? AND tp.season_id = ?
-                  ORDER BY p.fname, p.lname";
+    $team = $team_result->fetch_assoc();
 
-$stmt = $conn->prepare($players_query);
-$stmt->bind_param("ii", $team_id, $team['season_id']);
-$stmt->execute();
-$players_result = $stmt->get_result();
+    // Fetch all players sold to this team
+    $players_query = "SELECT p.*, tp.sold_price, tp.tpid
+                    FROM team_player tp
+                    INNER JOIN players p ON tp.pid = p.id
+                    WHERE tp.tid = ? AND tp.season_id = ? ";
 
-$title_name = $team['name'] . " - Team Management";
+    $stmt = $conn->prepare($players_query);
+    $stmt->bind_param("ii", $team_id, $team['season_id']);
+    $stmt->execute();
+    $players_result = $stmt->get_result();
+
+    $title_name = $team['name'] . " - Team Management | CrickFolio";
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -52,6 +100,10 @@ $title_name = $team['name'] . " - Team Management";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $title_name; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome-all.css">    
+    <link rel="stylesheet" href="../assets/css/sweetalert2.css">
+    <script src="../assets/script/sweetalert2.js"></script>
+    
     <style>
         /* Active state styling for sidebar */
         .nav-link.active {
@@ -557,11 +609,11 @@ $title_name = $team['name'] . " - Team Management";
     <div class="main-wrapper">
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="tournaments.php"><?php echo htmlspecialchars($team['tournament_name']); ?></a>
+            <a href="tournament.php"><?php echo htmlspecialchars($team['tournament_name']); ?></a>
             <i class="fas fa-chevron-right"></i>
-            <a href="seasons.php?tid=<?php echo $team['season_id']; ?>"><?php echo htmlspecialchars($team['season_name']); ?></a>
+            <a href="sea-detail.php?id=<?php echo $team['season_id']; ?>"><?php echo htmlspecialchars($team['season_name']); ?></a>
             <i class="fas fa-chevron-right"></i>
-            <a href="tour-manage.php?season_id=<?php echo $team['season_id']; ?>">Teams</a>
+            <a href="tour-manage.php?id=<?php echo $team['season_id']; ?>">Teams</a>
             <i class="fas fa-chevron-right"></i>
             <span><?php echo htmlspecialchars($team['name']); ?></span>
         </div>
@@ -653,7 +705,9 @@ $title_name = $team['name'] . " - Team Management";
                                     Sold: ₹<?php echo number_format($player['sold_price']); ?>
                                 </div>
                             </div>
-                            <button class="delete-btn" onclick="removePlayer(<?php echo $player['tpid']; ?>, '<?php echo htmlspecialchars($player['fname'] . ' ' . $player['lname']); ?>')">
+                            <button type="button" class="delete-btn" 
+                                    data-tpid="<?php echo $player['tpid']; ?>" 
+                                    data-player-name="<?php echo htmlspecialchars($player['fname'] . ' ' . $player['lname'], ENT_QUOTES); ?>">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -669,45 +723,106 @@ $title_name = $team['name'] . " - Team Management";
         </div>
     </div>
 
+    <!-- Include jQuery if not already included -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <script>
-        // Get current page filename
-        const currentPage = window.location.pathname.split('/').pop();
-
-        // Get all nav links
-        const navLinks = document.querySelectorAll('.nav-link');
-
-        // Add active class to current page link
-        navLinks.forEach(link => {
-            const linkPage = link.getAttribute('data-page');
-            if (linkPage === currentPage) {
-                link.classList.add('active');
-            }
-
-            // Optional: Add click event to store active state
-            link.addEventListener('click', function() {
-                // Remove active class from all links
-                navLinks.forEach(l => l.classList.remove('active'));
-                // Add active class to clicked link
-                this.classList.add('active');
+        // Wait for everything to load
+        window.addEventListener('load', function() {
+            console.log('Page loaded');
+            
+            // Find all delete buttons
+            var deleteButtons = document.querySelectorAll('.delete-btn');
+            console.log('Found delete buttons:', deleteButtons.length);
+            
+            // Add click handler to each delete button
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    var tpid = this.getAttribute('data-tpid');
+                    var playerName = this.getAttribute('data-player-name');
+                    
+                    console.log('Delete clicked:', tpid, playerName);
+                    
+                    // Show SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Delete Player?',
+                        html: 'Are you sure you want to permanently remove <strong>' + playerName + '</strong> from this team?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Yes, Delete Player',
+                        cancelButtonText: 'Cancel',
+                        reverseButtons: true,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Show loading
+                            Swal.fire({
+                                title: 'Deleting...',
+                                text: 'Please wait while we remove the player.',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                            
+                            // Redirect to same page with delete parameters
+                            window.location.href = 'team-management.php?team_id=<?php echo $team_id; ?>&delete_tpid=' + tpid + '&confirm=yes';
+                        }
+                    });
+                });
+            });
+            
+            // Tab switching
+            var tabElements = document.querySelectorAll('.tab');
+            tabElements.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabElements.forEach(function(t) {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
             });
         });
 
-        // Tab switching
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+        // Show success message after deletion
+        <?php if (isset($_SESSION['delete_success']) && $_SESSION['delete_success']): ?>
+            window.addEventListener('load', function() {
+                Swal.fire({
+                    title: 'Deleted!',
+                    html: 'Player has been removed successfully.<br>₹<?php echo number_format($_SESSION['deleted_player_price']); ?> has been refunded to team credits.',
+                    icon: 'success',                    
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
             });
-        });
+            <?php 
+                unset($_SESSION['delete_success']);
+                unset($_SESSION['deleted_player_price']);
+            ?>
+        <?php endif; ?>
 
-        // Remove player function
-        function removePlayer(tpid, playerName) {
-            if (confirm('Are you sure you want to remove ' + playerName + ' from this team?')) {
-                window.location.href = 'remove-player.php?tpid=' + tpid + '&team_id=<?php echo $team_id; ?>';
-            }
-        }
+        // Show error message if deletion failed
+        <?php if (isset($_SESSION['delete_error']) && $_SESSION['delete_error']): ?>
+            window.addEventListener('load', function() {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to remove player. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            });
+            <?php unset($_SESSION['delete_error']); ?>
+        <?php endif; ?>
     </script>
 </body>
-
 </html>

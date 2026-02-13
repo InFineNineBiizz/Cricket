@@ -212,6 +212,10 @@
                 window.location.href = 'index.php';
             });
 
+            $('#email').on('keyup', function() {
+                $('.alert').remove();
+            });
+
             // Email validation
             $('#email').on('input blur', function() {
                 var email = $(this).val().trim();
@@ -356,8 +360,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Login Successful!',
-                        text: data.message,
-                        confirmButtonColor: '#4c6fff',
+                        text: data.message,                        
                         showConfirmButton: false,
                         timer: 2000,
                         timerProgressBar: true,

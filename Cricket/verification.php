@@ -41,8 +41,7 @@
         }
         else if($otp1 === (string)($_SESSION['otp'] ?? ''))
         {
-            header("Location: reset_password.php");
-            exit;
+            $otp_verified=true;            
         }
         else
         {                
@@ -80,8 +79,8 @@
 
                 $mail->isHTML(true);
                 $mail->Subject = 'OTP For Reset Your Password (Resent)';
-                $mail->Body    = 'Your new OTP for password reset is: <b>' . $otp . '</b>. It expires in 1 minute.';
-                $mail->AltBody = 'Your new OTP for password reset is: ' . $otp;
+                $mail->Body    = 'Your new OTP for reset your password is: <b>' . $otp . '</b>. It expires in 1 minute.';
+                $mail->AltBody = 'Your new OTP for reset your password is: ' . $otp;
 
                 $mail->send();
 
@@ -96,12 +95,13 @@
 ?>
 <html>
 <head>
-    <title>Verify OTP | CrickFolio</title>
+    <title>Verify OTP | <?php echo $title_name;?></title>
     <link rel="stylesheet" href="assets/css/login.css">
     <link rel="stylesheet" href="assets/css/fontawesome-all.css">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/sweetalert2.css">
     <script src="assets/script/sweetalert2.js"></script>
+
     <style>
         .otp-container {
             display: flex;
@@ -240,10 +240,9 @@
                 window.location.href = 'index.php';
             });
 
-            // Auto-hide alerts after 5 seconds
-            setTimeout(function() {
-                $('.alert').fadeOut('slow');
-            }, 5000);
+            $('#otp1,#otp2,#otp3,#otp4,#otp5,#otp6').on('keyup', function() {
+                $('.alert').remove();
+            });
 
             // OTP input behavior
             const boxes = document.querySelectorAll(".otp-box");
@@ -346,5 +345,22 @@
             }, 1000);
         }
     </script>
+
+    <?php if(isset($otp_verified) && $otp_verified == true): ?>
+    <script>
+        Swal.fire({
+            title: "OTP Verified!",
+            text: "An OTP has been verify successfully.",
+            icon: "success",        
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            willClose: () => {                    
+                window.location.href = "reset_password.php";
+            }
+        });        
+    </script>
+    <?php endif; ?>
+
 </body>
 </html>
