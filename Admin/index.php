@@ -1,8 +1,13 @@
+<?php
+   session_name('admin_session');
+   session_start();
+   include "connection.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard</title>
+    <title>Dashboard | CrickFolio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
     <meta content="Coderthemes" name="author" />
@@ -487,6 +492,21 @@
     <?php 
         include "scripts.php";
     ?>
+     <?php if (isset($_SESSION['done'])): ?>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Logged in successful',
+            text: 'You have logged in successfully.',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            willClose: () => {                    
+                window.location.href = "index.php";
+            }
+        });
+    </script>
+    <?php unset($_SESSION['done']); endif; ?>
 
 </body>
 </html>

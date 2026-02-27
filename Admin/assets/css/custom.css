@@ -1,0 +1,36 @@
+/* Dashboard cards */
+.stat-card {
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* summary list */
+.summary-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.summary-list li:last-child {
+    border-bottom: none;
+}
+
+/* responsive fix */
+@media (max-width: 768px) {
+    .stat-card h3 {
+        font-size: 22px;
+    }
+}

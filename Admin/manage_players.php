@@ -1,4 +1,6 @@
-<?php 
+<?php
+    session_name('admin_session');
+    session_start(); 
     include "connection.php";    
 
     $str="select * from players";
@@ -140,7 +142,6 @@
                                         <td><?php echo $row['created_at'];?></td>
                                         <td>
                                             <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_players.php?id=<?php echo $row['id'];?>"></a>
                                         </td>
                                     </tr>
                                     <?php 

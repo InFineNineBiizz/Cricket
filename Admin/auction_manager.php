@@ -1,4 +1,6 @@
 <?php 
+    session_name('admin_session');
+    session_start();
     include "connection.php";    
 
     $str="SELECT am.*, a.name AS auction_name

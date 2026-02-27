@@ -1,7 +1,9 @@
 <?php 
+    session_name('admin_session');
+    session_start();
     include "connection.php";    
 
-    $str="select * from teams";
+    $str = "SELECT t.id,t.logo,t.name AS team_name,t.status,t.created_at,s.name AS season_name FROM teams t JOIN seasons s ON t.season_id = s.id";
     $res=mysqli_query($conn,$str);
 ?>
 
@@ -81,23 +83,23 @@
                                 <thead>
                                     <tr>
                                         <th>Team ID</th>
-                                        <th>Team Logo</th>                                    
-                                        <th>Tournament ID</th>                                    
+                                        <th>Team Logo</th>                                                                       
                                         <th>Team Name</th>
+                                        <th>Season Name</th>
                                         <th>Status[Active/Inactive]</th>
                                         <th>Created_AT</th>                                            
                                         <th>Action</th>                                            
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php  
+                                    <?php   
                                         while($row = mysqli_fetch_assoc($res)){
                                     ?>
                                     <tr>
                                         <td><?php echo $row['id'];?></td>
                                         <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
-                                        <td><?php echo $row['tid'];?></td>                                            
-                                        <td><?php echo $row['name'];?></td>
+                                        <td><?php echo $row['team_name'];?></td>
+                                        <td><?php echo $row['season_name'];?></td>                                            
                                         <td>
                                         <button class="statusBtn btn 
                                             <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
@@ -111,7 +113,6 @@
                                         <td><?php echo $row['created_at'];?></td>
                                         <td>
                                             <a class="fa fa-trash fa-lg btn btn-danger"  href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_teams.php?id=<?php echo $row['id'];?>"></a>
                                         </td>
                                     </tr>
                                     <?php 

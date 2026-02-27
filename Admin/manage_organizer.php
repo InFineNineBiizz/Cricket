@@ -1,4 +1,6 @@
 <?php
+    session_name('admin_session');
+    session_start();
     include 'connection.php';
     
     $str="select * from organizers";
@@ -71,9 +73,7 @@
                                     <th>NAME</th>
                                     <th>EMAIL</th>
                                     <th>NUMBER</th>
-                                    <th>STATUS</th>
                                     <th>CREATED_AT</th>
-                                    <th>ACTION</th>
                                     </tr>
                                 </thead>                                    
                                 <tbody>
@@ -83,19 +83,7 @@
                                         <td><?php echo $row['name'];?></td>
                                         <td><?php echo $row['email'];?></td>
                                         <td><?php echo $row['number'];?></td>
-                                        <td>  
-                                            <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['id']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="organizers">
-
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>
-                                        <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                        <a class="fa fa-pencil fa-lg btn btn-success" href="add_organizer.php?id=<?php echo $row['id'];?>"></a></td>
+                                        <td><?php echo $row['created_at'];?></td>                                        
                                     </tr>
                                     <?php } ?>
                                 </tbody> 

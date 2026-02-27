@@ -1,7 +1,10 @@
 <?php 
+    session_name('admin_session');
+    session_start();
     include "connection.php";    
 
-    $str="select * from auctions";
+    $str = "SELECT a.id,a.logo,a.name AS auction_name,t.name AS tournament_name,s.name AS season_name,a.venue,a.sdate,a.edate,a.credit_type,a.minplayer,a.maxplayer,
+            a.resplayer,a.camt,a.bidamt,a.bprice,a.status,a.created_at FROM auctions a JOIN tournaments t ON a.tour_id = t.tid JOIN seasons s ON a.sea_id = s.id";
     $res=mysqli_query($conn,$str);
 ?>
 
@@ -83,8 +86,8 @@
                                         <th>Auction ID</th>
                                         <th>Auction Logo</th>                                    
                                         <th>Auction Name</th>
-                                        <th>Tournament ID</th>
-                                        <th>Season ID</th>
+                                        <th>Tournament Name</th>
+                                        <th>Season Name</th>
                                         <th>Venue</th>
                                         <th>Auction Start Date</th>
                                         <th>Auction End Date</th>
@@ -95,9 +98,7 @@
                                         <th>Credit Amount</th>
                                         <th>Bid Increment</th>
                                         <th>Base Price</th>
-                                        <th>Status[Active/Inactive]</th>
                                         <th>Created_AT</th>  
-                                        <th>Action</th>  
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,9 +108,9 @@
                                     <tr>
                                         <td><?php echo $row['id'];?></td>
                                         <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>
-                                        <td><?php echo $row['name'];?></td>                                            
-                                        <td><?php echo $row['tour_id'];?></td>
-                                        <td><?php echo $row['sea_id'];?></td>
+                                        <td><?php echo $row['auction_name'];?></td>                                            
+                                        <td><?php echo $row['tournament_name'];?></td>
+                                        <td><?php echo $row['season_name'];?></td>
                                         <td><?php echo $row['venue'];?></td>
                                         <td><?php echo $row['sdate'];?></td>
                                         <td><?php echo $row['edate'];?></td>
@@ -120,21 +121,7 @@
                                         <td><?php echo $row['camt'];?></td>
                                         <td><?php echo $row['bidamt'];?></td>
                                         <td><?php echo $row['bprice'];?></td>
-                                        <td>
-                                            <button class="statusBtn btn 
-                                            <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                            data-id="<?php echo $row['id']; ?>" 
-                                            data-status="<?php echo $row['status']; ?>"
-                                            data-table="auctions">    <!-- 👈 table name here -->
-
-                                            <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                        </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>                                            
-                                        <td>
-                                            <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a> 
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_auctions.php?id=<?php echo $row['id'];?>"></a>
-                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>                                        
                                     </tr>
                                     <?php 
                                         }

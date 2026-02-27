@@ -37,7 +37,7 @@
                     <img src="assets/images/users/avatar-1.jpg" width="46" class="rounded-circle" alt="user-image">
                     <span class="d-flex justify-content-center gap-1 sidenav-user-name my-2">
                         <span>
-                            <span class="mb-0 fw-semibold lh-base fs-15">Harsh</span>
+                            <h6><?php echo isset($_SESSION['name']) ? ucfirst($_SESSION['name']) : 'Guest'; ?></h6>
                             <p class="my-0 fs-13 text-muted">Admin</p>
                         </span>
                         <i class="ri-arrow-down-s-line d-block sidenav-user-arrow align-middle"></i>
@@ -58,7 +58,7 @@
                     <div class="dropdown-divider"></div>
 
                     <!-- item-->
-                    <a href="" class="dropdown-item active fw-semibold text-danger">
+                    <a href="auth-logout.php" class="dropdown-item active fw-semibold text-danger">
                         <i class="ri-logout-box-line me-1 fs-16 align-middle"></i>
                         <span class="align-middle">Sign Out</span>
                     </a>
@@ -84,11 +84,6 @@
                 <div class="collapse" id="sidebarPagesTour">
                     <ul class="sub-menu">
                         <li class="side-nav-item">
-                            <a href="add_tournaments.php" class="side-nav-link">
-                                <span class="menu-text">Add Tournaments</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
                             <a href="manage_tournaments.php" class="side-nav-link">
                                 <span class="menu-text">Manage Tournaments</span>
                             </a>
@@ -107,18 +102,8 @@
                 <div class="collapse" id="sidebarPagesSeason">
                     <ul class="sub-menu">
                         <li class="side-nav-item">
-                            <a href="add_seasons.php" class="side-nav-link">
-                                <span class="menu-text">Add Seasons</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
                             <a href="manage_seasons.php" class="side-nav-link">
                                 <span class="menu-text">Manage Seasons</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="add_organizer.php" class="side-nav-link">
-                                <span class="menu-text">Add Organizer</span>
                             </a>
                         </li>
                         <li class="side-nav-item">
@@ -127,13 +112,23 @@
                             </a>
                         </li>
                         <li class="side-nav-item">
-                            <a href="add_sponsor.php" class="side-nav-link">
-                                <span class="menu-text">Add Sponsor</span>
+                            <a href="manage_sponsor.php" class="side-nav-link">
+                                <span class="menu-text">Manage Sponsor</span>
                             </a>
                         </li>
                         <li class="side-nav-item">
-                            <a href="manage_sponsor.php" class="side-nav-link">
-                                <span class="menu-text">Manage Sponsor</span>
+                            <a href="manage_season_organizer.php" class="side-nav-link">
+                                <span class="menu-text">Manage Season Organizer</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_season_sponsor.php" class="side-nav-link">
+                                <span class="menu-text">Manage Season Sponsor</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="manage_season_players.php" class="side-nav-link">
+                                <span class="menu-text">Manage Season Players</span>
                             </a>
                         </li>
                     </ul>
@@ -149,11 +144,6 @@
                 </a>
                 <div class="collapse" id="sidebarPagesAuc">
                     <ul class="sub-menu">
-                        <li class="side-nav-item">
-                            <a href="add_auctions.php" class="side-nav-link">
-                                <span class="menu-text">Add Auctions</span>
-                            </a>
-                        </li>
                         <li class="side-nav-item">
                             <a href="manage_auctions.php" class="side-nav-link">
                                 <span class="menu-text">Manage Auctions</span>
@@ -188,18 +178,8 @@
                 <div class="collapse" id="sidebarPagesTeam">
                     <ul class="sub-menu">
                         <li class="side-nav-item">
-                            <a href="add_teams.php" class="side-nav-link">
-                                <span class="menu-text">Add Teams</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
                             <a href="manage_team.php" class="side-nav-link">
                                 <span class="menu-text">Manage Teams</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="add_players.php" class="side-nav-link">
-                                <span class="menu-text">Add Players</span>
                             </a>
                         </li>
                         <li class="side-nav-item">
@@ -244,87 +224,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
-                    
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarPagesError" aria-expanded="false"
-                    aria-controls="sidebarPagesError" class="side-nav-link">
-                    <span class="menu-icon"><i class="ti ti-exclamation-circle"></i></span>
-                    <span class="menu-text"> Error Pages </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarPagesError">
-                    <ul class="sub-menu">
-                        <li class="side-nav-item">
-                            <a href="error-401.php" class="side-nav-link">
-                                <span class="menu-text">401 Unauthorized</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="error-400.php" class="side-nav-link">
-                                <span class="menu-text">400 Bad Request</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="error-403.php" class="side-nav-link">
-                                <span class="menu-text">403 Forbidden</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="error-404.php" class="side-nav-link">
-                                <span class="menu-text">404 Not Found</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="error-500.php" class="side-nav-link">
-                                <span class="menu-text">500 Internal Server</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="error-service-unavailable.php" class="side-nav-link">
-                                <span class="menu-text">Service Unavailable</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="error-404-alt.php" class="side-nav-link">
-                                <span class="menu-text">Error 404 Alt</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li class="side-nav-title mt-2">Components</li>
-
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarIcons" aria-expanded="false" aria-controls="sidebarIcons"
-                    class="side-nav-link">
-                    <span class="menu-icon"><i class="ti ti-icons"></i></span>
-                    <span class="menu-text"> Icons </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarIcons">
-                    <ul class="sub-menu">
-                        <li class="side-nav-item">
-                            <a href="icons-remix.php" class="side-nav-link">
-                                <span class="menu-text">Remix</span>
-                            </a>
-                        </li>
-                        <li class="side-nav-item">
-                            <a href="icons-tabler.php" class="side-nav-link">
-                                <span class="menu-text">Tabler</span>
-                            </a>
-                        </li>                        
-                    </ul>
-                </div>
-            </li>
-            
-            <li class="side-nav-item">
-                <a href="order.php" class="side-nav-link">
-                    <span class="menu-icon"><i class="ti ti-dashboard"></i></span>
-                    <span class="menu-text"> Your Order </span>
-                </a>                
-            </li>
+            </li>         
         </ul>
         <div class="clearfix"></div>
     </div>

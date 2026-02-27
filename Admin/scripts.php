@@ -119,31 +119,47 @@ $("#myForm").on("submit", function(e){
 </script>
 
 <script>
-$(document).on("click", ".statusBtn", function () {
-    let btn = $(this);
-    let id = btn.data("id");
-    let status = btn.data("status");
-    let table = btn.data("table");
+document.addEventListener("click", function(e) {
 
-    $.ajax({
-        url: "update_status.php",
-        type: "POST",
-        data: { id, status, table },
-        success: function (response) {
-            if (response == "1") {
-                let newStatus = status == 1 ? 0 : 1;
-                btn.data("status", newStatus);
+    if(e.target.classList.contains("statusBtn")) {
 
-                if (newStatus == 1) {
-                    btn.removeClass("btn-danger").addClass("btn-success").text("Active");
-                } else {
-                    btn.removeClass("btn-success").addClass("btn-danger").text("Inactive");
-                }
-            } 
-        }
-    });
+        let btn    = e.target;
+        let id     = btn.dataset.id;
+        let status = btn.dataset.status;
+        let table  = btn.dataset.table;
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "update_status.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onload = function() {
+
+            if(this.responseText === "1") {
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-success");
+                btn.innerText = "Active";
+                btn.dataset.status = "1";
+            }
+            else if(this.responseText === "0") {
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-danger");
+                btn.innerText = "Inactive";
+                btn.dataset.status = "0";
+            }
+            else {
+                alert("Status update failed");
+            }
+        };
+
+        xhr.send(
+            "id=" + id +
+            "&status=" + status +
+            "&table=" + table
+        );
+    }
 });
 </script>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -391,4 +407,39 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+ 
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('dashboardChart');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Tournaments', 'Teams', 'Players', 'Users', 'Sponsors'],
+        datasets: [{
+            label: 'System Data',
+            data: [
+                <?= $total_tournaments ?>,
+                <?= $total_teams ?>,
+                <?= $total_players ?>,
+                <?= $total_users ?>,
+                <?= $total_sponsors ?>
+            ],
+            borderColor: '#556ee6',
+            backgroundColor: 'rgba(85,110,230,0.15)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
 </script>

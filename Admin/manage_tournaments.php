@@ -1,18 +1,21 @@
 <?php 
+    session_name('admin_session');
+    session_start();
     include "connection.php";    
 
-    $str="select * from tournaments";
-    $res=mysqli_query($conn,$str);
+    $str = "select t.*,u.uname from users u,tournaments t where t.created_by=u.id";
+    $res = mysqli_query($conn, $str);
+
 ?>
 
 <?php
-      if(isset($_GET['tid']))
-      {   
-         $id=$_GET['tid'];
-         $sql="delete from tournaments where tid=".$id."";
-         mysqli_query($conn,$sql);
-         header("location:manage_tournaments.php");
-      }
+    if(isset($_GET['tid']))
+    {   
+        $id=$_GET['tid'];
+        $sql="delete from tournaments where tid=".$id."";
+        mysqli_query($conn,$sql);
+        header("location:manage_tournaments.php");
+    }
 ?>
 
 <!DOCTYPE html>
@@ -82,10 +85,9 @@
                                         <th>Tournament ID</th>
                                         <th>Tournament Logo</th>                                    
                                         <th>Tournament Name</th>
-                                        <th>Tournament Category</th>
-                                        <th>Status[Active/Inactive]</th>
+                                        <th>Tournament Category</th>                                        
+                                        <th>Created_BY</th>                                
                                         <th>Created_AT</th>                                            
-                                        <th>Action</th>                                            
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -97,20 +99,8 @@
                                         <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>                                            
                                         <td><?php echo $row['name'];?></td>                                            
                                         <td><?php echo $row['category'];?></td>
-                                        <td>
-                                        <button class="statusBtn btn 
-                                            <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                            data-id="<?php echo $row['tid']; ?>" 
-                                            data-status="<?php echo $row['status']; ?>"
-                                            data-table="tournaments">
-                                            <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                        </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>
-                                        <td>
-                                            <a class="fa fa-trash fa-lg btn btn-danger"  href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['tid']; ?>)"></a>
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_tournaments.php?tid=<?php echo $row['tid'];?>"></a>
-                                        </td>
+                                        <td><?php echo $row['uname'];?></td>
+                                        <td><?php echo $row['created_at'];?></td>                                        
                                     </tr>
                                     <?php 
                                         }

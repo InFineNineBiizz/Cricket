@@ -109,16 +109,8 @@
 </head>
 <body>
     <nav class="top-nav">
-       <a href="../index.php" class="brand">
-            <div class="brand-logo">
-                <i class="fas fa-trophy"></i>
-            </div>
-            <div class="brand-text">
-                <h1>CRICKFOLIO</h1>
-                <p>Cricket Portal</p>
-            </div>
-        </a>
-
+        <a href="../index.php" class="ritekhela-logo"><img src="../assets/images/Crickfolio1.png" alt="Logo" height="60px" width="200px"></a>            
+        
         <div class="user-dropdown">
             <div class="user-menu" id="userMenu">
                 <div class="user-avatar"><?php echo $user_initials; ?></div>

@@ -1,7 +1,9 @@
 <?php 
+    session_name('admin_session');
+    session_start();
     include "connection.php";    
 
-    $str="select * from seasons";
+    $str="select t.name as tname, s.* from seasons s, tournaments t where s.tid=t.tid";
     $res=mysqli_query($conn,$str);
 ?>
 
@@ -81,9 +83,9 @@
                                 <thead>
                                     <tr>
                                         <th>Season ID</th>
-                                        <th>Season Logo</th>                                    
+                                        <th>Tournament Name</th>
                                         <th>Season Name</th>
-                                        <th>Tournament ID</th>
+                                        <th>Season Logo</th>                                                
                                         <th>City Name</th>
                                         <th>Ground Name</th>
                                         <th>Season Start Date</th>
@@ -92,9 +94,7 @@
                                         <th>Ground Type</th>
                                         <th>Match Type</th>
                                         <th>Overs</th>
-                                        <th>Status[Active/Inactive]</th>
                                         <th>Created_AT</th>  
-                                        <th>Action</th>  
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,9 +103,9 @@
                                     ?>
                                     <tr>
                                         <td><?php echo $row['id'];?></td>
+                                        <td><?php echo $row['tname'];?></td>
+                                        <td><?php echo $row['name'];?></td>
                                         <td><img src="images/<?php echo $row['logo'];?>" height="100px" width="100px" style="border-radius: 20px;"></td>
-                                        <td><?php echo $row['name'];?></td>                                            
-                                        <td><?php echo $row['tid'];?></td>
                                         <td><?php echo $row['cname'];?></td>
                                         <td><?php echo $row['gname'];?></td>
                                         <td><?php echo $row['sdate'];?></td>
@@ -114,21 +114,7 @@
                                         <td><?php echo $row['gtype'];?></td>
                                         <td><?php echo $row['mtype'];?></td>
                                         <td><?php echo $row['overs'];?></td>
-                                        <td>
-                                            <button class="statusBtn btn 
-                                            <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                            data-id="<?php echo $row['id']; ?>" 
-                                            data-status="<?php echo $row['status']; ?>"
-                                            data-table="sponsers">    <!-- 👈 table name here -->
-
-                                            <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                        </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>                                            
-                                        <td>
-                                            <a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a> 
-                                            <a class="fa fa-pencil fa-lg btn btn-success" href="add_seasons.php?id=<?php echo $row['id'];?>"></a>
-                                        </td>
+                                        <td><?php echo $row['created_at'];?></td>                                        
                                     </tr>
                                     <?php 
                                         }

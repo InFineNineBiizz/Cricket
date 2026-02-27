@@ -181,11 +181,9 @@
     <div class="container-main">
         <!-- Left Panel -->
         <div class="left-panel">
-            <div class="header-section">
-                <div class="logo">CF</div>
+            <div class="header-section">                
                 <div class="header-text">
-                    <h4>CRICKFOLIO</h4>
-                    <p>CRICKET LIVE AUCTION</p>
+                    <a href="index.php" class="ritekhela-logo"><img src="assets/images/Crickfolio.png" alt="Logo" height="70px" width="200px"></a>
                 </div>
             </div>
 

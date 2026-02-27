@@ -1,4 +1,6 @@
-<?php 
+<?php
+    session_name('admin_session');
+    session_start(); 
     include "connection.php";    
 
     $str="select * from group_auction";

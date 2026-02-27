@@ -1,7 +1,9 @@
 <?php
+    session_name('admin_session');
+    session_start();
     include 'connection.php';
 
-    $str="select * from sponsers";
+    $str="select * from sponsors";
     $res=mysqli_query($conn,$str);   
 ?> 
 
@@ -9,7 +11,7 @@
     if(isset($_GET['id']))
     {   
         $id=$_GET['id'];
-        $sql="delete from sponsers where id=".$id."";
+        $sql="delete from sponsors where id=".$id."";
         mysqli_query($conn,$sql);
         header("location:manage_sponsor.php");
     }
@@ -73,9 +75,7 @@
                                         <th>TYPE</th>
                                         <th>NUMBER</th>
                                         <th>EMAIL</th>
-                                        <th>STATUS</th>
                                         <th>CREATED_AT</th>
-                                        <th>ACTION</th>
                                     </tr>
                                 </thead>                                        
                                 <tbody>
@@ -88,19 +88,7 @@
                                         <td><?php echo $row['type'];?></td>
                                         <td><?php echo $row['number'];?></td>
                                         <td><?php echo $row['email'];?></td>
-                                        <td>
-                                            <button class="statusBtn btn 
-                                                <?php echo ($row['status']==1) ? 'btn-success' : 'btn-danger'; ?>"
-                                                data-id="<?php echo $row['id']; ?>" 
-                                                data-status="<?php echo $row['status']; ?>"
-                                                data-table="sponsers">    <!-- 👈 table name here -->
-
-                                                <?php echo ($row['status']==1) ? "Active" : "Inactive"; ?>
-                                            </button>
-                                        </td>
-                                        <td><?php echo $row['created_at'];?></td>
-                                        <td><a class="fa fa-trash fa-lg btn btn-danger" href="javascript:void(0);" onclick="confirmDelete(<?php echo $row['id']; ?>)"></a>
-                                        <a class="fa fa-pencil fa-lg btn btn-success" href="add_sponsor.php?id=<?php echo $row['id'];?>"></a></td>
+                                        <td><?php echo $row['created_at'];?></td>                                        
                                     </tr>
                                     <?php } ?>
                                     </tbody> 

@@ -19,7 +19,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="index.php" class="ritekhela-logo"><img src="assets/images/Crickfolio.png" alt="Logo" height="100px" width="200px"></a>
+                        <a href="index.php" class="ritekhela-logo"><img src="assets/images/Crickfolio.png" alt="Logo" height="100px" width="200px" style="margin: -15px 14px -3px -23px;"></a>
                         <div class="ritekhela-right-section">
                             <div class="ritekhela-navigation">
                                 <span class="ritekhela-menu-link">

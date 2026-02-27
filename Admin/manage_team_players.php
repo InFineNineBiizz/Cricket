@@ -1,4 +1,6 @@
 <?php
+    session_name('admin_session');
+    session_start();
     include 'connection.php';
 
     $str="select tp.*,p.fname as first_name,p.lname as last_name,t.name as team_name 
